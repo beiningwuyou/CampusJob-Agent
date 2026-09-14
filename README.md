@@ -20,6 +20,11 @@
 
 [English](./README_EN.md) · [查看详细需求 PRD](./CampusJob_Agent_PRD_V1.0.md) · [商业化与分级设计](./docs/PRODUCT_TIERING_AND_MONETIZATION_PRD.md) · [贡献指南](./CONTRIBUTING.md)
 
+<br/>
+
+<img src="./docs/images/dashboard.png" alt="CampusJob-Agent 核心作战仪表盘" width="100%" />
+<p><em>▲ CampusJob-Agent 核心作战仪表盘：多源校招与招考态势感知、72h 紧急 DDL 倒计时与意向命中度分布</em></p>
+
 </div>
 
 ---
@@ -36,18 +41,53 @@
 
 ---
 
-## ✨ 核心特性矩阵
+## 📸 功能模块全景画廊
 
-| 模块 | 功能亮点 | 核心能力描述 |
-| :--- | :--- | :--- |
-| 📡 **情报雷达** | 多源公告实时监听 | 支持高校就业网 RSS、指定大厂官网与招考人事网白名单，定时自动清洗聚合。 |
-| 🧩 **双轨 Schema** | 结构化信息抽取 | 自动识别区分「企业校招」与「公考选调」，提取专业代码要求、薪资、笔面轮次及截止时间。 |
-| 🛡️ **本地沙箱** | 个人数据零泄露 | 真实姓名、电话、邮箱、身份证及院校本地加密脱敏，LLM 仅接触混淆 Token。 |
-| 🤖 **AI 诊断舱** | 0-100 契合度与雷达 | 生成 6 维能力雷达（研发/算法/系统/公文/组织/抗压），提供面试针对性押题与公考避坑。 |
-| 📋 **投递看板** | 全生命周期协同 | 网申 ➔ 笔试 ➔ 一面 ➔ 二面 ➔ 终面 ➔ 录用，卡片式状态流转与 UTF-8 BOM CSV 导出。 |
-| 📅 **招考日历** | 智能冲突检测与 iCal | 自动标注关键宣讲/笔试日程，一键订阅同步至 Apple Calendar / Google Calendar / Outlook。 |
-| ✉️ **每日早报** | 自动化 SMTP 邮件直达 | 每天清晨自动汇总今日网申截止、高契合度新发岗位及笔面试备考锦囊。 |
-| 🍏 **极轻桌面端** | 原生 WebKit 客户端 | 基于 Cocoa WebKit 原生轻量封装，启动毫秒级，告别 300MB+ 内存的 Electron 沉重负担。 |
+### 1. 📡 全域校招与招考雷达 (`/jobs`)
+支持高校就业网 RSS、名企官网与公务员事业单位招聘白名单聚合，支持按**城市、契合度阈值、仅应届、仅党员**组合交叉过滤，一键加入日程与穿透排查资格。
+
+<p align="center">
+  <img src="./docs/images/jobs_radar.png" alt="招考看板与全域岗位流" width="95%" />
+</p>
+
+---
+
+### 2. 📋 全生命周期五阶投递追踪看板 (`/tracker`)
+覆盖 **已网申 ➔ 笔试阶段 ➔ 面试阶段 ➔ 体检/政审 ➔ 意向录用 (Offer)** 全流程。支持临界待办高亮、初筛入围率实时统计，并提供 **UTF-8 BOM CSV** 明细导出。
+
+<p align="center">
+  <img src="./docs/images/tracker_kanban.png" alt="投递追踪五阶看板" width="95%" />
+</p>
+
+---
+
+### 3. 📅 招考日程日历与双向日程同步 (`/calendar`)
+月视图 / 周视图自由切换，自动计算宣讲会、网申 DDL 与统考机试时间冲突。内置 **.ics 订阅源**，可一键将校招日程双向同步至 **Apple Calendar / Google Calendar / Outlook**。
+
+<p align="center">
+  <img src="./docs/images/calendar_schedule.png" alt="招考与求职日程日历" width="95%" />
+</p>
+
+---
+
+### 4. 🤖 AI 顾问诊断舱与实战沙盘决策 (`/advisory`)
+基于本地沙箱解析出的经历摘要，由 Agent 深度推演：
+- **六维能力剖析**：专业背景匹配、项目工程落地、体制合规准入、面试表达达胜率、笔试应试储备与精力分配度；
+- **名企针对性面试押题**：自动预测技术追问盲区（如 Raft/Paxos 状态机、分布式双写一致性等）；
+- **公考硬性资格穿透**：对照《普通高等学校本科/研究生专业目录》精准判定专业代码与选调准入资格。
+
+<p align="center">
+  <img src="./docs/images/advisory_cockpit.png" alt="AI 顾问诊断与决策中心" width="95%" />
+</p>
+
+---
+
+### 5. ⚙️ 存储主密钥与本地脱敏控制中心 (`/settings`)
+纯单机离线运行，主凭据加密口令（Master Secret Key）由本地基于 SHA-256 与 AES-256 派生，密钥绝不上传云端，确保个人求职数据绝对自主可控。
+
+<p align="center">
+  <img src="./docs/images/system_settings.png" alt="系统全局设置与信源控制中心" width="95%" />
+</p>
 
 ---
 
@@ -83,6 +123,18 @@
                                    │  零明文隐私接触，仅推演技能  │
                                    └───────────────────────────┘
 ```
+
+---
+
+## 💎 产品形态与商业化规划 (Free vs Pro Tier)
+
+本项目采用 **Local-First 隐私优先 + Cloud-Curated 云端精选** 的商业化架构体系：
+- **免费基础版 (Free Tier)**：单校本地轮询，面向广大应届生开箱即用，支持绑定本校就业网与主要官网，本地单机基础匹配与通告推送；
+- **付费高级版 (Pro Tier)**：解锁全网 31 省市招考与大厂无限源接入，享受云端每日清洗的高价值岗位池、全流程五阶泳道闭环、深度六维雷达与大厂真题预测。
+
+<p align="center">
+  <img src="./docs/images/pro_tier_monetization.png" alt="版本功能对比与升级规划" width="95%" />
+</p>
 
 ---
 
@@ -224,12 +276,14 @@ CampusJob-Agent/
 │   ├── services/                 # 爬虫解析、邮件早报、日历生成与脱敏服务
 │   └── main.py                   # 应用启动入口
 ├── web/                          # Web 前端轻量工作台 (Tailwind + Vanilla JS)
+├── docs/                         # 技术规格文档与高清架构效果图
+│   ├── images/                   # 官方工作台全景高清截图 (7张高质感展示图)
+│   └── PRODUCT_TIERING_AND_MONETIZATION_PRD.md
 ├── scripts/                      # 自动化工具集
 │   ├── build_macos_app.sh        # macOS 原生 .app 打包脚本
 │   ├── seed_demo_data.py         # 脱敏虚拟演示数据初始化工具
 │   └── pre_publish_check.sh      # 开源发布前安全看门狗核验脚本
 ├── tests/                        # 自动化测试矩阵 (pytest)
-├── docs/                         # 商业化规划与技术文档
 ├── desktop.py                    # macOS WebKit 原生客户端外壳
 ├── run_desktop.sh                # 桌面端一键启动快捷脚本
 ├── .env.example                  # 环境变量安全示例模板

@@ -3,6 +3,10 @@
 
 CampusJob-Agent is an open-source, privacy-first career copilot tailored for master's and doctoral graduates pursuing both **Enterprise Tech Campus Recruiting** and **Civil Service / Selected Candidate Examinations**.
 
+<p align="center">
+  <img src="./docs/images/dashboard.png" alt="CampusJob-Agent Dashboard" width="95%" />
+</p>
+
 ---
 
 ## 🌟 Key Features
