@@ -1,0 +1,810 @@
+<!DOCTYPE html><html lang="zh-CN" style=""><svg class="inline-defs-container" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></svg><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>CampusJob-Agent - 求职与考公总览仪表盘</title>
+<!-- Google Fonts: Inter & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background": "#f8fafc",
+            "surface": "#ffffff",
+            "surface-card": "#ffffff",
+            "surface-elevated": "#f1f5f9",
+            "surface-container-high": "#e2e8f0",
+            "surface-variant": "#f8fafc",
+            "primary": "#eab308",
+            "primary-light": "#fef08a",
+            "primary-container": "#fefce8",
+            "primary-active": "#ca8a04",
+            "secondary": "#10b981",
+            "accent-turquoise": "#0d9488",
+            "danger": "#ef4444",
+            "hairline": "#e2e8f0",
+            "hairline-strong": "#cbd5e1",
+            "text-primary": "#0f172a",
+            "text-body": "#334155",
+            "text-muted": "#64748b",
+            "text-muted-strong": "#475569",
+            "ink-inverse": "#ffffff"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "sm": "0.125rem",
+            "md": "0.375rem",
+            "lg": "0.5rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    html {
+      scrollbar-gutter: stable;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f8fafc;
+      color: #334155;
+    }
+    .font-mono-num {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.96); }
+    }
+    .animate-pulse-subtle {
+      animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-background text-text-body antialiased min-h-screen selection:bg-amber-100 selection:text-amber-900 flex flex-col">
+<!-- ==================== TOP NAVIGATION & SHELL HEADER ==================== -->
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-6 h-14 flex items-center shadow-sm">
+  <div class="max-w-[1536px] w-full mx-auto flex items-center justify-between gap-4">
+    <!-- 1. Left: Branding & Dashboard Entrance -->
+    <div class="flex items-center gap-6 flex-shrink-0">
+      <a href="/dashboard" class="flex items-center gap-2 px-3 py-1.5 bg-amber-400 hover:bg-amber-500 text-slate-950 rounded-md font-bold text-xs shadow-xs transition-all select-none group">
+        <span class="material-symbols-outlined text-[18px] text-slate-950">dashboard</span>
+        <span class="">仪表盘 /dashboard</span>
+      </a>
+    </div>
+
+    <!-- 2. Center: 4 Core Business Section Entrances -->
+    <nav class="hidden lg:flex items-center gap-1 xl:gap-2 flex-shrink-0">
+      <a href="/jobs" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors">
+        <span class="material-symbols-outlined text-[17px] text-slate-400">view_kanban</span>
+        <span class="">校招雷达 /jobs</span>
+      </a>
+      <a href="/calendar" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors">
+        <span class="material-symbols-outlined text-[17px] text-slate-400">calendar_month</span>
+        <span class="">日历日程</span>
+        <span class="px-1.5 py-0.5 text-[10px] font-mono-num font-bold bg-rose-50 text-rose-600 border border-rose-200 rounded-full leading-none">3待办</span>
+      </a>
+      <a href="/tracker" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors relative">
+        <span class="material-symbols-outlined text-[17px] text-slate-400">track_changes</span>
+        <span class="">投递追踪</span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+      </a>
+      <a href="/advisory" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors">
+        <span class="material-symbols-outlined text-[17px] text-amber-500">auto_awesome</span>
+        <span class="">AI顾问诊断</span>
+      </a>
+    </nav>
+
+    <!-- 3. Right: Search, Parser Button, Notifications, User Profile & Settings -->
+    <div class="flex items-center gap-3 justify-end flex-1 max-w-xl">
+      <!-- Global Search -->
+      <div class="relative flex-1 max-w-xs hidden sm:block">
+        <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] pointer-events-none select-none">search</span>
+        <input class="w-full h-[34px] pl-8 pr-12 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-amber-400 focus:bg-white focus:ring-0 rounded-md text-xs text-slate-800 placeholder:text-slate-400 transition-all font-sans" placeholder="全局搜索企业、岗位、公考..." type="text">
+        <kbd class="absolute right-2 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-mono-num bg-white text-slate-500 rounded border border-slate-200 shadow-2xs pointer-events-none select-none">⌘K</kbd>
+      </div>
+
+      <!-- Fast Parser CTA Button -->
+      <button onclick="location.href='/jobs'" class="h-[34px] flex items-center gap-1.5 px-3.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold rounded-md transition-all shadow-xs flex-shrink-0 active:scale-95">
+        <span class="material-symbols-outlined text-[16px] text-slate-950 font-bold">bolt</span>
+        <span class="">+ 解析推文/海报</span>
+      </button>
+
+      <!-- Notifications Bell -->
+      <a href="/calendar" class="relative h-[34px] w-[34px] flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-md hover:bg-slate-100 border border-slate-200 bg-white transition-all flex-shrink-0" title="待阅通知 (2)">
+        <span class="material-symbols-outlined text-[18px]">notifications</span>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white animate-pulse"></span>
+      </a>
+
+      <!-- User Profile & Settings Combined Interactive Capsule -->
+      <a href="/settings" class="flex items-center gap-2 pl-1.5 pr-2.5 h-[34px] bg-white hover:bg-slate-50 border border-slate-200 rounded-md flex-shrink-0 cursor-pointer shadow-2xs group transition-all" title="个人中心与系统设置">
+        <div class="w-6 h-6 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 font-bold text-[11px] shadow-2xs flex-shrink-0 select-none">
+          职
+        </div>
+        <div class="hidden md:flex flex-col text-left justify-center leading-tight">
+          <div id="header-profile-degree" class="text-[11px] font-bold text-slate-800 flex items-center gap-1">
+            个人求职画像
+          </div>
+          <div id="header-profile-major" class="text-[9px] text-slate-500 font-medium">
+            点击前往配置
+          </div>
+        </div>
+        <div class="h-4 w-px bg-slate-200 mx-0.5 hidden md:block"></div>
+        <span class="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-amber-600 transition-colors">settings</span>
+      </a>
+    </div>
+  </div>
+</header>
+<!-- ==================== MAIN WORKSPACE ==================== -->
+<main class="flex-1 max-w-[1536px] w-full mx-auto px-6 py-5 space-y-5">
+<!-- 1. TOP STAT METRIC CARDS (4-Column Grid) -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Card 1: 今日新增招考 -->
+<div class="bg-surface border border-hairline rounded-md p-4 flex flex-col justify-between hover:border-hairline-strong hover:shadow-sm transition-all shadow-2xs">
+<div class="flex items-center justify-between">
+<span class="text-xs font-medium text-text-muted">今日新增招考 (企招 78 / 公考 50)</span>
+<span class="material-symbols-outlined text-slate-400 text-[18px]">query_stats</span>
+</div>
+<div class="flex items-baseline justify-between mt-2.5">
+<div class="text-2xl font-black font-mono-num text-text-primary">128 <span class="text-xs font-normal text-text-muted font-sans">个新公告</span></div>
+<div class="flex items-center gap-0.5 text-xs font-mono-num font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+<span class="material-symbols-outlined text-[13px]">trending_up</span>
+            +23.1%
+          </div>
+</div>
+<div class="mt-2 text-[11px] text-text-muted-strong flex items-center gap-1.5">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="">早间 08:00 集中抓取 88 项，全天持续更新</span>
+</div>
+</div>
+<!-- Card 2: 高匹配推荐 -->
+<div class="bg-surface border border-hairline rounded-md p-4 flex flex-col justify-between hover:border-hairline-strong hover:shadow-sm transition-all relative overflow-hidden shadow-2xs">
+<div class="absolute top-0 right-0 w-24 h-24 bg-amber-100/50 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex items-center justify-between">
+<span class="text-xs font-medium text-text-muted">高匹配推荐 (≥85分)</span>
+<span class="material-symbols-outlined text-amber-500 text-[18px]">verified</span>
+</div>
+<div class="flex items-baseline justify-between mt-2.5">
+<div class="text-2xl font-black font-mono-num text-amber-600">12 <span class="text-xs font-normal text-text-muted font-sans">席</span></div>
+<div class="flex items-center gap-0.5 text-xs font-mono-num font-bold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
+            +4个省选调
+          </div>
+</div>
+<div class="mt-2 text-[11px] text-text-muted-strong flex items-center gap-1.5">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+<span class="">依据硕士学位、党员面貌、软开架构经历精算</span>
+</div>
+</div>
+<!-- Card 3: 72h内紧急DDL -->
+<div class="bg-surface border border-hairline rounded-md p-4 flex flex-col justify-between hover:border-hairline-strong hover:shadow-sm transition-all shadow-2xs">
+<div class="flex items-center justify-between">
+<span class="text-xs font-medium text-text-muted">72h内紧急DDL</span>
+<span class="material-symbols-outlined text-red-400 text-[18px]">alarm</span>
+</div>
+<div class="flex items-baseline justify-between mt-2.5">
+<div class="text-2xl font-black font-mono-num text-red-600">3 <span class="text-xs font-normal text-text-muted font-sans">项待处理</span></div>
+<div class="flex items-center gap-0.5 text-xs font-mono-num font-semibold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
+            -2项已投
+          </div>
+</div>
+<div class="mt-2 text-[11px] text-text-muted-strong flex items-center gap-1.5">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+<span class="">最近截止：美团北斗提前批 (仅剩 4小时)</span>
+</div>
+</div>
+<!-- Card 4: 监控信源健康度 -->
+<div class="bg-surface border border-hairline rounded-md p-4 flex flex-col justify-between hover:border-hairline-strong hover:shadow-sm transition-all shadow-2xs">
+<div class="flex items-center justify-between">
+<span class="text-xs font-medium text-text-muted">监控信源健康度</span>
+<span class="material-symbols-outlined text-teal-600 text-[18px]">sensors</span>
+</div>
+<div class="flex items-baseline justify-between mt-2.5">
+<div class="text-2xl font-black font-mono-num text-text-primary">24 <span class="text-xs font-normal text-text-muted font-sans">/ 24 正常</span></div>
+<div class="flex items-center gap-0.5 text-xs font-mono-num font-semibold text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200">
+            240ms 延迟
+          </div>
+</div>
+<div class="mt-2 text-[11px] text-text-muted-strong flex items-center gap-1.5">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-600"></span>
+<span class="">100% 正常 · 牛客/应届生/浙大就创/各省组工网</span>
+</div>
+</div>
+</section>
+<!-- 2. MIDDLE SECTION: DUAL CHARTS (65% : 35% Grid Ratio) -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+<!-- Left: 14-Day Trends Chart (65% -> col-span-8) -->
+<div class="lg:col-span-8 bg-surface border border-hairline rounded-md p-5 flex flex-col justify-between shadow-2xs">
+<div>
+<!-- Header and Range Selectors -->
+<div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-hairline">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-4 bg-amber-400 rounded-xs"></span>
+<h3 class="text-sm font-bold text-text-primary">近14天新增招考走势对比 (企招 vs 考公)</h3>
+</div>
+<div class="flex items-center gap-4">
+<!-- Flow Indicators -->
+<div class="flex items-center gap-3 text-xs">
+<span class="inline-flex items-center gap-1.5">
+<span class="w-2.5 h-1 bg-amber-500 rounded-full"></span>
+<span class="text-text-muted">企业校招 (提前批/秋招)</span>
+</span>
+<span class="inline-flex items-center gap-1.5">
+<span class="w-2.5 h-1 bg-teal-600 rounded-full"></span>
+<span class="text-text-muted">体制内公考 (省选调/国考)</span>
+</span>
+</div>
+<!-- Time Range Toggles -->
+<div class="inline-flex bg-slate-100 border border-hairline rounded p-0.5 text-xs font-mono-num" id="dashboard-trend-selector">
+<button class="px-2 py-0.5 rounded text-text-muted hover:text-slate-900 transition-colors">7D</button>
+<button class="px-2.5 py-0.5 rounded bg-white text-slate-900 font-bold shadow-xs border border-slate-200">14D</button>
+<button class="px-2 py-0.5 rounded text-text-muted hover:text-slate-900 transition-colors">30D</button>
+</div>
+</div>
+</div>
+<!-- High-Density SVG Area Chart -->
+<div class="relative w-full h-64 mt-4 select-none">
+<svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 760 240">
+<defs>
+<linearGradient id="primaryFlowGradLight" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#f59e0b" stop-opacity="0.28"></stop>
+<stop offset="100%" stop-color="#f59e0b" stop-opacity="0.02"></stop>
+</linearGradient>
+<linearGradient id="turquoiseFlowGradLight" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#0d9488" stop-opacity="0.22"></stop>
+<stop offset="100%" stop-color="#0d9488" stop-opacity="0.02"></stop>
+</linearGradient>
+</defs>
+<!-- Grid Horizontal Lines -->
+<line stroke="#f1f5f9" stroke-dasharray="3 3" stroke-width="1" x1="45" x2="740" y1="20" y2="20"></line>
+<line stroke="#f1f5f9" stroke-dasharray="3 3" stroke-width="1" x1="45" x2="740" y1="68" y2="68"></line>
+<line stroke="#f1f5f9" stroke-dasharray="3 3" stroke-width="1" x1="45" x2="740" y1="116" y2="116"></line>
+<line stroke="#f1f5f9" stroke-dasharray="3 3" stroke-width="1" x1="45" x2="740" y1="164" y2="164"></line>
+<line stroke="#e2e8f0" stroke-width="1" x1="45" x2="740" y1="210" y2="210"></line>
+<!-- Y-Axis Labels -->
+<text fill="#94a3b8" font-family="JetBrains Mono" font-size="10" x="14" y="24">150</text>
+<text fill="#94a3b8" font-family="JetBrains Mono" font-size="10" x="14" y="72">100</text>
+<text fill="#94a3b8" font-family="JetBrains Mono" font-size="10" x="14" y="120">60</text>
+<text fill="#94a3b8" font-family="JetBrains Mono" font-size="10" x="14" y="168">20</text>
+<text fill="#94a3b8" font-family="JetBrains Mono" font-size="10" x="20" y="213">0</text>
+<!-- Enterprise Flow (Yellow Line & Area) -->
+<polygon fill="url(#primaryFlowGradLight)" points="55,182 110,168 165,158 220,140 275,115 330,80 385,32 440,52 495,72 550,88 605,66 660,78 720,70 720,210 55,210"></polygon>
+<polyline fill="none" points="55,182 110,168 165,158 220,140 275,115 330,80 385,32 440,52 495,72 550,88 605,66 660,78 720,70" stroke="#d97706" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></polyline>
+<!-- Civil Exam Flow (Cyan Line & Area) -->
+<polygon fill="url(#turquoiseFlowGradLight)" points="55,195 110,190 165,185 220,178 275,170 330,158 385,148 440,138 495,132 550,122 605,115 660,105 720,92 720,210 55,210"></polygon>
+<polyline fill="none" points="55,195 110,190 165,185 220,178 275,170 330,158 385,148 440,138 495,132 550,122 605,115 660,105 720,92" stroke="#0d9488" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polyline>
+<!-- Vertical Peak Guide at Sep 8 (X=385) -->
+<line stroke="#d97706" stroke-dasharray="2 2" stroke-opacity="0.6" stroke-width="1.5" x1="385" x2="385" y1="32" y2="210"></line>
+<circle cx="385" cy="32" fill="#d97706" r="5" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="720" cy="70" fill="#d97706" r="4"></circle>
+<circle cx="720" cy="92" fill="#0d9488" r="4"></circle>
+</svg>
+<!-- Peak Interactive Badge Tooltip -->
+<div class="absolute left-[50.5%] top-[1%] -translate-x-1/2 bg-white border border-amber-300 rounded shadow-md px-3 py-1.5 pointer-events-none">
+<div class="flex items-center justify-between gap-3 text-[11px]">
+<span class="text-text-muted-strong font-mono-num font-semibold">09-08 峰值</span>
+<span class="text-emerald-600 font-mono-num font-bold">+142 单日</span>
+</div>
+<div class="text-[10px] text-text-muted mt-0.5">
+                大厂提前批爆发：企招 114 / 选调公告 28
+              </div>
+</div>
+<!-- X-Axis Date Indicators -->
+<div class="flex justify-between px-10 text-[11px] font-mono-num text-slate-500 mt-1.5">
+<span class="">08-28</span>
+<span class="">08-30</span>
+<span class="">09-01</span>
+<span class="">09-03</span>
+<span class="">09-05</span>
+<span class="">09-07</span>
+<span class="text-amber-700 font-bold">09-08 (峰值)</span>
+<span class="">09-09</span>
+<span class="">09-10</span>
+</div>
+</div>
+</div>
+<!-- AI Insight Note Strip -->
+<div class="mt-4 p-3 bg-amber-50/70 border border-amber-200 border-l-4 border-l-amber-500 rounded-r-md flex items-start gap-2.5">
+<span class="material-symbols-outlined text-amber-600 text-[18px] flex-shrink-0 mt-0.5">insights</span>
+<div class="text-xs text-slate-800 leading-relaxed">
+<strong class="text-amber-900 font-semibold">AI 态势研判简报：</strong>
+<span class="">国考公告预计将于10月中旬下发，当前主要增量由互联网技术大厂提前批与长三角核心央国企（金融科技类）驱动。建议优先锁定华为、阿里提前批锁定笔试机会。</span>
+</div>
+</div>
+</div>
+<!-- Right: Target Distribution Gauge (35% -> col-span-4) -->
+<div class="lg:col-span-4 bg-surface border border-hairline rounded-md p-5 flex flex-col justify-between shadow-2xs">
+<div>
+<!-- Header -->
+<div class="flex items-center justify-between pb-3 border-b border-hairline">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-4 bg-emerald-500 rounded-xs"></span>
+<h3 class="text-sm font-bold text-text-primary">意向命中与分布</h3>
+</div>
+<span class="text-[11px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded font-mono-num border border-slate-200">2027 届硕士画像</span>
+</div>
+<!-- Circular Radial Gauge -->
+<div class="flex items-center justify-center my-3.5">
+<div class="relative w-36 h-36 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+<!-- Base track -->
+<circle cx="60" cy="60" fill="none" r="48" stroke="#f1f5f9" stroke-width="11"></circle>
+<!-- Arc 1: R&D 48% (144.76) -->
+<circle cx="60" cy="60" fill="none" r="48" stroke="#f59e0b" stroke-dasharray="144.76 301.59" stroke-dashoffset="0" stroke-linecap="round" stroke-width="11"></circle>
+<!-- Arc 2: FinTech 28% (84.44) -->
+<circle cx="60" cy="60" fill="none" r="48" stroke="#0d9488" stroke-dasharray="84.44 301.59" stroke-dashoffset="-148" stroke-width="11"></circle>
+<!-- Arc 3: Gov/Cadre 24% (72.38) -->
+<circle cx="60" cy="60" fill="none" r="48" stroke="#10b981" stroke-dasharray="72.38 301.59" stroke-dashoffset="-234" stroke-width="11"></circle>
+</svg>
+<!-- Center Metric Inside Ring -->
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="text-[10px] text-slate-500 font-medium">综合意向命中</span>
+<span class="text-2xl font-black font-mono-num text-slate-900 leading-none my-0.5">86<span class="text-xs text-amber-600 font-bold">%</span></span>
+<span class="text-[10px] text-emerald-700 font-mono-num font-semibold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">A+ 匹配池</span>
+</div>
+</div>
+</div>
+<!-- Target Category Progress Bars -->
+<div class="space-y-2.5 pt-1 border-t border-hairline/80">
+<div>
+<div class="flex items-center justify-between text-xs mb-1">
+<span class="flex items-center gap-1.5 text-slate-700 font-medium">
+<span class="w-2 h-2 rounded-xs bg-amber-500"></span>互联网高可用架构
+                </span>
+<span class="font-mono-num text-slate-900 font-bold">48%</span>
+</div>
+<div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+<div class="bg-amber-500 h-full rounded-full" style="width: 48%"></div>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between text-xs mb-1">
+<span class="flex items-center gap-1.5 text-slate-700 font-medium">
+<span class="w-2 h-2 rounded-xs bg-teal-600"></span>央国企金融科技专岗
+                </span>
+<span class="font-mono-num text-slate-900 font-bold">28%</span>
+</div>
+<div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+<div class="bg-teal-600 h-full rounded-full" style="width: 28%"></div>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between text-xs mb-1">
+<span class="flex items-center gap-1.5 text-slate-700 font-medium">
+<span class="w-2 h-2 rounded-xs bg-emerald-500"></span>数字政务 / 定向选调
+                </span>
+<span class="font-mono-num text-slate-900 font-bold">24%</span>
+</div>
+<div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+<div class="bg-emerald-500 h-full rounded-full" style="width: 24%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Target City Preferences Table -->
+<div class="mt-4 pt-3 border-t border-hairline">
+<div class="text-[11px] text-slate-500 font-medium mb-2 flex items-center justify-between">
+<span class="">意向城市偏好分布</span>
+<span class="text-slate-500 font-mono-num">浙 / 沪 / 粤</span>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-slate-50 p-2 rounded border border-hairline text-center">
+<span class="text-[11px] text-slate-500 block">杭州</span>
+<span class="text-sm font-bold font-mono-num text-emerald-600">42%</span>
+</div>
+<div class="bg-slate-50 p-2 rounded border border-hairline text-center">
+<span class="text-[11px] text-slate-500 block">上海</span>
+<span class="text-sm font-bold font-mono-num text-slate-800">35%</span>
+</div>
+<div class="bg-slate-50 p-2 rounded border border-hairline text-center">
+<span class="text-[11px] text-slate-500 block">深圳</span>
+<span class="text-sm font-bold font-mono-num text-slate-800">23%</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. BOTTOM SECTION: TOP PICKS & KEY SCHEDULE (60% : 40% Ratio) -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+<!-- Left: Top Recommended Jobs (60% -> col-span-7) -->
+<div class="lg:col-span-7 space-y-3.5">
+<div class="flex items-center justify-between pb-0.5">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-4 bg-amber-400 rounded-xs"></span>
+<h3 class="text-sm font-bold text-text-primary">今日高匹配推荐</h3>
+<span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-xs font-mono-num rounded font-bold border border-amber-200">12 席</span>
+</div>
+<a class="text-xs text-amber-700 hover:text-amber-800 hover:underline flex items-center gap-0.5 font-semibold" href="#">
+<span class="">查看全部推荐 (12)</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</a>
+</div>
+<!-- Job Card 1: Huawei Technologies -->
+<div class="bg-surface border border-hairline hover:border-hairline-strong rounded-md p-4 transition-all shadow-2xs">
+<div class="flex items-start justify-between gap-4">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded bg-slate-100 border border-slate-200 flex items-center justify-center flex-shrink-0 text-slate-800 font-black text-sm tracking-tight">
+                HW
+              </div>
+<div>
+<div class="flex flex-wrap items-center gap-2">
+<h4 class="text-sm font-bold text-text-primary hover:text-amber-600 cursor-pointer">
+                    华为技术有限公司 · 通用软件开发工程师
+                  </h4>
+<span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-[11px] font-semibold">
+                    强烈推荐投递
+                  </span>
+</div>
+<div class="flex flex-wrap items-center gap-2.5 text-xs text-slate-500 mt-1 font-mono-num">
+<span class="text-slate-700 font-medium">杭州 / 深圳</span>
+<span class="">•</span>
+<span class="text-amber-700 font-semibold">20k-35k × 15薪</span>
+<span class="">•</span>
+<span class="">网申倒计时：剩余 14天</span>
+</div>
+</div>
+</div>
+<!-- Match Score Badge -->
+<div class="flex flex-col items-center justify-center w-11 h-11 rounded bg-emerald-50 border border-emerald-200 flex-shrink-0">
+<span class="text-xs font-mono-num text-emerald-700 font-bold">88</span>
+<span class="text-[9px] text-emerald-800 font-medium">匹配度</span>
+</div>
+</div>
+<!-- Highlight rationale -->
+<div class="mt-3 py-2 px-3 bg-slate-50 rounded border-l-2 border-emerald-500 text-xs text-slate-700">
+<strong class="text-text-primary">核心契合点：</strong> 分布式架构完全匹配，系统检测到开源项目 Linux 内核深度吻合，建议网申重点突出底层开发经历。
+          </div>
+<!-- Action Buttons -->
+<div class="mt-3 flex items-center justify-between border-t border-hairline pt-2.5">
+<div class="flex items-center gap-1.5 text-xs text-emerald-700 font-mono-num">
+<span class="material-symbols-outlined text-[15px]">verified</span>
+<span class="">简历已完成初筛模拟 (Pass)</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-700 text-xs rounded border border-hairline font-medium flex items-center gap-1 shadow-2xs">
+<span class="material-symbols-outlined text-[13px] text-slate-500">calendar_add_on</span>
+<span class="">加入日历</span>
+</button>
+<button class="px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-700 text-xs rounded border border-hairline font-medium flex items-center gap-1 shadow-2xs">
+<span class="">AI顾问抽屉</span>
+<span class="material-symbols-outlined text-[13px] text-slate-500">chevron_right</span>
+</button>
+<button class="px-3 py-1 bg-amber-400 text-slate-950 text-xs font-bold rounded hover:bg-amber-500 transition-colors flex items-center gap-1 shadow-2xs">
+<span class="">直达官网</span>
+<span class="material-symbols-outlined text-[13px]">open_in_new</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Job Card 2: Zhejiang Provincial Development & Reform Commission (Gov Cadre) -->
+<div class="bg-surface border border-hairline hover:border-hairline-strong rounded-md p-4 transition-all shadow-2xs">
+<div class="flex items-start justify-between gap-4">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded bg-amber-50 border border-amber-200 flex items-center justify-center flex-shrink-0 text-amber-700 font-bold text-xs">
+                选调
+              </div>
+<div>
+<div class="flex flex-wrap items-center gap-2">
+<h4 class="text-sm font-bold text-text-primary hover:text-amber-600 cursor-pointer">
+                    浙江省发展和改革委员会 · 数字化改革综合管理岗
+                  </h4>
+<span class="px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200 rounded text-[11px] font-semibold">
+                    资格完全符合
+                  </span>
+</div>
+<div class="flex flex-wrap items-center gap-2.5 text-xs text-slate-500 mt-1 font-mono-num">
+<span class="text-slate-700 font-medium">杭州市 · 机关编制</span>
+<span class="">•</span>
+<span class="">招录 2人</span>
+<span class="">•</span>
+<span class="text-teal-700 font-medium">定向选调 / 省考</span>
+</div>
+</div>
+</div>
+<!-- Match Score Badge -->
+<div class="flex flex-col items-center justify-center w-11 h-11 rounded bg-amber-50 border border-amber-200 flex-shrink-0">
+<span class="text-xs font-mono-num text-amber-700 font-bold">94</span>
+<span class="text-[9px] text-amber-800 font-medium">匹配度</span>
+</div>
+</div>
+<!-- Requirements info box -->
+<div class="mt-3 py-2 px-3 bg-slate-50 rounded border-l-2 border-amber-400 text-xs text-slate-700 space-y-1">
+<div class=""><strong class="text-text-primary">报考门槛：</strong> 计算机工学硕士及以上 | 中共党员 | 应届生专业完全符合。</div>
+<div class="text-teal-700 font-mono-num text-[11px]">报名窗口：10/10 09:00 开始系统报名 (距今 4天)</div>
+</div>
+<!-- Action Buttons -->
+<div class="mt-3 flex items-center justify-between border-t border-hairline pt-2.5">
+<div class="flex items-center gap-1.5 text-xs text-teal-700 font-mono-num">
+<span class="material-symbols-outlined text-[15px]">task_alt</span>
+<span class="">100% 资格预审过线</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-700 text-xs rounded border border-hairline font-medium flex items-center gap-1 shadow-2xs">
+<span class="material-symbols-outlined text-[13px] text-slate-500">bookmark_add</span>
+<span class="">设为报考跟踪</span>
+</button>
+<button class="px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-700 text-xs rounded border border-hairline font-medium shadow-2xs">
+                自查报告
+              </button>
+<button class="px-3 py-1 bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold rounded border border-hairline flex items-center gap-1 shadow-2xs">
+<span class="">官方入口</span>
+<span class="material-symbols-outlined text-[13px] text-slate-500">open_in_new</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Job Card 3: Meituan Urgent DDL -->
+<div class="bg-surface border border-rose-200 hover:border-rose-400 rounded-md p-4 transition-all relative overflow-hidden shadow-2xs">
+<div class="absolute top-0 right-0 left-0 h-1 bg-rose-500"></div>
+<div class="flex items-start justify-between gap-4 mt-0.5">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded bg-amber-50 border border-amber-200 flex items-center justify-center flex-shrink-0 text-amber-700 font-black text-sm">
+                MT
+              </div>
+<div>
+<div class="flex flex-wrap items-center gap-2">
+<h4 class="text-sm font-bold text-text-primary hover:text-amber-600 cursor-pointer">
+                    美团 · 后端开发工程师 (北斗计划/提前批)
+                  </h4>
+<span class="px-2 py-0.5 bg-rose-50 text-rose-700 border border-rose-200 rounded text-[11px] font-bold animate-pulse">
+                    仅剩 4 小时截止
+                  </span>
+</div>
+<div class="flex flex-wrap items-center gap-2.5 text-xs text-slate-500 mt-1 font-mono-num">
+<span class="text-slate-700 font-medium">北京 / 上海</span>
+<span class="">•</span>
+<span class="text-amber-700 font-semibold">30k-45k × 15.5薪</span>
+<span class="">•</span>
+<span class="text-rose-600 font-bold">今日 23:59 截止网申</span>
+</div>
+</div>
+</div>
+<!-- Match Score Badge -->
+<div class="flex flex-col items-center justify-center w-11 h-11 rounded bg-slate-50 border border-hairline flex-shrink-0">
+<span class="text-xs font-mono-num text-slate-800 font-bold">82</span>
+<span class="text-[9px] text-slate-500 font-medium">良好匹配</span>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between border-t border-hairline pt-2.5">
+<div class="text-xs text-rose-600 flex items-center gap-1 font-mono-num">
+<span class="material-symbols-outlined text-[15px]">timer</span>
+<span class="">草稿箱进度 85%，一键提交可直接锁单</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3.5 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded transition-colors flex items-center gap-1 shadow-2xs">
+<span class="">立即提交网申</span>
+<span class="material-symbols-outlined text-[13px]">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Key Schedules & Deadlines (40% -> col-span-5) -->
+<div class="lg:col-span-5 space-y-3.5">
+<div class="flex items-center justify-between pb-0.5">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-4 bg-teal-600 rounded-xs"></span>
+<h3 class="text-sm font-bold text-text-primary">近期关键日程与宣讲排期</h3>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs text-slate-500 font-mono-num">本月宣讲 12 场</span>
+</div>
+</div>
+<!-- Schedule Item 1: Tencent Offline Talk -->
+<div class="bg-surface border border-hairline rounded-md p-3.5 hover:border-hairline-strong transition-all shadow-2xs">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-bold rounded flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+              线下宣讲 · 现场直筛
+            </span>
+<span class="text-xs font-mono-num font-bold text-amber-700">今日 14:00 (距今 2.5h)</span>
+</div>
+<h4 class="text-sm font-bold text-text-primary mt-2">
+            腾讯 2027 全球校园招聘巡展 · 浙大专场
+          </h4>
+<p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-slate-400">location_on</span>
+<span class="">浙江大学玉泉校区 · 永谦活动中心二楼剧场</span>
+</p>
+<div class="mt-2 p-2 bg-slate-50 rounded text-xs text-slate-700 flex items-start gap-1.5">
+<span class="material-symbols-outlined text-blue-600 text-[14px] flex-shrink-0 mt-0.5">info</span>
+<span class="">技术总监一对一面聊简历，通过者当场发第二天初试直通卡。请携带 2 份纸质简历。</span>
+</div>
+<div class="mt-2.5 flex items-center justify-between text-xs pt-2 border-t border-hairline">
+<span class="text-emerald-700 flex items-center gap-1 text-[11px] font-medium">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> 已添加手机日历
+</span>
+<button class="px-2.5 py-0.5 bg-white text-slate-700 hover:bg-slate-50 rounded border border-hairline text-xs font-medium shadow-2xs">
+              导航及提醒
+            </button>
+</div>
+</div>
+<!-- Schedule Item 2: Alibaba DDL -->
+<div class="bg-surface border border-rose-200 rounded-md p-3.5 hover:border-rose-300 transition-all shadow-2xs">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 bg-rose-50 text-rose-700 border border-rose-200 text-[11px] font-bold rounded">
+              网申截止 DDL
+            </span>
+<span class="text-xs font-mono-num font-bold text-rose-600">今日 18:00 (仅剩 6.5h)</span>
+</div>
+<h4 class="text-sm font-bold text-text-primary mt-2">
+            阿里巴巴 2027 届秋季校招 · 研发提前批网申窗口关闭
+          </h4>
+<p class="text-xs text-slate-500 mt-1">
+            阿里云基础设施平台 / 淘天技术线共计 18 个分布式及存储岗位
+          </p>
+<div class="mt-2.5 flex items-center justify-between text-xs pt-2 border-t border-hairline">
+<span class="text-slate-600 text-[11px] font-mono-num">
+              投递状态：已提交 1 志愿，剩余 1 志愿可用
+            </span>
+<button class="px-2.5 py-0.5 bg-rose-600 text-white hover:bg-rose-700 rounded text-xs font-bold transition-colors shadow-2xs">
+              补全第二志愿
+            </button>
+</div>
+</div>
+<!-- Schedule Item 3: CMB FinTech Online Test -->
+<div class="bg-surface border border-hairline rounded-md p-3.5 hover:border-hairline-strong transition-all shadow-2xs">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold rounded">
+              在线统一笔试
+            </span>
+<span class="text-xs font-mono-num text-slate-700 font-semibold">今日 19:00 - 21:00</span>
+</div>
+<h4 class="text-sm font-bold text-text-primary mt-2">
+            招商银行金融科技联合体 · 第一轮全国在线笔试
+          </h4>
+<p class="text-xs text-slate-500 mt-1">
+            牛客网双机位在线监控 | 包含 40min 计算机专业综合 + 3 道算法编程
+          </p>
+<div class="mt-2.5 flex items-center justify-between text-xs pt-2 border-t border-hairline">
+<span class="text-slate-500 text-[11px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-emerald-600">task_alt</span> 硬件环境已自检完毕
+</span>
+<button class="px-2.5 py-0.5 bg-white text-slate-700 hover:bg-slate-50 rounded border border-hairline text-xs font-medium shadow-2xs">
+  进入候考室
+</button>
+</div>
+</div>
+<!-- Schedule Item 4: Zhejiang Provincial Exam Outlook -->
+<div class="bg-surface border border-hairline rounded-md p-3.5 hover:border-hairline-strong transition-all shadow-2xs">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200 text-[11px] font-bold rounded">
+              公考前瞻雷达
+            </span>
+<span class="text-xs font-mono-num text-slate-500">10月10日 09:00</span>
+</div>
+<h4 class="text-sm font-bold text-text-primary mt-2">
+            2027年浙江省公务员及四级联考报名系统开通
+          </h4>
+<p class="text-xs text-slate-500 mt-1">
+            全省计划招录 7,300+ 岗位，包含杭甬温数字经济专职选拔
+          </p>
+<div class="mt-2.5 flex items-center justify-between text-xs pt-2 border-t border-hairline">
+<span class="text-slate-500 text-[11px]">招录简章预警已激活</span>
+<button class="px-2.5 py-0.5 bg-white text-slate-700 hover:bg-slate-50 rounded border border-hairline text-xs font-medium shadow-2xs">
+              职位表筛查
+            </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- ==================== FOOTER & GLOBAL STATUS BAR ==================== -->
+<footer class="bg-white border-t border-hairline py-3 px-6 text-xs text-text-muted mt-auto">
+<div class="max-w-[1536px] mx-auto flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="text-slate-600 font-medium">CampusJob-Agent 本地引擎就绪</span>
+<span class="text-slate-300">|</span>
+<span class="font-mono-num text-slate-500">数据最后同步：11:42:08</span>
+</div>
+<div class="flex items-center gap-4 text-slate-500">
+<span class="hover:text-slate-800 cursor-pointer">隐私沙箱协议</span>
+<span class="hover:text-slate-800 cursor-pointer">信源管理 (24/24)</span>
+<span class="font-mono-num text-slate-400">v2.4.0-web</span>
+</div>
+</div>
+</footer>
+
+<div id="dashboard-toast-container" class="fixed bottom-12 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<script>
+(function() {
+  window.showDashboardToast = function(msg) {
+    let container = document.getElementById('dashboard-toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'dashboard-toast-container';
+      container.className = 'fixed bottom-12 right-6 z-50 flex flex-col gap-2 pointer-events-none';
+      document.body.appendChild(container);
+    }
+    const toast = document.createElement('div');
+    toast.className = 'bg-white border border-amber-300 text-slate-800 px-4 py-2.5 rounded shadow-lg flex items-center gap-2 text-xs animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-auto max-w-md';
+    toast.innerHTML = `
+      <span class="material-symbols-outlined text-amber-500 text-[18px]">info</span>
+      <span class="text-[13px] leading-tight font-sans">${msg}</span>
+      <button type="button" class="ml-auto text-slate-400 hover:text-slate-700 flex items-center">
+        <span class="material-symbols-outlined text-[14px]">close</span>
+      </button>
+    `;
+    toast.querySelector('button').addEventListener('click', () => toast.remove());
+    container.appendChild(toast);
+    setTimeout(() => { if (toast.parentElement) toast.remove(); }, 3500);
+  };
+
+  // Trend Range Toggle
+  const trendSelector = document.getElementById('dashboard-trend-selector');
+  if (trendSelector) {
+    const btns = trendSelector.querySelectorAll('button');
+    btns.forEach((btn) => {
+      btn.addEventListener('click', function() {
+        btns.forEach(b => {
+          b.className = 'px-2 py-0.5 rounded text-text-muted hover:text-slate-900 transition-colors';
+        });
+        this.className = 'px-2.5 py-0.5 rounded bg-white text-slate-900 font-bold shadow-xs border border-slate-200';
+        showDashboardToast(`已切换至【${this.innerText.trim()}】趋势排期视角，热度数据已动态校准`);
+      });
+    });
+  }
+
+  // Quick action buttons
+  document.querySelectorAll('button').forEach(btn => {
+    const text = btn.innerText.trim();
+    if (text === '进入候考室') {
+      btn.addEventListener('click', () => {
+        showDashboardToast('候考室监控沙箱自检已通过：双机位流延迟 14ms，考前10分钟将强制锁屏');
+      });
+    } else if (text === '职位表筛查') {
+      btn.addEventListener('click', () => {
+        location.href = '/jobs.html';
+      });
+    }
+  });
+
+  window.loadDashboardStats = async function() {
+    try {
+      const res = await fetch('/api/v1/dashboard/stats');
+      if (res.ok) {
+        const data = await res.json();
+        console.log('[Dashboard] Loaded stats from SQLite:', data);
+        if (data.metrics) {
+          const metric1 = document.querySelector('section.grid > div:nth-child(1) .text-2xl');
+          if (metric1 && data.metrics.total_jobs) {
+            metric1.innerHTML = `${data.metrics.total_jobs} <span class="text-xs font-normal text-text-muted font-sans">个高匹配公告</span>`;
+          }
+          const metric2 = document.querySelector('section.grid > div:nth-child(2) .text-2xl');
+          if (metric2 && data.metrics.high_match_count) {
+            metric2.innerHTML = `${data.metrics.high_match_count} <span class="text-xs font-normal text-text-muted font-sans">席精选</span>`;
+          }
+          const metric3 = document.querySelector('section.grid > div:nth-child(3) .text-2xl');
+          if (metric3 && data.metrics.urgent_ddl_count) {
+            metric3.innerHTML = `${data.metrics.urgent_ddl_count} <span class="text-xs font-normal text-text-muted font-sans">项待处理</span>`;
+          }
+          const metric4 = document.querySelector('section.grid > div:nth-child(4) .text-2xl');
+          if (metric4 && data.metrics.active_sources_count) {
+            metric4.innerHTML = `${data.metrics.active_sources_count} <span class="text-xs font-normal text-text-muted font-sans">/ ${data.metrics.active_sources_count} 正常</span>`;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('[Dashboard] Stats fetch note:', err);
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    window.loadDashboardStats();
+  });
+})();
+</script>
+</body></html>

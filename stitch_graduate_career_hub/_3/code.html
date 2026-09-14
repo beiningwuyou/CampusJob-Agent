@@ -1,0 +1,1606 @@
+<!DOCTYPE html><html lang="zh-CN" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><title>日历日程 - CampusJob·Agent</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "background": "#f8fafc",
+          "surface": "#ffffff",
+          "surface-card": "#ffffff",
+          "surface-elevated": "#f1f5f9",
+          "surface-container-high": "#e2e8f0",
+          "surface-container-low": "#f8fafc",
+          "surface-variant": "#f8fafc",
+          "primary": "#eab308",
+          "primary-light": "#fef08a",
+          "primary-container": "#fefce8",
+          "primary-active": "#ca8a04",
+          "secondary": "#10b981",
+          "secondary-container": "#ecfdf5",
+          "accent-turquoise": "#0d9488",
+          "danger": "#ef4444",
+          "hairline": "#e2e8f0",
+          "hairline-strong": "#cbd5e1",
+          "text-primary": "#0f172a",
+          "text-body": "#334155",
+          "text-muted": "#64748b",
+          "text-muted-strong": "#475569",
+          "ink-inverse": "#ffffff"
+        },
+        borderRadius: {
+          "DEFAULT": "0.25rem",
+          "sm": "0.125rem",
+          "md": "0.375rem",
+          "lg": "0.5rem",
+          "full": "9999px"
+        },
+        fontFamily: {
+          sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+          mono: ["JetBrains Mono", "monospace"],
+          "number-display": ["JetBrains Mono", "monospace"],
+          "label-code": ["JetBrains Mono", "monospace"],
+          "caption": ["Inter", "sans-serif"],
+          "title-sm": ["Inter", "sans-serif"]
+        }
+      }
+    }
+  };</script><style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f8fafc;
+      color: #334155;
+    }
+    .font-mono-num {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    html {
+      scrollbar-gutter: stable;
+    }
+  </style></head><body class="bg-background font-sans text-text-body min-h-screen flex flex-col selection:bg-amber-100 selection:text-amber-900 antialiased">
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-6 h-14 flex items-center shadow-sm">
+  <div class="max-w-[1536px] w-full mx-auto flex items-center justify-between gap-4">
+    <!-- 1. Left: Branding & Dashboard Entrance -->
+    <div class="flex items-center gap-6 flex-shrink-0">
+      <a href="/dashboard" class="flex items-center gap-2 px-3 py-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-md font-semibold text-xs transition-colors">
+        <span class="material-symbols-outlined text-[18px] text-amber-500">grid_view</span>
+        <span class="">仪表盘</span>
+      </a>
+    </div>
+
+    <!-- 2. Center: 4 Core Business Section Entrances -->
+    <nav class="hidden lg:flex items-center gap-1 xl:gap-2 flex-shrink-0">
+      <a href="/jobs" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors">
+        <span class="material-symbols-outlined text-[17px] text-slate-400">view_kanban</span>
+        <span class="">校招雷达 /jobs</span>
+      </a>
+      <a href="/calendar" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-950 bg-amber-400 rounded-md shadow-xs transition-colors">
+        <span class="material-symbols-outlined text-[17px] text-slate-950 font-bold">calendar_month</span>
+        <span class="">日历日程</span>
+        <span class="px-1.5 py-0.2 bg-black/10 text-slate-950 text-[10px] font-mono-num rounded-full font-bold">3待办</span>
+      </a>
+      <a href="/tracker" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors relative">
+        <span class="material-symbols-outlined text-[17px] text-slate-400">track_changes</span>
+        <span class="">投递追踪</span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+      </a>
+      <a href="/advisory" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors">
+        <span class="material-symbols-outlined text-[17px] text-amber-500">auto_awesome</span>
+        <span class="">AI顾问诊断</span>
+      </a>
+    </nav>
+
+    <!-- 3. Right: Search, Parser Button, Notifications, User Profile & Settings -->
+    <div class="flex items-center gap-3 justify-end flex-1 max-w-xl">
+      <!-- Global Search -->
+      <div class="relative flex-1 max-w-xs hidden sm:block">
+        <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] pointer-events-none select-none">search</span>
+        <input id="global-search-input" class="w-full h-[34px] pl-8 pr-12 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-amber-400 focus:bg-white focus:ring-0 rounded-md text-xs text-slate-800 placeholder:text-slate-400 transition-all font-sans" placeholder="全局搜索企业、岗位、公考..." type="text">
+        <kbd onclick="document.getElementById('global-search-input').focus()" class="absolute right-2 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-mono-num bg-white text-slate-500 rounded border border-slate-200 shadow-2xs pointer-events-none select-none">⌘K</kbd>
+      </div>
+
+      <!-- Fast Parser CTA Button -->
+      <button onclick="location.href='/jobs'" class="h-[34px] flex items-center gap-1.5 px-3.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold rounded-md transition-all shadow-xs flex-shrink-0 active:scale-95">
+        <span class="material-symbols-outlined text-[16px] text-slate-950 font-bold">bolt</span>
+        <span class="">+ 解析推文/海报</span>
+      </button>
+
+      <!-- Notifications Bell -->
+      <a href="/calendar" class="relative h-[34px] w-[34px] flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-md hover:bg-slate-100 border border-slate-200 bg-white transition-all flex-shrink-0" title="待阅通知 (2)">
+        <span class="material-symbols-outlined text-[18px]">notifications</span>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white animate-pulse"></span>
+      </a>
+
+      <!-- User Profile & Settings Combined Interactive Capsule -->
+      <a href="/settings" class="flex items-center gap-2 pl-1.5 pr-2.5 h-[34px] bg-white hover:bg-slate-50 border border-slate-200 rounded-md flex-shrink-0 cursor-pointer shadow-2xs group transition-all" title="个人中心与系统设置">
+        <div class="w-6 h-6 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 font-bold text-[11px] shadow-2xs flex-shrink-0 select-none">
+          研
+        </div>
+        <div class="hidden md:flex flex-col text-left justify-center leading-tight">
+          <div class="text-[11px] font-bold text-slate-800 flex items-center gap-1">
+            2027届 硕士
+          </div>
+          <div class="text-[9px] text-slate-500 font-medium">
+            计算机工学 · 党员
+          </div>
+        </div>
+        <div class="h-4 w-px bg-slate-200 mx-0.5 hidden md:block"></div>
+        <span class="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-amber-600 transition-colors">settings</span>
+      </a>
+    </div>
+  </div>
+</header>
+<main class="flex-1 max-w-[1536px] w-full mx-auto px-6 py-5 space-y-5 bg-background">
+<div class="flex flex-col w-full text-text-body">
+<!-- Top Metric Summary Cards Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+<!-- Card 1: 本月关键日程 -->
+<div class="bg-surface border border-hairline rounded-md p-4 flex flex-col justify-between hover:border-hairline-strong hover:shadow-sm transition-all shadow-2xs">
+<div class="flex items-center justify-between">
+<span class="text-xs font-medium text-text-muted flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-amber-500">calendar_month</span>
+          本月关键日程
+        </span>
+<span class="font-mono-num text-text-muted text-[11px] bg-slate-100 px-2 py-0.5 rounded border border-slate-200">2026.09</span>
+</div>
+<div class="flex items-baseline justify-between mt-2.5">
+<div class="flex items-baseline gap-1.5">
+<span class="font-mono-num font-black text-text-primary text-2xl">28</span>
+<span class="text-xs font-normal text-text-muted">项重要节点</span>
+</div>
+<div class="flex items-center gap-1.5 font-mono-num text-[11px]">
+<span class="text-text-muted">企招 <span class="text-text-primary font-bold">18</span></span>
+<span class="text-hairline-strong">/</span>
+<span class="text-text-muted">体制内 <span class="text-emerald-700 font-bold">10</span></span>
+</div>
+</div>
+</div>
+<!-- Card 2: 72h 内紧急截止 (DDL) -->
+<div class="bg-surface border border-rose-200 rounded-md p-4 flex flex-col justify-between hover:border-rose-400 hover:shadow-sm transition-all shadow-2xs relative overflow-hidden">
+<div class="absolute top-0 right-0 left-0 h-1 bg-rose-500"></div>
+<div class="flex items-center justify-between mt-0.5">
+<span class="text-xs font-semibold text-rose-700 flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+          72h 内紧急截止 (DDL)
+        </span>
+<span class="font-mono-num text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200 text-[10px] font-bold">CRITICAL</span>
+</div>
+<div class="flex items-baseline justify-between mt-2.5">
+<div class="flex items-baseline gap-1.5">
+<span class="font-mono-num font-black text-rose-600 text-2xl">03</span>
+<span class="text-xs font-normal text-text-muted">项网申锁定</span>
+</div>
+<span class="font-mono-num text-[11px] text-rose-600 font-bold">最近倒计时 &lt; 06h</span>
+</div>
+<div class="mt-2 pt-2 border-t border-hairline truncate text-[11px] text-text-muted-strong flex items-center gap-1">
+<span class="text-text-primary font-medium">阿里提前批</span>·<span class="text-text-primary font-medium">招行统考</span>·<span class="text-text-primary font-medium">美团北斗</span>
+</div>
+</div>
+<!-- Card 3: 宣讲会与双选会 -->
+<div class="bg-surface border border-hairline rounded-md p-4 flex flex-col justify-between hover:border-hairline-strong hover:shadow-sm transition-all shadow-2xs">
+<div class="flex items-center justify-between">
+<span class="text-xs font-medium text-text-muted flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-blue-600">campaign</span>
+          宣讲会与双选会
+        </span>
+<span class="font-mono-num text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 text-[11px]">浙大专场</span>
+</div>
+<div class="flex items-baseline justify-between mt-2.5">
+<div class="flex items-baseline gap-1.5">
+<span class="font-mono-num font-black text-blue-700 text-2xl">09</span>
+<span class="text-xs font-normal text-text-muted">场重点关注</span>
+</div>
+<div class="flex items-center gap-1.5 font-mono-num text-[11px] text-text-muted">
+<span class="">玉泉 <span class="text-text-primary font-bold">5</span></span>
+<span class="text-hairline-strong">/</span>
+<span class="">紫金港 <span class="text-text-primary font-bold">4</span></span>
+</div>
+</div>
+<div class="mt-2 pt-2 border-t border-hairline flex items-center justify-between text-[11px] text-text-muted-strong">
+<span class="truncate">腾讯·华为·网易·字节</span>
+<span class="font-mono-num text-blue-700 font-semibold">已领 2 场直通券</span>
+</div>
+</div>
+<!-- Card 4: 统一笔试/资格确认 -->
+<div class="bg-surface border border-hairline rounded-md p-4 flex flex-col justify-between hover:border-hairline-strong hover:shadow-sm transition-all shadow-2xs">
+<div class="flex items-center justify-between">
+<span class="text-xs font-medium text-text-muted flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-emerald-600">verified</span>
+          统一笔试 / 准考确认
+        </span>
+<span class="font-mono-num text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[11px]">已排期锁定</span>
+</div>
+<div class="flex items-baseline justify-between mt-2.5">
+<div class="flex items-baseline gap-1.5">
+<span class="font-mono-num font-black text-emerald-600 text-2xl">04</span>
+<span class="text-xs font-normal text-text-muted">场环境就绪</span>
+</div>
+<span class="font-mono-num text-[11px] text-emerald-700 font-bold">牛客/机试双机位</span>
+</div>
+<div class="mt-2 pt-2 border-t border-hairline truncate text-[11px] text-text-muted-strong flex items-center gap-1">
+<span class="">招行金科</span>·<span class="">美团机考</span>·<span class="">国网测评</span>·<span class="">省考确认</span>
+</div>
+</div>
+</div>
+<!-- Calendar Toolbar & Event Filter Strip -->
+<div class="bg-surface border border-hairline rounded-md p-3 mb-4 flex flex-wrap items-center justify-between gap-3 shadow-2xs">
+<!-- Left: Month Nav & View Switch -->
+<div class="flex items-center gap-3 flex-wrap">
+<div class="flex items-center bg-slate-100 border border-hairline rounded p-0.5">
+<button class="w-7 h-7 flex items-center justify-center text-text-muted hover:text-text-primary rounded hover:bg-white transition-colors" id="prev-month-btn" title="上个月">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<span class="px-2.5 text-xs font-bold text-text-primary font-mono-num tracking-tight" id="current-month-display">2026年 09月</span>
+<button class="w-7 h-7 flex items-center justify-center text-text-muted hover:text-text-primary rounded hover:bg-white transition-colors" id="next-month-btn" title="下个月">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+<button class="px-2.5 py-1 bg-white hover:bg-slate-50 border border-hairline hover:border-hairline-strong text-slate-700 text-xs rounded flex items-center gap-1.5 transition-colors shadow-2xs" id="today-jump-btn">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+<span class="font-medium">回到今天 (9.11)</span>
+</button>
+<!-- View Switcher -->
+<div class="flex items-center bg-slate-100 border border-hairline rounded p-0.5" id="view-mode-selector">
+<button class="px-2.5 py-1 rounded bg-white text-slate-900 border border-slate-200 text-xs font-bold shadow-2xs">月视图 (Month)</button>
+<button class="px-2.5 py-1 rounded text-text-muted hover:text-text-primary text-xs transition-colors font-medium">周视图 (Week)</button>
+<button class="px-2.5 py-1 rounded text-text-muted hover:text-text-primary text-xs transition-colors font-medium">日程清单 (Agenda)</button>
+</div>
+</div>
+<!-- Center: Semantic Category Filter Chips -->
+<div class="flex items-center gap-2 flex-wrap">
+<button class="filter-chip active flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#fef2f2] border border-[#fecaca] text-[11px] font-mono-num text-[#b91c1c] hover:bg-red-100 transition-colors font-medium" data-type="ddl">
+<span class="w-2 h-2 rounded-full bg-rose-500"></span>
+<span class="">网申/公考 DDL</span>
+</button>
+<button class="filter-chip active flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#eff6ff] border border-[#bfdbfe] text-[11px] font-mono-num text-[#1d4ed8] hover:bg-blue-100 transition-colors font-medium" data-type="talk">
+<span class="w-2 h-2 rounded-full bg-blue-600"></span>
+<span class="">线下宣讲 (校区)</span>
+</button>
+<button class="filter-chip active flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#f0fdf4] border border-[#bbf7d0] text-[11px] font-mono-num text-[#15803d] hover:bg-emerald-100 transition-colors font-medium" data-type="exam">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+<span class="">统一笔试/准考证</span>
+</button>
+<button class="filter-chip active flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#faf5ff] border border-[#e9d5ff] text-[11px] font-mono-num text-[#7e22ce] hover:bg-purple-100 transition-colors font-medium" data-type="career">
+<span class="w-2 h-2 rounded-full bg-purple-500"></span>
+<span class="">双选会/初面直通</span>
+</button>
+</div>
+<!-- Right: Actions -->
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold rounded shadow-sm transition-all active:scale-95" id="sync-subscribe-btn">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+<span class="">一键订阅同步</span>
+</button>
+</div>
+</div>
+<!-- Master-Detail 70/30 Workspace -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+<!-- LEFT: Calendar Grid (8 Cols = ~67-70%) -->
+<div class="lg:col-span-8 bg-surface border border-hairline rounded-md overflow-hidden flex flex-col shadow-2xs" id="view-month-container">
+<!-- 7 Column Day Headers -->
+<div class="grid grid-cols-7 bg-[#f8fafc] border-b border-hairline text-center py-2 font-mono-num text-[11px] text-text-muted uppercase tracking-wider font-semibold">
+<div class="">周一 MON</div>
+<div class="">周二 TUE</div>
+<div class="">周三 WED</div>
+<div class="">周四 THU</div>
+<div class="">周五 FRI</div>
+<div class="text-amber-700 font-bold">周六 SAT</div>
+<div class="text-amber-700 font-bold">周日 SUN</div>
+</div>
+<!-- Calendar 35-Grid Container (2026年9月: 9月1日为周二，周一为8月31日占位) -->
+<div class="grid grid-cols-7 bg-hairline gap-[1px]" id="month-days-grid">
+<!-- Day 0: 8月31日 (Prev Month Padding) -->
+<div class="bg-slate-50/70 min-h-[112px] p-1.5 flex flex-col opacity-50 select-none">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted">
+<span class="">31</span>
+<span class="text-[10px]">八月</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200 truncate">美团提前批简历初筛</div>
+</div>
+</div>
+<!-- Day 1 (9.1) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('9月1日：字节跳动 2027 秋季校园招聘正式全面开启网申通道。')">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">01</span>
+<span class="text-[10px]">七月廿</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe] font-medium truncate" title="字节秋招网申启动">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0"></span>
+<span class="truncate">字节秋招网申启动</span>
+</div>
+</div>
+</div>
+<!-- Day 2 (9.2) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">02</span>
+<span class="text-[10px]">廿一</span>
+</div>
+</div>
+<!-- Day 3 (9.3) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('9月3日：浙江大学2026秋季知名重点企事业单位双选会(紫金港体育馆)')">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">03</span>
+<span class="text-[10px]">廿二</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#faf5ff] text-[#7e22ce] border border-[#e9d5ff] font-medium truncate">
+<span class="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0"></span>
+<span class="truncate">浙大秋季名企双选</span>
+</div>
+</div>
+</div>
+<!-- Day 4 (9.4) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">04</span>
+<span class="text-[10px]">廿三</span>
+</div>
+</div>
+<!-- Day 5 (9.5) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">05</span>
+<span class="text-[10px]">廿四</span>
+</div>
+</div>
+<!-- Day 6 (9.6) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('9月6日：国家电网高校毕业生招聘预申报系统开放')">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">06</span>
+<span class="text-[10px]">廿五</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0] font-medium truncate">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0"></span>
+<span class="truncate">国家电网预申报</span>
+</div>
+</div>
+</div>
+<!-- Day 7 (9.7) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">07</span>
+<span class="text-[10px]">白露</span>
+</div>
+</div>
+<!-- Day 8 (9.8) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('9月8日 14:00：腾讯秋招综合宣讲(玉泉永谦) · WXG团队技术主管直通交流')">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">08</span>
+<span class="text-[10px]">廿七</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe] font-medium truncate">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0"></span>
+<span class="truncate">14:00 腾讯宣讲(玉泉)</span>
+</div>
+<div class="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 font-medium truncate">
+<span class="material-symbols-outlined text-[10px]">star</span>
+<span class="truncate">WXG 后端直通</span>
+</div>
+</div>
+</div>
+<!-- Day 9 (9.9) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">09</span>
+<span class="text-[10px]">廿八</span>
+</div>
+</div>
+<!-- Day 10 (9.10) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('9月10日：玉泉校区装备制造与ICT行业中型双选交流会')">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">10</span>
+<span class="text-[10px]">教师节</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#faf5ff] text-[#7e22ce] border border-[#e9d5ff] font-medium truncate">
+<span class="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0"></span>
+<span class="truncate">玉泉校区综合双选</span>
+</div>
+</div>
+</div>
+<!-- Day 11 (TODAY: 9.11) - HIGHLIGHTED: amber border #eab308, pale yellow bg #fefce8 -->
+<div class="bg-[#fefce8] min-h-[112px] p-1.5 flex flex-col border-2 border-[#eab308] relative shadow-sm cursor-pointer" onclick="showEventToast('今日待办：18:00 阿里网申截止、19:00 招行统考机试、下午腾讯现场宣讲。')">
+<div class="absolute -top-2.5 right-1.5 bg-amber-400 text-slate-950 text-[10px] font-mono-num font-bold px-1.5 py-0.2 rounded shadow-xs">
+            TODAY · 3待办
+          </div>
+<div class="flex items-center justify-between font-mono-num text-[11px] text-amber-800 font-bold pt-0.5">
+<span class="text-[14px]">11</span>
+<span class="text-[10px] text-amber-700">八月初一</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#fef2f2] text-[#b91c1c] border border-[#fecaca] truncate font-semibold animate-pulse">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
+<span class="truncate">18:00 阿里截止 (仅剩6h)</span>
+</div>
+<div class="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0] truncate font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0"></span>
+<span class="truncate">19:00 招行统考机试</span>
+</div>
+</div>
+</div>
+<!-- Day 12 (9.12) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">12</span>
+<span class="text-[10px]">初二</span>
+</div>
+</div>
+<!-- Day 13 (9.13) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">13</span>
+<span class="text-[10px]">初三</span>
+</div>
+</div>
+<!-- Day 14 (9.14) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">14</span>
+<span class="text-[10px]">初四</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 truncate">
+              美团综合面材料提交
+            </div>
+</div>
+</div>
+<!-- Day 15 (9.15) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('9月15日 14:00：华为终端BG玉泉宣讲会，现场直接发放初面绿色通行卡')">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">15</span>
+<span class="text-[10px]">初五</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe] font-medium truncate">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0"></span>
+<span class="truncate">14:00 华为终端宣讲</span>
+</div>
+<div class="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0] font-medium truncate">
+<span class="material-symbols-outlined text-[10px]">bolt</span>
+<span class="truncate">现场初面直通卡</span>
+</div>
+</div>
+</div>
+<!-- Day 16 (9.16) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">16</span>
+<span class="text-[10px]">初六</span>
+</div>
+</div>
+<!-- Day 17 (9.17) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">17</span>
+<span class="text-[10px]">初七</span>
+</div>
+</div>
+<!-- Day 18 (9.18) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('9月18日：美团北斗计划截止(17:00) &amp; 华东电网统招第一批测评(19:00)')">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">18</span>
+<span class="text-[10px]">初八</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#fef2f2] text-[#b91c1c] border border-[#fecaca] font-medium truncate">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
+<span class="truncate">17:00 美团北斗网申 DDL</span>
+</div>
+<div class="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0] font-medium truncate">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0"></span>
+<span class="truncate">19:00 华东电网测评</span>
+</div>
+</div>
+</div>
+<!-- Day 19 (9.19) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">19</span>
+<span class="text-[10px]">初九</span>
+</div>
+</div>
+<!-- Day 20 (9.20) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('9月20日：浙江省属国企统一招考笔试阶段开启')">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">20</span>
+<span class="text-[10px]">初十</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="text-[10px] px-1.5 py-0.5 rounded bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0] font-medium truncate">
+              浙江省属国企统招开考
+            </div>
+</div>
+</div>
+<!-- Day 21 (9.21) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">21</span>
+<span class="text-[10px]">十一</span>
+</div>
+</div>
+<!-- Day 22 (9.22) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('9月22日 09:00：微软苏州二轮线上专业面试(Teams)')">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">22</span>
+<span class="text-[10px]">十二</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0] font-medium truncate">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0"></span>
+<span class="truncate">09:00 微软二轮技术面</span>
+</div>
+</div>
+</div>
+<!-- Day 23 (9.23) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">23</span>
+<span class="text-[10px]">秋分</span>
+</div>
+</div>
+<!-- Day 24 (9.24) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('9月24日 18:30：网易互娱高管闭门交流及预录用沟通会')">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">24</span>
+<span class="text-[10px]">十四</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe] font-medium truncate">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0"></span>
+<span class="truncate">网易互娱高管座谈</span>
+</div>
+</div>
+</div>
+<!-- Day 25 (9.25) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">25</span>
+<span class="text-[10px]">中秋节</span>
+</div>
+</div>
+<!-- Day 26 (9.26) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">26</span>
+<span class="text-[10px]">十六</span>
+</div>
+</div>
+<!-- Day 27 (9.27) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">27</span>
+<span class="text-[10px]">十七</span>
+</div>
+</div>
+<!-- Day 28 (9.28) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('9月28日 24:00：腾讯微信事业群(WXG) 秋招网申窗口彻底锁定')">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">28</span>
+<span class="text-[10px]">十八</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#fef2f2] text-[#b91c1c] border border-[#fecaca] font-medium truncate">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
+<span class="truncate">24:00 微信网申锁定</span>
+</div>
+</div>
+</div>
+<!-- Day 29 (9.29) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">29</span>
+<span class="text-[10px]">十九</span>
+</div>
+</div>
+<!-- Day 30 (9.30) -->
+<div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted group-hover:text-text-primary">
+<span class="font-bold text-text-primary">30</span>
+<span class="text-[10px]">二十</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 truncate">9月志愿档案自动封存</div>
+</div>
+</div>
+<!-- Next Month Padding (10.1 - 10.4) -->
+<div class="bg-slate-50/70 min-h-[112px] p-1.5 flex flex-col opacity-50 select-none">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted">
+<span class="">01</span>
+<span class="text-[10px]">国庆节</span>
+</div>
+</div>
+<div class="bg-slate-50/70 min-h-[112px] p-1.5 flex flex-col opacity-50 select-none">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted">
+<span class="">02</span>
+<span class="text-[10px]">十月</span>
+</div>
+</div>
+<div class="bg-slate-50/70 min-h-[112px] p-1.5 flex flex-col opacity-50 select-none">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted">
+<span class="">03</span>
+<span class="text-[10px]">初四</span>
+</div>
+</div>
+<div class="bg-slate-50/70 min-h-[112px] p-1.5 flex flex-col opacity-50 select-none">
+<div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted">
+<span class="">04</span>
+<span class="text-[10px]">初五</span>
+</div>
+</div>
+</div>
+<!-- Calendar Bottom Radar / Forward Looking Strip -->
+<div class="bg-slate-50 px-4 py-2.5 border-t border-hairline flex flex-wrap items-center justify-between text-xs text-text-muted gap-3">
+<div class="flex items-center gap-2 font-mono-num">
+<span class="material-symbols-outlined text-[16px] text-amber-500">radar</span>
+<span class="text-text-primary font-semibold">10月前瞻雷达:</span>
+<span class="text-rose-600 font-medium">10月10日 09:00 浙江省考公务员统一报名窗口正式开放</span>
+</div>
+<div class="flex items-center gap-3 font-mono-num text-[11px]">
+<span class="">冲突自检规则: 间隔&lt;90分钟标红</span>
+
+
+</div>
+</div>
+</div>
+<!-- Alternative Views: Week View (周视图) -->
+<div class="hidden lg:col-span-8 bg-surface border border-hairline rounded-md overflow-hidden flex flex-col shadow-2xs p-4" id="view-week-container" style="display: none;">
+  <div class="flex items-center justify-between pb-2.5 border-b border-hairline mb-3">
+    <span class="text-sm font-bold text-text-primary">第37周日程概览 (9.07 - 9.13)</span>
+    <span class="text-amber-700 font-mono-num text-[11px] font-bold">本周共 5 项重要节点</span>
+  </div>
+  <div class="grid grid-cols-7 gap-2 min-h-[360px]">
+    <div class="bg-slate-50 p-2 rounded border border-hairline flex flex-col text-center">
+      <span class="font-mono-num text-[11px] text-text-muted">周一 9.07</span>
+      <span class="text-[11px] text-text-muted-strong mt-4">白露·无安排</span>
+    </div>
+    <div class="bg-slate-50 p-2 rounded border border-hairline flex flex-col">
+      <span class="font-mono-num text-[11px] text-text-muted text-center">周二 9.08</span>
+      <div class="mt-2 bg-[#eff6ff] text-[#1d4ed8] p-1 rounded text-[11px] border border-[#bfdbfe]">14:00 腾讯宣讲</div>
+    </div>
+    <div class="bg-slate-50 p-2 rounded border border-hairline flex flex-col text-center">
+      <span class="font-mono-num text-[11px] text-text-muted">周三 9.09</span>
+      <span class="text-[11px] text-text-muted-strong mt-4">常规复习</span>
+    </div>
+    <div class="bg-slate-50 p-2 rounded border border-hairline flex flex-col">
+      <span class="font-mono-num text-[11px] text-text-muted text-center">周四 9.10</span>
+      <div class="mt-2 bg-[#faf5ff] text-[#7e22ce] p-1 rounded text-[11px] border border-[#e9d5ff]">玉泉双选会</div>
+    </div>
+    <div class="bg-[#fefce8] p-2 rounded border-2 border-[#eab308] flex flex-col relative">
+      <span class="font-mono-num text-[11px] text-amber-800 font-bold text-center">周五 9.11 (今天)</span>
+      <div class="mt-2 space-y-1">
+        <div class="bg-[#fef2f2] text-[#b91c1c] p-1 rounded text-[10px] font-bold border border-[#fecaca]">18:00 阿里DDL</div>
+        <div class="bg-[#f0fdf4] text-[#15803d] p-1 rounded text-[10px] border border-[#bbf7d0]">19:00 招行统考</div>
+      </div>
+    </div>
+    <div class="bg-slate-50 p-2 rounded border border-hairline flex flex-col text-center">
+      <span class="font-mono-num text-[11px] text-text-muted">周六 9.12</span>
+      <span class="text-[11px] text-text-muted-strong mt-4">全真机考模拟</span>
+    </div>
+    <div class="bg-slate-50 p-2 rounded border border-hairline flex flex-col text-center">
+      <span class="font-mono-num text-[11px] text-text-muted">周日 9.13</span>
+      <span class="text-[11px] text-text-muted-strong mt-4">公考申论精批</span>
+    </div>
+  </div>
+</div>
+<!-- Alternative Views: Agenda View (日程清单) -->
+<div class="hidden lg:col-span-8 bg-surface border border-hairline rounded-md overflow-hidden flex flex-col shadow-2xs p-4 space-y-3" id="view-agenda-container" style="display: none;">
+  <div class="flex items-center justify-between pb-2.5 border-b border-hairline">
+    <span class="text-sm font-bold text-text-primary">2026年9月 全程日程清单 (按倒计时排序)</span>
+    <span class="font-mono-num text-text-muted text-[11px]">共计 28 项</span>
+  </div>
+  <div class="space-y-2">
+    <div class="p-3 bg-white hover:bg-slate-50 rounded border border-rose-200 flex items-center justify-between cursor-pointer" onclick="openEventDetailModal('阿里巴巴 2027 届研发提前批网申锁定', '2026-09-11 18:00', '线上网申锁定', '网申/公考 DDL', '阿里提前批网申截止，系统将准时锁定志愿顺序，当前检测到亮点未补齐。')">
+      <div class="flex items-center gap-2.5">
+        <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+        <span class="font-bold text-text-primary text-xs">09月11日 18:00</span>
+        <span class="text-text-body text-xs">阿里巴巴 研发提前批网申锁定</span>
+      </div>
+      <span class="font-mono-num text-rose-600 text-[11px] font-bold">倒计时 06h</span>
+    </div>
+    <div class="p-3 bg-white hover:bg-slate-50 rounded border border-emerald-200 flex items-center justify-between cursor-pointer" onclick="openEventDetailModal('招商银行金融科技联合体·第一轮全国统考', '2026-09-11 19:00 - 21:00', '牛客双机位监考', '统一笔试/准考证', '招商银行总行及直属分行联合统考，已通过双机位环境检测。')">
+      <div class="flex items-center gap-2.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+        <span class="font-bold text-text-primary text-xs">09月11日 19:00</span>
+        <span class="text-text-body text-xs">招商银行 金科第一轮全国统考</span>
+      </div>
+      <span class="font-mono-num text-emerald-700 text-[11px] font-medium">已排期锁定</span>
+    </div>
+    <div class="p-3 bg-white hover:bg-slate-50 rounded border border-blue-200 flex items-center justify-between cursor-pointer" onclick="openEventDetailModal('华为终端BG宣讲会', '2026-09-15 14:00', '玉泉校区邵体馆', '线下宣讲 (校区)', '现场发放初面绿色通道卡')">
+      <div class="flex items-center gap-2.5">
+        <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+        <span class="font-bold text-text-primary text-xs">09月15日 14:00</span>
+        <span class="text-text-body text-xs">华为终端BG 校园宣讲会 (直通初面)</span>
+      </div>
+      <span class="font-mono-num text-blue-700 text-[11px] font-medium">4天后</span>
+    </div>
+    <div class="p-3 bg-white hover:bg-slate-50 rounded border border-rose-200 flex items-center justify-between cursor-pointer" onclick="openEventDetailModal('美团北斗计划网申 DDL', '2026-09-18 17:00', '线上系统', '网申/公考 DDL', '美团顶尖算法人才北斗计划正式截止。')">
+      <div class="flex items-center gap-2.5">
+        <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+        <span class="font-bold text-text-primary text-xs">09月18日 17:00</span>
+        <span class="text-text-body text-xs">美团北斗计划 顶尖算法通道 DDL</span>
+      </div>
+      <span class="font-mono-num text-rose-600 text-[11px] font-bold">7天后</span>
+    </div>
+  </div>
+</div>
+<!-- RIGHT: Agenda & Critical Milestones Rail (4 Cols = ~30-33%) -->
+<div class="lg:col-span-4 space-y-4">
+<!-- Card A: 今日日程 (9月11日 星期五) -->
+<div class="bg-surface border border-hairline rounded-md p-4 shadow-2xs">
+<div class="flex items-center justify-between pb-2.5 border-b border-hairline mb-3">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+<h3 class="text-sm text-text-primary font-bold" id="agenda-panel-title">今日日程 · 09月11日</h3>
+</div>
+<span class="font-mono-num text-[11px] text-slate-950 bg-amber-400 px-2 py-0.5 rounded font-bold">
+            3 项待办
+          </span>
+</div>
+<div class="space-y-3" id="agenda-items-container">
+<!-- Item 1: 宣讲会 -->
+<div class="bg-surface border border-hairline hover:border-blue-300 rounded p-3 transition-all group shadow-2xs">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-1.5">
+<span class="font-mono-num text-blue-700 font-bold text-xs">14:00</span>
+<span class="px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-mono-num font-medium">线下宣讲</span>
+</div>
+<button class="text-blue-600 hover:text-blue-800 text-[11px] font-medium flex items-center gap-0.5 group-hover:underline" id="view-pass-btn" onclick="showEventToast('入场凭证已发送至手机钱包 (座位号: 玉泉永谦剧场 2F-A08)')">
+                查看入场券 <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+</button>
+</div>
+<div class="text-xs font-bold text-text-primary mt-1.5">腾讯 2027 全球校园招聘巡展 (浙大专场)</div>
+<div class="text-text-muted text-[11px] mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-slate-400">location_on</span>
+<span class="">浙大玉泉校区永谦活动中心二楼剧场</span>
+</div>
+<div class="mt-2 pt-2 border-t border-hairline flex items-center justify-between text-[11px] font-mono-num text-text-muted-strong">
+<span class="">需携带纸质简历 2 份</span>
+<span class="text-emerald-700 font-semibold">发直通交流券</span>
+</div>
+</div>
+<!-- Item 2: DDL 阿里 -->
+<div class="bg-surface border border-rose-200 hover:border-rose-400 rounded p-3 transition-all relative overflow-hidden shadow-2xs">
+<div class="absolute right-0 top-0 bottom-0 w-1 bg-rose-500"></div>
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-1.5">
+<span class="font-mono-num text-rose-600 font-bold text-xs">18:00</span>
+<span class="px-1.5 py-0.2 rounded bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-mono-num font-bold">网申截止 DDL</span>
+</div>
+<div class="font-mono-num text-rose-600 font-bold text-[11px] flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]">timer</span>
+<span class="" id="countdown-timer">06:27:25</span>
+</div>
+</div>
+<div class="text-xs font-bold text-text-primary mt-1.5">阿里巴巴 2027 届秋招·研发提前批网申锁定</div>
+<p class="text-text-muted text-[11px] mt-1 leading-relaxed">
+              系统将准时锁定志愿顺序。当前检测到“项目自述亮点”未补齐，可能降档初筛评级。
+            </p>
+<div class="mt-2.5 pt-2 border-t border-hairline flex items-center justify-between">
+<span class="text-[11px] font-mono-num text-text-muted">志愿状态: 待最终提交</span>
+<button class="px-2.5 py-1 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold rounded flex items-center gap-1 transition-all shadow-2xs" onclick="showEventToast('正在拉取已保存的阿里专属简历并唤起一键填报...')">
+<span class="material-symbols-outlined text-[12px]">bolt</span>
+                一键快速补全
+              </button>
+</div>
+</div>
+<!-- Item 3: 笔试 招行 -->
+<div class="bg-surface border border-emerald-200 hover:border-emerald-400 rounded p-3 transition-all shadow-2xs">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-1.5">
+<span class="font-mono-num text-emerald-700 font-bold text-xs">19:00 - 21:00</span>
+<span class="px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-mono-num font-medium">统一机试</span>
+</div>
+<span class="font-mono-num text-[11px] text-emerald-700 font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]">check_circle</span>
+                环境校验通过
+              </span>
+</div>
+<div class="text-xs font-bold text-text-primary mt-1.5">招商银行金融科技联合体·第一轮全国统考</div>
+<div class="text-text-muted text-[11px] mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-slate-400">laptop_chromebook</span>
+<span class="">牛客双机位监考 (请在 18:45 前进入等待大厅)</span>
+</div>
+<div class="mt-2.5 pt-2 border-t border-hairline flex items-center justify-between">
+<span class="text-[11px] font-mono-num text-text-muted">口令: CMB-984021</span>
+<button class="px-2.5 py-1 bg-white hover:bg-slate-50 border border-emerald-300 text-emerald-700 text-xs font-medium rounded flex items-center gap-1 transition-colors shadow-2xs" id="launch-sandbox-btn" onclick="showEventToast('已启动防扰考试沙箱，锁定其他进程弹窗并开启机位自检')">
+<span class="material-symbols-outlined text-[12px]">rocket_launch</span>
+                启动前端沙箱
+              </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Card B: 体制内与公考关键里程碑 (倒计时雷达) -->
+<div class="bg-surface border border-hairline rounded-md p-4 shadow-2xs">
+<div class="flex items-center justify-between pb-2.5 border-b border-hairline mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-teal-600">account_balance</span>
+<h3 class="text-sm text-text-primary font-bold">体制内与公考里程碑</h3>
+</div>
+<span class="font-mono-num text-[11px] text-teal-700 border border-teal-200 bg-teal-50 px-2 py-0.5 rounded font-medium">
+            雷达已锁定
+          </span>
+</div>
+<div class="space-y-2.5">
+<!-- Milestone 1: 浙江省考 -->
+<div class="p-2.5 bg-slate-50 border border-hairline rounded space-y-1.5">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold text-text-primary flex items-center gap-1">
+                2027 浙江省公务员四级联考
+              </span>
+<span class="px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 text-[10px] font-mono-num font-bold border border-amber-200">
+                重点目标
+              </span>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-1">
+<div class="bg-white p-2 rounded border border-hairline flex flex-col">
+<span class="font-mono-num text-[10px] text-text-muted">网上报名开启</span>
+<div class="flex items-baseline justify-between mt-1">
+<span class="font-mono-num text-text-primary font-bold text-sm">28 <span class="text-[10px] font-normal text-text-muted font-sans">天后</span></span>
+<span class="font-mono-num text-[10px] text-slate-500">10.10</span>
+</div>
+</div>
+<div class="bg-white p-2 rounded border border-hairline flex flex-col">
+<span class="font-mono-num text-[10px] text-text-muted">公共科目笔试</span>
+<div class="flex items-baseline justify-between mt-1">
+<span class="font-mono-num text-emerald-700 font-bold text-sm">87 <span class="text-[10px] font-normal text-text-muted font-sans">天后</span></span>
+<span class="font-mono-num text-[10px] text-slate-500">12.07</span>
+</div>
+</div>
+</div>
+<div class="text-[11px] text-text-muted flex items-center gap-1 pt-1">
+<span class="material-symbols-outlined text-[13px] text-emerald-600">verified_user</span>
+<span class="">目标岗位: 杭州市西湖区 · 浙江省发改委数字经济处</span>
+</div>
+<div class="text-[10px] font-mono-num text-emerald-700 pl-4">
+              [专业要求: 计算机科学与技术 / 政治面貌完全符合]
+            </div>
+</div>
+<!-- Milestone 2: 事业编统招 -->
+<div class="p-2.5 bg-slate-50 border border-hairline rounded space-y-1">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold text-text-primary">杭州高新技术开发区 (滨江) 事业编</span>
+<span class="font-mono-num text-text-muted text-[11px]">笔试 11月15日</span>
+</div>
+<div class="flex items-center justify-between text-[11px] font-mono-num pt-0.5">
+<span class="text-text-muted">初审资格结果: <span class="text-emerald-700 font-bold">已通过</span></span>
+<span class="text-amber-700 font-bold">倒计时 65 天</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card C: 日历自动订阅与早报推送 -->
+<div class="bg-surface border border-hairline rounded-md p-4 shadow-2xs space-y-3">
+<div class="flex items-center justify-between pb-2 border-b border-hairline">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-amber-500">sync_saved_locally</span>
+<h3 class="text-sm text-text-primary font-bold">日历订阅与晨报</h3>
+</div>
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+</div>
+<div class="space-y-2 text-xs">
+<div class="flex items-center justify-between bg-slate-50 p-2.5 rounded border border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-slate-500">forward_to_inbox</span>
+<span class="text-text-primary font-medium">每日求职晨报 (08:00 AM)</span>
+</div>
+<span class="text-emerald-700 font-mono-num text-[11px] font-semibold">🟢 投递就绪</span>
+</div>
+<div class="flex items-center justify-between bg-slate-50 p-2.5 rounded border border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-slate-500">devices</span>
+<span class="text-text-primary font-medium">Apple / Outlook 轮询同步</span>
+</div>
+<span class="text-slate-500 font-mono-num text-[11px]">每 30 分钟</span>
+</div>
+</div>
+<button class="w-full py-2 bg-white hover:bg-slate-50 text-slate-700 border border-hairline hover:border-hairline-strong rounded text-xs font-medium flex items-center justify-center gap-1.5 transition-colors shadow-2xs" id="copy-webcal-btn">
+<span class="material-symbols-outlined text-[15px] text-amber-500">content_copy</span>
+<span class="">复制 WebCal 动态日历订阅地址</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Toast Notification Container -->
+<div class="fixed bottom-12 right-6 z-50 flex flex-col gap-2 pointer-events-none" id="toast-container"></div>
+<!-- Modals Collection -->
+<!-- 1. Event Detail Modal -->
+<div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs hidden flex items-center justify-center p-4" id="modal-event-detail">
+<div class="bg-surface border border-hairline rounded-md max-w-lg w-full p-4 shadow-xl relative animate-in fade-in zoom-in-95 duration-150 text-text-body">
+<div class="flex items-center justify-between pb-2.5 border-b border-hairline mb-3">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-[11px] font-mono-num font-bold bg-amber-100 text-amber-800 border border-amber-200" id="detail-type-badge">DDL 截止</span>
+<h3 class="text-sm text-text-primary font-bold" id="detail-title">日程详情</h3>
+</div>
+<button class="text-text-muted hover:text-slate-800 p-1 rounded hover:bg-slate-100" onclick="closeModal('modal-event-detail')">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="space-y-3 text-xs">
+<div class="flex items-center gap-2 text-text-muted text-[12px] font-mono-num">
+<span class="material-symbols-outlined text-[15px] text-amber-500">schedule</span>
+<span class="" id="detail-time">2026-09-11 18:00</span>
+<span class="text-hairline-strong">|</span>
+<span class="flex items-center gap-1" id="detail-location"><span class="material-symbols-outlined text-[14px]">location_on</span>线上锁定</span>
+</div>
+<div class="p-3 bg-slate-50 rounded border border-hairline text-slate-700 text-xs leading-relaxed" id="detail-desc">
+        详细要求与志愿锁定时间节点说明。
+      </div>
+<div class="flex items-center justify-between pt-1 text-[11px] font-mono-num text-text-muted-strong">
+<span class="">同步状态: <span class="text-emerald-700 font-semibold">已接入监控</span></span>
+<span class="">提醒提前量: 2小时 / 30分钟</span>
+</div>
+</div>
+<div class="mt-4 pt-2.5 border-t border-hairline flex items-center justify-end gap-2">
+<button class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs rounded border border-hairline" onclick="closeModal('modal-event-detail')">关闭</button>
+<button class="px-3.5 py-1.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold rounded shadow-sm" id="detail-action-btn" onclick="handleDetailAction()">处理事项</button>
+</div>
+</div>
+</div>
+<!-- 2. Subscribe Sync Modal -->
+<div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs items-center justify-center p-4 hidden" id="modal-subscribe">
+<div class="bg-surface border border-hairline rounded-md max-w-md w-full p-4 shadow-xl relative text-text-body animate-in fade-in zoom-in-95 duration-150">
+<div class="flex items-center justify-between pb-2.5 border-b border-hairline mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-500 text-[20px]">sync</span>
+<h3 class="text-sm text-text-primary font-bold">订阅日历同步</h3>
+</div>
+<button class="text-text-muted hover:text-slate-800 p-1 rounded hover:bg-slate-100" onclick="closeModal('modal-subscribe')">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="space-y-3 text-xs">
+<p class="text-text-muted leading-relaxed">支持直接导入系统原生日历（iOS / macOS Calendar、Google Calendar、Microsoft Outlook）。</p>
+<div class="p-2.5 bg-slate-50 rounded border border-hairline space-y-1">
+<span class="text-text-muted font-mono-num text-[11px]">WebCal 订阅地址:</span>
+<div class="flex items-center justify-between gap-1">
+<input id="webcal-input-field" class="w-full bg-white border border-hairline px-2 py-1 rounded text-text-primary font-mono-num text-[11px] selection:bg-amber-100" readonly="" value="">
+<button class="px-2 py-1 bg-amber-400 text-slate-950 rounded text-xs font-bold hover:bg-amber-500 shrink-0" onclick="copyWebCalAddress()">复制</button>
+</div>
+</div>
+<div class="flex flex-col gap-1.5 pt-1 text-slate-700">
+<label class="flex items-center gap-2 cursor-pointer"><input checked="" class="accent-amber-500 rounded" type="checkbox"> 自动同步更新企招网申 DDL</label>
+<label class="flex items-center gap-2 cursor-pointer"><input checked="" class="accent-amber-500 rounded" type="checkbox"> 自动同步省考与选调宣讲关键节点</label>
+<label class="flex items-center gap-2 cursor-pointer"><input checked="" class="accent-amber-500 rounded" type="checkbox"> 笔试前1小时高优先级系统横幅提醒</label>
+</div>
+</div>
+<div class="mt-4 pt-2.5 border-t border-hairline flex items-center justify-end gap-2">
+<button class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs rounded border border-hairline" onclick="closeModal('modal-subscribe')">取消</button>
+<button class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium rounded border border-slate-300 flex items-center gap-1" onclick="downloadICS()">
+<span class="material-symbols-outlined text-[14px]">download</span>
+下载 .ics 文件
+</button>
+<button class="px-3.5 py-1.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold rounded shadow-sm flex items-center gap-1" onclick="confirmSubscription()">
+<span class="material-symbols-outlined text-[14px]">sync</span>
+全量订阅同步
+</button>
+</div>
+</div>
+</div>
+<!-- 3. Ticket Pass Modal -->
+<div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs hidden flex items-center justify-center p-4" id="modal-ticket-pass">
+<div class="bg-surface border border-hairline rounded-md max-w-sm w-full p-4 shadow-xl relative text-text-body animate-in fade-in zoom-in-95 duration-150">
+<div class="flex items-center justify-between pb-2.5 border-b border-hairline mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-600 text-[20px]">confirmation_number</span>
+<h3 class="text-sm text-text-primary font-bold">宣讲入场凭证</h3>
+</div>
+<button class="text-text-muted hover:text-slate-800 p-1 rounded hover:bg-slate-100" onclick="closeModal('modal-ticket-pass')">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="space-y-3 text-center">
+<div class="p-4 bg-slate-50 rounded border border-blue-200 space-y-2">
+<div class="text-sm font-bold text-text-primary">腾讯 2027 届全球校招宣讲会</div>
+<div class="text-blue-700 font-mono-num text-xs font-bold">座位席: 玉泉永谦剧场 2F-A08</div>
+<div class="w-28 h-28 mx-auto bg-white border border-hairline rounded flex flex-col items-center justify-center p-2 shadow-2xs">
+<span class="material-symbols-outlined text-[56px] text-slate-800">qr_code_2</span>
+<span class="font-mono-num text-[9px] text-text-muted">TX-9820-ZJU</span>
+</div>
+<div class="text-[11px] text-slate-600">包含 WXG 后端技术主管现场初面直通加分特权</div>
+</div>
+</div>
+<div class="mt-4 pt-2.5 border-t border-hairline flex items-center justify-between">
+<span class="text-[11px] font-mono-num text-emerald-700 font-semibold">● 已加至 Apple 钱包</span>
+<button class="px-3 py-1 bg-white text-slate-700 text-xs rounded border border-hairline hover:bg-slate-50" onclick="closeModal('modal-ticket-pass'); showEventToast('凭证已离线缓存至本地终端')">确定</button>
+</div>
+</div>
+</div>
+<!-- 4. Sandbox Modal -->
+<div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs hidden flex items-center justify-center p-4" id="modal-sandbox">
+<div class="bg-surface border border-hairline rounded-md max-w-md w-full p-4 shadow-xl relative text-text-body animate-in fade-in zoom-in-95 duration-150">
+<div class="flex items-center justify-between pb-2.5 border-b border-hairline mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-600 text-[20px]">security</span>
+<h3 class="text-sm text-text-primary font-bold">防干扰考试沙箱自检</h3>
+</div>
+<button class="text-text-muted hover:text-slate-800 p-1 rounded hover:bg-slate-100" onclick="closeModal('modal-sandbox')">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="space-y-3 text-xs">
+<div class="p-2.5 bg-slate-50 rounded border border-hairline space-y-1.5">
+<div class="flex items-center justify-between">
+<span class="text-text-muted">目标考试:</span>
+<span class="text-text-primary font-semibold">招商银行金科统考 (19:00)</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-text-muted">双机位推流:</span>
+<span class="text-emerald-700 font-mono-num font-bold">Ready (延迟 14ms)</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-text-muted">防切屏全屏锁:</span>
+<span class="text-emerald-700 font-mono-num font-bold">已接管</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-text-muted">通知静音与微信弹窗:</span>
+<span class="text-amber-700 font-mono-num font-bold">已拦截屏蔽</span>
+</div>
+</div>
+<p class="text-text-muted text-[11px]">提示：开启沙箱后，外接显示器及多屏扩展将被强制单屏限制，保障牛客机考合规性。</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-hairline flex items-center justify-end gap-2">
+<button class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs rounded border border-hairline" onclick="closeModal('modal-sandbox')">退出自检</button>
+<button class="px-3.5 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded shadow-sm hover:bg-emerald-700" onclick="startMockExamSandbox()">进入锁屏模拟</button>
+</div>
+</div>
+</div>
+<!-- 5. Reminder Preferences Modal -->
+<div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs hidden flex items-center justify-center p-4" id="modal-preferences">
+<div class="bg-surface border border-hairline rounded-md max-w-md w-full p-4 shadow-xl relative text-text-body animate-in fade-in zoom-in-95 duration-150">
+<div class="flex items-center justify-between pb-2.5 border-b border-hairline mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-500 text-[20px]">tune</span>
+<h3 class="text-sm text-text-primary font-bold">提醒与推送偏好配置</h3>
+</div>
+<button class="text-text-muted hover:text-slate-800 p-1 rounded hover:bg-slate-100" onclick="closeModal('modal-preferences')">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="space-y-2 text-xs">
+<label class="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-hairline cursor-pointer">
+<span class="text-text-primary">网申截止 (DDL) 提前 6 小时强弹窗</span>
+<input checked="" class="accent-amber-500 rounded" type="checkbox">
+</label>
+<label class="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-hairline cursor-pointer">
+<span class="text-text-primary">笔试机试前 45 分钟开启设备自检提醒</span>
+<input checked="" class="accent-amber-500 rounded" type="checkbox">
+</label>
+<label class="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-hairline cursor-pointer">
+<span class="text-text-primary">每日 08:00 晨报聚合推送至系统通知</span>
+<input checked="" class="accent-amber-500 rounded" type="checkbox">
+</label>
+<label class="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-hairline cursor-pointer">
+<span class="text-text-primary">省属公考/事业编考情雷达前瞻提示</span>
+<input checked="" class="accent-amber-500 rounded" type="checkbox">
+</label>
+</div>
+<div class="mt-4 pt-2.5 border-t border-hairline flex items-center justify-end gap-2">
+<button class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs rounded border border-hairline" onclick="closeModal('modal-preferences')">取消</button>
+<button class="px-3.5 py-1.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold rounded shadow-sm" onclick="closeModal('modal-preferences'); showEventToast('偏好配置已保存并同步写入本地 DataStore')">保存设置</button>
+</div>
+</div>
+</main><script>
+(function() {
+  // 1. Toast Notification
+  window.showEventToast = function(msg) {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toast-container';
+      container.className = 'fixed bottom-12 right-6 z-50 flex flex-col gap-2 pointer-events-none';
+      document.body.appendChild(container);
+    }
+    const toast = document.createElement('div');
+    toast.className = 'bg-white border border-amber-300 text-slate-800 px-4 py-2.5 rounded shadow-lg flex items-center gap-2 text-xs animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-auto max-w-md';
+    toast.innerHTML = `
+      <span class="material-symbols-outlined text-amber-500 text-[18px]">info</span>
+      <span class="text-[13px] leading-tight font-sans">${msg}</span>
+      <button type="button" class="ml-auto text-slate-400 hover:text-slate-700 flex items-center">
+        <span class="material-symbols-outlined text-[14px]">close</span>
+      </button>
+    `;
+    toast.querySelector('button').addEventListener('click', () => toast.remove());
+    container.appendChild(toast);
+    setTimeout(() => {
+      if (toast.parentElement) toast.remove();
+    }, 4000);
+  };
+
+  // 2. Modal Controls & ESC/Backdrop dismissal
+  window.openModal = function(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+  };
+
+  window.closeModal = function(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+  };
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('[id^="modal-"]:not(.hidden)').forEach(m => {
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+      });
+    }
+  });
+
+  document.querySelectorAll('[id^="modal-"]').forEach(modal => {
+    modal.addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.add('hidden');
+        this.classList.remove('flex');
+      }
+    });
+  });
+
+  // 3. Event Detail Modal Helper
+  window.openEventDetailModal = function(title, time, location, badge, desc) {
+    const modal = document.getElementById('modal-event-detail');
+    if (modal) {
+      const titleEl = document.getElementById('detail-title');
+      const timeEl = document.getElementById('detail-time');
+      const locEl = document.getElementById('detail-location');
+      const badgeEl = document.getElementById('detail-type-badge');
+      const descEl = document.getElementById('detail-desc');
+      if (titleEl) titleEl.innerText = title;
+      if (timeEl) timeEl.innerText = time;
+      if (locEl) locEl.innerHTML = `<span class="material-symbols-outlined text-[14px]">location_on</span>${location}`;
+      if (badgeEl) badgeEl.innerText = badge;
+      if (descEl) descEl.innerText = desc;
+      openModal('modal-event-detail');
+    } else {
+      showEventToast(`${title} · ${time} (${location})`);
+    }
+  };
+
+  window.handleDetailAction = function() {
+    showEventToast('已处理并锁定日程节点，更新已同步至云端。');
+    closeModal('modal-event-detail');
+  };
+
+  const getWebCalUrl = () => (window.location.protocol === 'https:' ? 'webcals://' : 'webcal://') + window.location.host + '/api/v1/calendar/subscribe.ics';
+  const icsDownloadUrl = '/api/v1/calendar/export.ics';
+
+  window.copyWebCalAddress = function() {
+    const url = getWebCalUrl();
+    navigator.clipboard?.writeText(url);
+    showEventToast(`WebCal 订阅地址已复制到剪贴板！可直接粘贴至 Apple / Outlook / Google 日历`);
+  };
+
+  window.downloadICS = function() {
+    window.open(icsDownloadUrl, '_blank');
+    showEventToast('正在下载 2026 年招考排期 iCalendar (.ics) 标准日历文件...');
+    closeModal('modal-subscribe');
+  };
+
+  window.confirmSubscription = function() {
+    window.open(icsDownloadUrl, '_blank');
+    showEventToast('已全量触发日历同步下载，本地日历即将自动弹窗确认。');
+    closeModal('modal-subscribe');
+  };
+
+  window.loadCalendarBackendData = async function() {
+    try {
+      const [eventsRes, todayRes] = await Promise.all([
+        fetch('/api/v1/calendar/events?start_date=2026-09-01&end_date=2026-10-05'),
+        fetch('/api/v1/calendar/today')
+      ]);
+
+      if (eventsRes.ok) {
+        const events = await eventsRes.json();
+        console.log('[Calendar] Loaded events from SQLite:', events.length);
+        const ddlCount = events.filter(e => e.event_type === 'APPLY_DDL').length;
+        const talkCount = events.filter(e => e.event_type === 'TALK').length;
+        const examCount = events.filter(e => e.event_type === 'EXAM').length;
+        
+        const ddlEl = document.querySelector('.text-rose-600.text-2xl');
+        if (ddlEl && ddlCount > 0) ddlEl.innerText = String(ddlCount).padStart(2, '0');
+        
+        const talkEl = document.querySelector('.text-blue-700.text-2xl');
+        if (talkEl && talkCount > 0) talkEl.innerText = String(talkCount).padStart(2, '0');
+
+        const examEl = document.querySelector('.text-emerald-600.text-2xl');
+        if (examEl && examCount > 0) examEl.innerText = String(examCount).padStart(2, '0');
+      }
+
+      if (todayRes.ok) {
+        const todayData = await todayRes.json();
+        console.log('[Calendar] Loaded today agenda from SQLite:', todayData);
+      }
+    } catch (err) {
+      console.warn('[Calendar] Backend sync notice:', err);
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const webcalInput = document.getElementById('webcal-input-field');
+    if (webcalInput) {
+      webcalInput.value = getWebCalUrl();
+    }
+    window.loadCalendarBackendData();
+  });
+
+  window.startMockExamSandbox = function() {
+    showEventToast('考试沙箱全屏锁屏模式已激活，按 Esc 两次可退出');
+    closeModal('modal-sandbox');
+  };
+
+  // 4. Month Switchers (2026年 08月, 09月, 10月) with full interactive calendar cell updates
+  const months = ['2026年 08月', '2026年 09月', '2026年 10月'];
+  let currentMonthIdx = 1;
+  const monthDisplay = document.getElementById('current-month-display');
+  const monthDaysGrid = document.getElementById('month-days-grid');
+
+  // Cache September grid HTML initially
+  const septGridHTML = monthDaysGrid ? monthDaysGrid.innerHTML : '';
+
+  // August 2026 Grid HTML
+  const augGridHTML = `
+    <!-- July 27-31 Padding -->
+    <div class="bg-slate-50/70 min-h-[112px] p-1.5 flex flex-col opacity-50 select-none">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>27</span><span class="text-[10px]">七月</span></div>
+    </div>
+    <div class="bg-slate-50/70 min-h-[112px] p-1.5 flex flex-col opacity-50 select-none">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>28</span></div>
+    </div>
+    <div class="bg-slate-50/70 min-h-[112px] p-1.5 flex flex-col opacity-50 select-none">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>29</span></div>
+    </div>
+    <div class="bg-slate-50/70 min-h-[112px] p-1.5 flex flex-col opacity-50 select-none">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>30</span></div>
+    </div>
+    <div class="bg-slate-50/70 min-h-[112px] p-1.5 flex flex-col opacity-50 select-none">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>31</span></div>
+    </div>
+    <!-- 8.1 Sat -->
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>01</span><span class="text-[10px] font-normal text-text-muted">建军节</span></div>
+      <div class="mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">秋招规划开启</span></div>
+    </div>
+    <!-- 8.2 Sun -->
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>02</span></div>
+    </div>
+    <!-- Week 2 -->
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>03</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>04</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>05</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>06</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>07</span><span class="text-[10px]">立秋</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>08</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>09</span></div></div>
+    <!-- Week 3 -->
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('8月10日：字节跳动提前批研发通道投递截止')">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>10</span></div>
+      <div class="mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded bg-[#fef2f2] text-[#b91c1c] border border-[#fecaca] font-bold">字节提前批截止</span></div>
+    </div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>11</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>12</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>13</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>14</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('8月15日：华为勇敢星提前批启动')">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>15</span></div>
+      <div class="mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe]">华为勇敢星启动</span></div>
+    </div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>16</span></div></div>
+    <!-- Week 4 -->
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>17</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>18</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>19</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('8月20日：美团北斗顶尖计划初筛')">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>20</span></div>
+      <div class="mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded bg-[#faf5ff] text-[#7e22ce] border border-[#e9d5ff]">美团北斗初筛</span></div>
+    </div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>21</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>22</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>23</span><span class="text-[10px]">处暑</span></div></div>
+    <!-- Week 5 -->
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>24</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>25</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>26</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>27</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('8月28日：阿里提前批首轮面试通知')">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>28</span></div>
+      <div class="mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0]">阿里提前批首面</span></div>
+    </div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>29</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>30</span></div></div>
+    <!-- 8.31 -->
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('8月31日：美团提前批简历初筛')">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>31</span><span class="text-[10px]">月末</span></div>
+      <div class="mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">美团简历初筛</span></div>
+    </div>
+  `;
+
+  // October 2026 Grid HTML
+  const octGridHTML = `
+    <!-- Sep 28-30 Padding -->
+    <div class="bg-slate-50/70 min-h-[112px] p-1.5 flex flex-col opacity-50 select-none">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>28</span><span class="text-[10px]">九月</span></div>
+    </div>
+    <div class="bg-slate-50/70 min-h-[112px] p-1.5 flex flex-col opacity-50 select-none">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>29</span></div>
+    </div>
+    <div class="bg-slate-50/70 min-h-[112px] p-1.5 flex flex-col opacity-50 select-none">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>30</span></div>
+    </div>
+    <!-- Oct 1-4 -->
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('10月1日：国庆节，开始为期7天封闭机考真题刷题')">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-rose-600 font-bold"><span>01</span><span class="text-[10px]">国庆节</span></div>
+      <div class="mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 font-bold">国庆封闭刷题</span></div>
+    </div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-rose-600 font-bold"><span>02</span><span class="text-[10px]">休</span></div>
+    </div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-rose-600 font-bold"><span>03</span><span class="text-[10px]">休</span></div>
+    </div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-rose-600 font-bold"><span>04</span><span class="text-[10px]">休</span></div>
+    </div>
+    <!-- Week 2 -->
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-rose-600 font-bold"><span>05</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-rose-600 font-bold"><span>06</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-rose-600 font-bold"><span>07</span><span class="text-[10px]">假期结束</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>08</span><span class="text-[10px]">寒露</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>09</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('10月10日：浙江省公务员考试统一报名开放')">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>10</span></div>
+      <div class="mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded bg-[#fef2f2] text-[#b91c1c] border border-[#fecaca] font-bold">省考统一报名开启</span></div>
+    </div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>11</span></div></div>
+    <!-- Week 3 -->
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>12</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>13</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('10月14日：中央机关及其直属机构国考公告正式公布')">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>14</span></div>
+      <div class="mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-semibold">国考公告出炉</span></div>
+    </div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('10月15日：国家公务员考试报名系统开放')">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>15</span></div>
+      <div class="mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded bg-[#fef2f2] text-[#b91c1c] border border-[#fecaca] font-bold">国考报名启动</span></div>
+    </div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>16</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>17</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>18</span></div></div>
+    <!-- Week 4 -->
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>19</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('10月20日：秋招大厂终面集中发放意向书周')">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>20</span></div>
+      <div class="mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0]">大厂意向书首发</span></div>
+    </div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>21</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>22</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>23</span><span class="text-[10px]">霜降</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('10月24日：国考报名正式截止')">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>24</span></div>
+      <div class="mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded bg-[#fef2f2] text-[#b91c1c] border border-[#fecaca] font-bold">国考报名 DDL</span></div>
+    </div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>25</span></div></div>
+    <!-- Week 5 -->
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>26</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>27</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group cursor-pointer" onclick="showEventToast('10月28日：央国企秋招集中初面')">
+      <div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>28</span></div>
+      <div class="mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded bg-[#faf5ff] text-[#7e22ce] border border-[#e9d5ff]">央国企首轮面试</span></div>
+    </div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>29</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-text-muted"><span>30</span></div></div>
+    <div class="bg-surface min-h-[112px] p-1.5 flex flex-col hover:bg-[#f1f5f9] transition-colors group"><div class="flex items-center justify-between font-mono-num text-[11px] text-amber-700 font-bold"><span>31</span></div></div>
+  `;
+
+  function applyMonthView(idx) {
+    currentMonthIdx = idx;
+    const label = months[currentMonthIdx];
+    if (monthDisplay) monthDisplay.innerText = label;
+
+    if (monthDaysGrid) {
+      if (idx === 0) monthDaysGrid.innerHTML = augGridHTML;
+      else if (idx === 1) monthDaysGrid.innerHTML = septGridHTML;
+      else if (idx === 2) monthDaysGrid.innerHTML = octGridHTML;
+    }
+
+    // Rebind cell click for right-rail toast if user clicks
+    const newCells = document.querySelectorAll('#month-days-grid > div');
+    newCells.forEach(cell => {
+      cell.addEventListener('click', function(e) {
+        if (e.target.closest('button')) return;
+        const dayNum = this.querySelector('span.font-bold, span:not(.text-\\[10px\\])')?.innerText.trim() || '';
+        if (dayNum) {
+          showEventToast(`已选中 ${label.replace('年 ', '年')}${dayNum}日 日程排期`);
+        }
+      });
+    });
+
+    showEventToast(`已切换至 ${label} 月度日程视角`);
+  }
+
+  document.getElementById('prev-month-btn')?.addEventListener('click', () => {
+    if (currentMonthIdx > 0) {
+      applyMonthView(currentMonthIdx - 1);
+    } else {
+      showEventToast('已至最早历史排期 (2026年 08月)');
+    }
+  });
+
+  document.getElementById('next-month-btn')?.addEventListener('click', () => {
+    if (currentMonthIdx < months.length - 1) {
+      applyMonthView(currentMonthIdx + 1);
+    } else {
+      showEventToast('已至最远前瞻排期 (2026年 10月)');
+    }
+  });
+
+  // 5. Jump to Today (9.11)
+  document.getElementById('today-jump-btn')?.addEventListener('click', () => {
+    if (currentMonthIdx !== 1) {
+      applyMonthView(1);
+    }
+    // Switch to month view if in week/agenda
+    switchViewMode(0);
+    setTimeout(() => {
+      const day11 = document.querySelector('.border-2.border-\\[\\#eab308\\]');
+      if (day11) {
+        day11.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        day11.classList.add('ring-4', 'ring-amber-300');
+        setTimeout(() => day11.classList.remove('ring-4', 'ring-amber-300'), 1500);
+      }
+    }, 100);
+    showEventToast('已聚焦定位至今日：2026年9月11日 星期五');
+  });
+
+  // 6. View Mode Switcher (Month / Week / Agenda)
+  const viewSwitcherContainer = document.getElementById('view-mode-selector');
+  const monthContainer = document.getElementById('view-month-container');
+  const weekContainer = document.getElementById('view-week-container');
+  const agendaContainer = document.getElementById('view-agenda-container');
+
+  function switchViewMode(idx) {
+    if (!viewSwitcherContainer) return;
+    const viewButtons = viewSwitcherContainer.querySelectorAll('button');
+    viewButtons.forEach((b, i) => {
+      if (i === idx) {
+        b.className = 'px-2.5 py-1 rounded bg-white text-slate-900 border border-slate-200 text-xs font-bold shadow-2xs';
+      } else {
+        b.className = 'px-2.5 py-1 rounded text-text-muted hover:text-text-primary text-xs transition-colors font-medium';
+      }
+    });
+
+    if (idx === 0) {
+      if (monthContainer) { monthContainer.style.display = 'flex'; monthContainer.classList.remove('hidden'); }
+      if (weekContainer) { weekContainer.style.display = 'none'; weekContainer.classList.add('hidden'); }
+      if (agendaContainer) { agendaContainer.style.display = 'none'; agendaContainer.classList.add('hidden'); }
+    } else if (idx === 1) {
+      if (monthContainer) { monthContainer.style.display = 'none'; monthContainer.classList.add('hidden'); }
+      if (weekContainer) { weekContainer.style.display = 'flex'; weekContainer.classList.remove('hidden'); }
+      if (agendaContainer) { agendaContainer.style.display = 'none'; agendaContainer.classList.add('hidden'); }
+    } else {
+      if (monthContainer) { monthContainer.style.display = 'none'; monthContainer.classList.add('hidden'); }
+      if (weekContainer) { weekContainer.style.display = 'none'; weekContainer.classList.add('hidden'); }
+      if (agendaContainer) { agendaContainer.style.display = 'flex'; agendaContainer.classList.remove('hidden'); }
+    }
+    const btnLabel = viewButtons[idx]?.innerText.trim() || '';
+    showEventToast(`已切换视图视角：${btnLabel}`);
+  }
+
+  if (viewSwitcherContainer) {
+    const viewButtons = viewSwitcherContainer.querySelectorAll('button');
+    viewButtons.forEach((btn, idx) => {
+      btn.addEventListener('click', () => switchViewMode(idx));
+    });
+  }
+
+  // 7. Semantic Category Filter Chips (ddl, talk, exam, career)
+  const typeClassMap = {
+    'ddl': ['bg-\\[\\#fef2f2\\]'],
+    'talk': ['bg-\\[\\#eff6ff\\]'],
+    'exam': ['bg-\\[\\#f0fdf4\\]'],
+    'career': ['bg-\\[\\#faf5ff\\]']
+  };
+  document.querySelectorAll('.filter-chip').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const type = this.getAttribute('data-type');
+      const isDeactivated = this.classList.contains('opacity-40');
+      if (!isDeactivated) {
+        this.classList.add('opacity-40', 'border-dashed');
+      } else {
+        this.classList.remove('opacity-40', 'border-dashed');
+      }
+      const targetClasses = typeClassMap[type] || [];
+      targetClasses.forEach(cls => {
+        document.querySelectorAll(`.grid-cols-7 .${cls}`).forEach(el => {
+          el.style.display = isDeactivated ? '' : 'none';
+        });
+      });
+      showEventToast(`已${!isDeactivated ? '隐藏' : '启用'}分类日程：${this.innerText.trim()}`);
+    });
+  });
+
+  // 8. Day Cells Click Selection & Right Rail Sync
+  const calendarCells = document.querySelectorAll('.grid-cols-7 > div:not(.bg-\\[\\#f8fafc\\])');
+  calendarCells.forEach(cell => {
+    cell.addEventListener('click', function(e) {
+      if (e.target.closest('button')) return;
+      calendarCells.forEach(c => {
+        if (!c.classList.contains('border-\\[\\#eab308\\]')) {
+          c.classList.remove('ring-2', 'ring-amber-400');
+        }
+      });
+      if (!this.classList.contains('border-\\[\\#eab308\\]')) {
+        this.classList.add('ring-2', 'ring-amber-400');
+      }
+      const dayNum = this.querySelector('span.font-bold, span:not(.text-\\[10px\\])')?.innerText.trim() || '';
+      if (dayNum) {
+        showEventToast(`已选中 2026年9月${dayNum}日 日程排期`);
+      }
+    });
+  });
+
+  // 9. Quick Actions Binding
+  document.getElementById('sync-subscribe-btn')?.addEventListener('click', () => {
+    openModal('modal-subscribe');
+  });
+  document.getElementById('copy-webcal-btn')?.addEventListener('click', () => {
+    copyWebCalAddress();
+  });
+  document.getElementById('view-pass-btn')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openModal('modal-ticket-pass');
+  });
+  document.getElementById('launch-sandbox-btn')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openModal('modal-sandbox');
+  });
+
+  const privacySwitch = document.getElementById('privacy-toggle-btn');
+  if (privacySwitch) {
+    let isPrivate = true;
+    privacySwitch.addEventListener('click', function() {
+      isPrivate = !isPrivate;
+      const icon = this.querySelector('.material-symbols-outlined');
+      if (icon) icon.innerText = isPrivate ? 'visibility_off' : 'visibility';
+      showEventToast(isPrivate ? '脱敏保护已开启：个人关键信息已本地沙箱混淆' : '脱敏保护已关闭：展示真实企业投递与学籍信息');
+    });
+  }
+
+  // 10. Global Shortcut: Cmd+K / Ctrl+K focus search
+  window.addEventListener('keydown', function(e) {
+    if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      const searchInput = document.getElementById('global-search-input');
+      if (searchInput) {
+        searchInput.focus();
+        searchInput.select();
+      }
+    }
+  });
+
+  // Mini live countdown simulation
+  let seconds = 28 * 60 + 15;
+  setInterval(() => {
+    if (seconds > 0) {
+      seconds--;
+      const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      const el = document.getElementById('countdown-timer');
+      if (el) el.innerText = `06:${m}:${s}`;
+    }
+  }, 1000);
+})();
+</script>
+
+
+
+</body></html>

@@ -1,0 +1,49 @@
+[project]
+name = "campus-job-agent"
+version = "1.1.0"
+description = "基于多 Agent 协同与本地隐私沙箱的高校校招与招考智能协同系统"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic>=2.8.0",
+    "pydantic-settings>=2.4.0",
+    "sqlalchemy>=2.0.32",
+    "aiosqlite>=0.20.0",
+    "feedparser>=6.0.11",
+    "httpx>=0.27.0",
+    "beautifulsoup4>=4.12.3",
+    "lxml>=5.3.0",
+    "pdfplumber>=0.11.4",
+    "pillow>=10.4.0",
+    "aiosmtplib>=3.0.2",
+    "icalendar>=5.0.13",
+    "apscheduler>=3.10.4",
+    "litellm>=1.44.0",
+    "cryptography>=43.0.0",
+    "python-multipart>=0.0.9",
+    "greenlet>=3.5.5",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "ruff>=0.6.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = ["E501"]
+
+

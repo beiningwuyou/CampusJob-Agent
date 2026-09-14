@@ -1,0 +1,1976 @@
+<!DOCTYPE html><html lang="zh-CN" style="width: 100%; min-height: 100%;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>CampusJob-Agent - 招考看板与全域岗位流</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "background": "#f8fafc",
+            "surface": "#ffffff",
+            "surface-card": "#ffffff",
+            "surface-elevated": "#f1f5f9",
+            "surface-container": "#f8fafc",
+            "surface-container-high": "#e2e8f0",
+            "surface-container-lowest": "#f8fafc",
+            "surface-variant": "#f1f5f9",
+            "surface-bright": "#ffffff",
+            "outline": "#cbd5e1",
+            "outline-variant": "#e2e8f0",
+            "hairline": "#e2e8f0",
+            "hairline-strong": "#cbd5e1",
+            "text-primary": "#0f172a",
+            "text-body": "#334155",
+            "text-muted": "#64748b",
+            "text-muted-strong": "#475569",
+            "primary": "#eab308",
+            "primary-container": "#fef08a",
+            "primary-active": "#ca8a04",
+            "primary-light": "#fefce8",
+            "secondary": "#10b981",
+            "secondary-container": "#d1fae5",
+            "info-blue": "#2563eb",
+            "accent-turquoise": "#0d9488",
+            "error": "#ef4444",
+            "error-container": "#fee2e2",
+            "ink-inverse": "#0f172a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "sm": "0.125rem",
+            "md": "0.375rem",
+            "lg": "0.5rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "sans": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+            "mono": ["JetBrains Mono", "monospace"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f8fafc;
+      color: #334155;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .font-mono-num {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ca8a04;
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(202, 138, 4, 0.4);
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ca8a04;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 6px rgba(202, 138, 4, 0.4);
+    }
+    /* Privacy Blur Mode */
+    .privacy-mode .privacy-blur {
+      filter: blur(5px);
+      user-select: none;
+      transition: filter 0.2s ease;
+    }
+    /* Scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f8fafc;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 2px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    html {
+      scrollbar-gutter: stable;
+    }
+  </style>
+</head>
+<body class="bg-[#f8fafc] text-text-body min-h-screen flex flex-col font-sans antialiased selection:bg-amber-100 selection:text-amber-900 relative">
+<!-- Toast Notification Container -->
+<div class="fixed bottom-6 right-6 z-[100] flex flex-col gap-2 pointer-events-none" id="toast-container"></div>
+<!-- Top Global Navigation -->
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-6 h-14 flex items-center shadow-sm">
+  <div class="max-w-[1536px] w-full mx-auto flex items-center justify-between gap-4">
+    <!-- 1. Left: Branding & Dashboard Entrance -->
+    <div class="flex items-center gap-6 flex-shrink-0">
+      <a href="/dashboard" class="flex items-center gap-2 px-3 py-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-md font-semibold text-xs transition-colors">
+        <span class="material-symbols-outlined text-[18px] text-amber-500">grid_view</span>
+        <span class="">仪表盘</span>
+      </a>
+    </div>
+
+    <!-- 2. Center: 4 Core Business Section Entrances -->
+    <nav class="hidden lg:flex items-center gap-1 xl:gap-2 flex-shrink-0">
+      <a href="/jobs" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-950 bg-amber-400 rounded-md shadow-xs transition-colors">
+        <span class="material-symbols-outlined text-[17px] text-slate-950">view_kanban</span>
+        <span class="">校招雷达 /jobs</span>
+      </a>
+      <a href="/calendar" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors">
+        <span class="material-symbols-outlined text-[17px] text-slate-400">calendar_month</span>
+        <span class="">日历日程</span>
+        <span class="px-1.5 py-0.5 text-[10px] font-mono-num font-bold bg-rose-50 text-rose-600 border border-rose-200 rounded-full leading-none">3待办</span>
+      </a>
+      <a href="/tracker" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors relative">
+        <span class="material-symbols-outlined text-[17px] text-slate-400">track_changes</span>
+        <span class="">投递追踪</span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+      </a>
+      <a href="/advisory" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors">
+        <span class="material-symbols-outlined text-[17px] text-amber-500">auto_awesome</span>
+        <span class="">AI顾问诊断</span>
+      </a>
+    </nav>
+
+    <!-- 3. Right: Search, Parser Button, Notifications, User Profile & Settings -->
+    <div class="flex items-center gap-3 justify-end flex-1 max-w-xl">
+      <!-- Global Search -->
+      <div class="relative flex-1 max-w-xs hidden sm:block">
+        <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] pointer-events-none select-none">search</span>
+        <input id="global-search-input" class="w-full h-[34px] pl-8 pr-12 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-amber-400 focus:bg-white focus:ring-0 rounded-md text-xs text-slate-800 placeholder:text-slate-400 transition-all font-sans" placeholder="全局搜索企业、岗位、公考..." type="text">
+        <kbd onclick="document.getElementById('global-search-input').focus()" class="absolute right-2 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-mono-num bg-white text-slate-500 rounded border border-slate-200 shadow-2xs pointer-events-none select-none">⌘K</kbd>
+      </div>
+
+      <!-- Fast Parser CTA Button -->
+      <button onclick="showToast('智能简历/招考推文解析引擎已唤起')" class="h-[34px] flex items-center gap-1.5 px-3.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold rounded-md transition-all shadow-xs flex-shrink-0 active:scale-95">
+        <span class="material-symbols-outlined text-[16px] text-slate-950 font-bold">bolt</span>
+        <span class="">+ 解析推文/海报</span>
+      </button>
+
+      <!-- Notifications Bell -->
+      <a href="/calendar" class="relative h-[34px] w-[34px] flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-md hover:bg-slate-100 border border-slate-200 bg-white transition-all flex-shrink-0" title="待阅通知 (2)">
+        <span class="material-symbols-outlined text-[18px]">notifications</span>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white animate-pulse"></span>
+      </a>
+
+      <!-- User Profile & Settings Combined Interactive Capsule -->
+      <a href="/settings" class="flex items-center gap-2 pl-1.5 pr-2.5 h-[34px] bg-white hover:bg-slate-50 border border-slate-200 rounded-md flex-shrink-0 cursor-pointer shadow-2xs group transition-all" title="个人中心与系统设置">
+        <div class="w-6 h-6 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 font-bold text-[11px] shadow-2xs flex-shrink-0 select-none">
+          研
+        </div>
+        <div class="hidden md:flex flex-col text-left justify-center leading-tight">
+          <div class="text-[11px] font-bold text-slate-800 flex items-center gap-1">
+            2027届 硕士
+          </div>
+          <div class="text-[9px] text-slate-500 font-medium">
+            计算机工学 · 党员
+          </div>
+        </div>
+        <div class="h-4 w-px bg-slate-200 mx-0.5 hidden md:block"></div>
+        <span class="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-amber-600 transition-colors">settings</span>
+      </a>
+    </div>
+  </div>
+</header>
+<!-- Filter & Tab Navigation Area -->
+<main class="max-w-[1536px] w-full mx-auto px-6 py-5 flex-1 space-y-4">
+<!-- Category Tabs -->
+<div class="border-b border-hairline bg-white rounded-t-md px-3 pt-2 shadow-2xs">
+<div class="flex items-center gap-2 sm:gap-6 overflow-x-auto no-scrollbar" id="category-tabs">
+<button class="cat-tab relative pb-3 pt-1 text-xs sm:text-sm flex items-center gap-2 border-b-2 whitespace-nowrap transition-all border-amber-500 text-slate-900 font-bold" data-cat="all">
+<span class="">全部岗位</span>
+<span class="bg-amber-100 text-amber-900 text-[11px] px-2 py-0.5 rounded font-mono font-bold count-badge border border-amber-200">342</span>
+</button>
+<button class="cat-tab pb-3 pt-1 text-xs sm:text-sm font-medium text-text-muted hover:text-text-primary transition flex items-center gap-2 border-b-2 border-transparent whitespace-nowrap" data-cat="campus">
+<span class="">企业校招</span>
+<span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded font-mono count-badge border border-slate-200">210</span>
+</button>
+<button class="cat-tab pb-3 pt-1 text-xs sm:text-sm font-medium text-text-muted hover:text-text-primary transition flex items-center gap-2 border-b-2 border-transparent whitespace-nowrap" data-cat="soe">
+<span class="">央国企直聘</span>
+<span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded font-mono count-badge border border-slate-200">78</span>
+</button>
+<button class="cat-tab pb-3 pt-1 text-xs sm:text-sm font-medium text-text-muted hover:text-text-primary transition flex items-center gap-2 border-b-2 border-transparent whitespace-nowrap" data-cat="civil">
+<span class="">国家/地方公务员</span>
+<span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded font-mono count-badge border border-slate-200">34</span>
+</button>
+<button class="cat-tab pb-3 pt-1 text-xs sm:text-sm font-medium text-text-muted hover:text-text-primary transition flex items-center gap-2 border-b-2 border-transparent whitespace-nowrap" data-cat="institution">
+<span class="">事业单位/科研</span>
+<span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded font-mono count-badge border border-slate-200">20</span>
+</button>
+</div>
+</div>
+<!-- Advanced Filter Bar (Crisp Light Mode Single-Line Adaptive Layout) -->
+<div class="bg-white border border-hairline rounded-b-md p-3 shadow-2xs space-y-2.5">
+<div class="flex items-center justify-between gap-3 overflow-x-auto no-scrollbar py-0.5">
+<!-- Left Filter Group -->
+<div class="flex items-center gap-2.5 shrink-0">
+<!-- City Multi-select Dropdown Filter -->
+<div class="relative">
+<button class="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 border border-hairline rounded px-2.5 py-1.5 text-xs font-medium text-text-body transition whitespace-nowrap shadow-2xs" id="city-dropdown-btn">
+<span class="material-symbols-outlined text-amber-600 text-sm">location_on</span>
+<span class="text-text-muted">城市:</span>
+<span class="text-slate-900 font-semibold" id="city-filter-label">杭州, 上海, 深圳, 浙江省直</span>
+<span class="material-symbols-outlined text-text-muted text-xs transition-transform" id="city-dropdown-arrow">expand_more</span>
+</button>
+<!-- City selector dropdown panel -->
+<div class="absolute top-full left-0 mt-1.5 w-60 bg-white border border-hairline-strong rounded shadow-lg z-30 p-2 text-xs hidden" id="city-dropdown-panel">
+<div class="flex items-center justify-between text-text-muted text-[11px] pb-1.5 border-b border-hairline mb-1.5 px-1.5 font-mono">
+<span class="">快速勾选工作地</span>
+<button class="text-amber-700 hover:underline text-[10px] font-semibold" onclick="toggleAllCities(true)">全选</button>
+</div>
+<label class="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded cursor-pointer">
+<input checked="" class="city-checkbox rounded bg-white border-hairline text-amber-500 focus:ring-0" type="checkbox" value="杭州">
+<span class="text-text-body">杭州 (Hangzhou)</span>
+</label>
+<label class="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded cursor-pointer">
+<input checked="" class="city-checkbox rounded bg-white border-hairline text-amber-500 focus:ring-0" type="checkbox" value="上海">
+<span class="text-text-body">上海 (Shanghai)</span>
+</label>
+<label class="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded cursor-pointer">
+<input checked="" class="city-checkbox rounded bg-white border-hairline text-amber-500 focus:ring-0" type="checkbox" value="深圳">
+<span class="text-text-body">深圳 (Shenzhen)</span>
+</label>
+<label class="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded cursor-pointer">
+<input checked="" class="city-checkbox rounded bg-white border-hairline text-amber-500 focus:ring-0" type="checkbox" value="浙江省">
+<span class="text-text-body">浙江省直 (Zhejiang)</span>
+</label>
+<label class="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded cursor-pointer">
+<input class="city-checkbox rounded bg-white border-hairline text-amber-500 focus:ring-0" type="checkbox" value="广州">
+<span class="text-text-body">广州 (Guangzhou)</span>
+</label>
+<label class="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded cursor-pointer">
+<input class="city-checkbox rounded bg-white border-hairline text-amber-500 focus:ring-0" type="checkbox" value="南京">
+<span class="text-text-body">南京 (Nanjing)</span>
+</label>
+</div>
+</div>
+<!-- Minimum Match Score Slider -->
+<div class="flex items-center gap-2 bg-slate-50 border border-hairline rounded px-2.5 py-1.5 whitespace-nowrap shadow-2xs">
+<span class="text-xs text-text-muted">最低契合:</span>
+<div class="flex items-center gap-1.5 w-24 sm:w-28">
+<input class="w-full h-1 bg-slate-200 rounded appearance-none cursor-pointer accent-amber-500" id="score-slider" max="95" min="40" type="range" value="60">
+</div>
+<span class="text-[11px] font-mono-num font-bold text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded" id="score-display">≥ 60分</span>
+</div>
+<!-- Toggle 1: Fresh Grad Only -->
+<label class="flex items-center gap-2 cursor-pointer bg-slate-50 hover:bg-slate-100 border border-hairline rounded px-2.5 py-1.5 transition whitespace-nowrap shadow-2xs" id="toggle-fresh-label">
+<input checked="" class="sr-only peer" id="toggle-fresh" type="checkbox">
+<div class="w-7 h-3.5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-emerald-500 relative"></div>
+<span class="text-xs text-text-body select-none">仅看应届生</span>
+<span class="text-[10px] text-emerald-700 font-mono-num font-bold uppercase" id="toggle-fresh-text">ON</span>
+</label>
+<!-- Toggle 2: Party Member -->
+<label class="flex items-center gap-2 cursor-pointer bg-slate-50 hover:bg-slate-100 border border-hairline rounded px-2.5 py-1.5 transition whitespace-nowrap shadow-2xs" id="toggle-party-label">
+<input class="sr-only peer" id="toggle-party" type="checkbox">
+<div class="w-7 h-3.5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-emerald-500 relative"></div>
+<span class="text-xs text-text-body select-none">仅看党员岗</span>
+<span class="text-[10px] text-slate-400 font-mono-num font-bold uppercase" id="toggle-party-text">OFF</span>
+</label>
+</div>
+<!-- Right Controls: Sort & View Switcher -->
+<div class="flex items-center gap-2.5 shrink-0">
+<!-- Sort Dropdown -->
+<div class="relative">
+<button class="flex items-center gap-1.5 text-xs text-text-body bg-slate-50 hover:bg-slate-100 px-2.5 py-1.5 rounded border border-hairline transition whitespace-nowrap shadow-2xs" id="sort-menu-btn">
+<span class="material-symbols-outlined text-sm text-text-muted">swap_vert</span>
+<span class="font-medium text-slate-800" id="current-sort-label">匹配优先</span>
+<span class="material-symbols-outlined text-xs text-text-muted">expand_more</span>
+</button>
+<div class="absolute right-0 top-full mt-1.5 w-44 bg-white border border-hairline-strong rounded shadow-lg z-30 p-1.5 text-xs hidden" id="sort-dropdown-panel">
+<button class="w-full text-left px-2.5 py-1.5 rounded hover:bg-slate-50 text-amber-700 font-semibold sort-opt" data-sort="match-desc">匹配优先 (降序)</button>
+<button class="w-full text-left px-2.5 py-1.5 rounded hover:bg-slate-50 text-text-body sort-opt" data-sort="deadline-asc">DDL临近优先 (升序)</button>
+<button class="w-full text-left px-2.5 py-1.5 rounded hover:bg-slate-50 text-text-body sort-opt" data-sort="newest-desc">最新发布优先</button>
+<button class="w-full text-left px-2.5 py-1.5 rounded hover:bg-slate-50 text-text-body sort-opt" data-sort="salary-desc">薪资待遇优先</button>
+</div>
+</div>
+<!-- View Switcher (Grid vs Table) -->
+<div class="flex items-center bg-slate-100 border border-hairline rounded p-0.5 shrink-0">
+<button class="flex items-center gap-1.5 whitespace-nowrap px-2.5 py-1 rounded bg-white text-slate-900 text-xs font-semibold shadow-2xs transition" id="view-grid-btn">
+<span class="material-symbols-outlined text-sm text-amber-600">grid_view</span>
+<span class="">卡片</span>
+</button>
+<button class="flex items-center gap-1.5 whitespace-nowrap px-2.5 py-1 rounded text-text-muted hover:text-text-primary text-xs font-medium transition" id="view-table-btn">
+<span class="material-symbols-outlined text-sm">table_rows</span>
+<span class="">表格</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Active Pills Filter Tags Row -->
+<div class="flex items-center gap-2 flex-wrap text-xs pt-1 border-t border-hairline" id="active-pills-container">
+<span class="text-text-muted text-[11px] font-mono">已选条件:</span>
+<span class="inline-flex items-center gap-1 bg-slate-50 text-slate-700 px-2 py-0.5 rounded border border-hairline text-[11px]" id="pill-city" style="display: inline-flex;">
+  城市: <span class="text-amber-800 font-mono font-medium" id="pill-city-text">杭州, 上海, 深圳, 浙江省直</span>
+<span class="material-symbols-outlined text-[12px] text-text-muted hover:text-text-primary cursor-pointer ml-0.5" onclick="removePill('city')">close</span>
+</span>
+<span class="inline-flex items-center gap-1 bg-slate-50 text-slate-700 px-2 py-0.5 rounded border border-hairline text-[11px]" id="pill-score" style="display: inline-flex;">
+<span class="font-mono text-amber-800 font-medium" id="pill-score-text">匹配度 ≥ 60</span>
+<span class="material-symbols-outlined text-[12px] text-text-muted hover:text-text-primary cursor-pointer ml-0.5" onclick="removePill('score')">close</span>
+</span>
+<span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[11px]" id="pill-fresh" style="display: inline-flex;">
+<span class="font-medium">应届生专属</span>
+<span class="material-symbols-outlined text-[12px] text-emerald-600 hover:text-emerald-900 cursor-pointer ml-0.5" onclick="removePill('fresh')">close</span>
+</span>
+<span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[11px] hidden" id="pill-party">
+<span class="font-medium">仅看党员岗位</span>
+<span class="material-symbols-outlined text-[12px] text-emerald-600 hover:text-emerald-900 cursor-pointer ml-0.5" onclick="removePill('party')">close</span>
+</span>
+<button class="text-amber-700 hover:text-amber-800 hover:underline text-[11px] font-semibold ml-1 transition" onclick="resetFilters()">清空重置</button>
+</div>
+</div>
+<!-- Main Content View A: Cards Grid (3 Columns, Clean White Styling) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="job-cards-grid">
+<!-- Card 1: 华为 -->
+<div class="job-card bg-white border border-hairline hover:border-hairline-strong rounded-md p-4 flex flex-col justify-between transition-all duration-150 hover:-translate-y-0.5 shadow-2xs relative group" data-cat="campus" data-city="杭州 深圳" data-days="14" data-fresh="true" data-id="huawei" data-party="false" data-salary="35" data-score="88" data-search="华为技术有限公司 通用软件开发工程师 杭州 深圳 研发类 鸿蒙 分布式" style="display: flex;">
+<div>
+<div class="flex items-start justify-between gap-2 mb-2">
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="bg-slate-100 text-slate-700 text-[11px] font-medium px-2 py-0.5 rounded border border-slate-200">头部名企 · 研发类</span>
+<span class="bg-slate-50 text-slate-500 text-[11px] px-2 py-0.5 rounded border border-slate-100">秋招网申</span>
+<span class="applied-badge hidden bg-emerald-50 text-emerald-700 text-[10px] px-1.5 py-0.5 rounded font-mono font-bold border border-emerald-200">已投递</span>
+</div>
+<div class="flex items-center gap-1 bg-emerald-50 border border-emerald-200 text-emerald-700 px-2 py-0.5 rounded shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="font-mono-num text-xs font-bold">88分 契合</span>
+</div>
+</div>
+<div class="mb-2 cursor-pointer" onclick="openJobDrawer('huawei')">
+<h3 class="text-text-primary text-sm font-bold group-hover:text-amber-600 transition-colors line-clamp-1">通用软件开发工程师 (端云协同)</h3>
+<p class="text-text-muted text-xs mt-0.5">华为技术有限公司 · 终端BG / 计算产品线</p>
+</div>
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-muted mb-2.5 pb-2.5 border-b border-hairline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs text-slate-400">location_on</span>杭州 / 深圳</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs text-slate-400">school</span>硕士及以上</span>
+<span class="flex items-center gap-1 font-mono-num text-amber-700 font-bold text-xs privacy-blur">20k-35k*15薪</span>
+</div>
+<div class="space-y-1 mb-3">
+<div class="flex items-center justify-between text-[11px]">
+<span class="text-text-muted flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-emerald-600">event</span>
+              网申截止: 10-15
+            </span>
+<span class="text-emerald-700 font-mono-num font-medium">剩余 14 天</span>
+</div>
+<div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="bg-emerald-500 h-full rounded-full" style="width: 58%"></div>
+</div>
+</div>
+</div>
+<div class="space-y-1.5 pt-2 border-t border-hairline">
+<div class="grid grid-cols-2 gap-2">
+<button class="btn-calendar bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium py-1.5 px-2.5 rounded border border-hairline flex items-center justify-center gap-1 transition shadow-2xs" onclick="toggleCalendar(this, '华为 通用软件开发工程师 10-15截止')">
+<span class="material-symbols-outlined text-sm text-slate-500">calendar_add_on</span>
+<span class="btn-text">加入日历</span>
+</button>
+<button class="btn-applied bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium py-1.5 px-2.5 rounded border border-hairline flex items-center justify-center gap-1 transition shadow-2xs" onclick="markApplied(this, '华为 通用软件开发工程师')">
+<span class="material-symbols-outlined text-sm text-slate-500">check_circle</span>
+<span class="btn-text">标记已投递</span>
+</button>
+</div>
+<button class="w-full bg-slate-50 hover:bg-amber-400 hover:text-slate-950 text-slate-800 text-xs font-bold py-1.5 rounded transition flex items-center justify-center gap-1 border border-hairline/80 shadow-2xs" onclick="openJobDrawer('huawei')">
+<span class="material-symbols-outlined text-sm text-amber-600">psychology</span>
+          查看AI顾问诊断与画像 →
+        </button>
+</div>
+</div>
+<!-- Card 2: 浙江省发改委 (体制内) -->
+<div class="job-card bg-white border border-amber-200 hover:border-amber-400 rounded-md p-4 flex flex-col justify-between transition-all duration-150 hover:-translate-y-0.5 shadow-2xs relative group" data-cat="civil" data-city="杭州 浙江省" data-days="4" data-fresh="true" data-id="zhejiang-fgw" data-party="true" data-salary="20" data-score="95" data-search="浙江省发展和改革委员会 数字化改革综合管理岗 杭州 浙江省 010302001 公务员 编制" style="display: flex;">
+<div>
+<div class="flex items-start justify-between gap-2 mb-2">
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="bg-amber-50 text-amber-800 text-[11px] font-bold px-2 py-0.5 rounded border border-amber-200">省直公务员 · 考公编制</span>
+<span class="bg-slate-50 text-slate-500 text-[11px] px-2 py-0.5 rounded border border-slate-100">统考A类</span>
+<span class="applied-badge hidden bg-amber-100 text-amber-900 text-[10px] px-1.5 py-0.5 rounded font-mono font-bold border border-amber-300">已报名</span>
+</div>
+<div class="flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[11px] font-bold">
+<span class="material-symbols-outlined text-xs">verified</span>
+            95分 资格全符
+          </div>
+</div>
+<div class="mb-2 cursor-pointer" onclick="openJobDrawer('zhejiang-fgw')">
+<h3 class="text-text-primary text-sm font-bold group-hover:text-amber-600 transition-colors line-clamp-1">数字化改革综合管理岗 (一职位)</h3>
+<p class="text-text-muted text-xs mt-0.5">浙江省发展和改革委员会 · 数字化转型办公室</p>
+</div>
+<div class="bg-slate-50 p-2.5 rounded border border-hairline mb-2.5 space-y-0.5 text-[11px] font-mono">
+<div class="flex justify-between text-text-muted">
+<span class="">招考代码:</span>
+<span class="text-slate-800 font-bold">010302001</span>
+</div>
+<div class="flex justify-between text-text-muted">
+<span class="">招录指标:</span>
+<span class="text-emerald-700 font-bold font-sans">招录 2人 · 限计算机硕士</span>
+</div>
+<div class="text-slate-600 pt-1 border-t border-hairline font-sans flex items-center gap-1 text-[10px]">
+<span class="material-symbols-outlined text-xs text-emerald-600">check</span> 符合应届 + 中共党员 + 计算机大类
+          </div>
+</div>
+<div class="space-y-1 mb-3">
+<div class="flex items-center justify-between text-[11px]">
+<span class="text-text-muted flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-amber-600">timer</span>
+              报名窗口: 10/10 - 10/16
+            </span>
+<span class="text-amber-700 font-bold font-mono-num">待开启 (4天后)</span>
+</div>
+<div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="bg-amber-400 h-full rounded-full" style="width: 25%"></div>
+</div>
+</div>
+</div>
+<div class="space-y-1.5 pt-2 border-t border-hairline">
+<div class="grid grid-cols-2 gap-2">
+<button class="btn-calendar bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium py-1.5 px-2.5 rounded border border-hairline flex items-center justify-center gap-1 transition shadow-2xs" onclick="toggleCalendar(this, '浙江省发改委 考公报名窗口 10-10')">
+<span class="material-symbols-outlined text-sm text-slate-500">event_upcoming</span>
+<span class="btn-text">加入日程提醒</span>
+</button>
+<button class="bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold py-1.5 px-2.5 rounded flex items-center justify-center gap-1 transition shadow-2xs" onclick="openJobDrawer('zhejiang-fgw')">
+<span class="material-symbols-outlined text-sm">assignment_turned_in</span>
+            资格排查报告
+          </button>
+</div>
+<button class="w-full bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-text-primary text-xs font-medium py-1.5 rounded transition flex items-center justify-center gap-1 border border-hairline/80 shadow-2xs" onclick="showToast('已调取浙江省发改委近3年进面分数线: 2024年 71.5分 / 2023年 72.8分')">
+<span class="material-symbols-outlined text-sm text-slate-400">history_edu</span>
+          历年进面分数线与真题 (71.5分)
+        </button>
+</div>
+</div>
+<!-- Card 3: 国家电网 (央国企) -->
+<div class="job-card bg-white border border-hairline hover:border-hairline-strong rounded-md p-4 flex flex-col justify-between transition-all duration-150 hover:-translate-y-0.5 shadow-2xs relative group" data-cat="soe" data-city="上海 南京" data-days="19" data-fresh="true" data-id="state-grid" data-party="false" data-salary="28" data-score="84" data-search="国家电网有限公司华东分部 电力数字化与算法岗 上海 南京 重点央企 提前批" style="display: flex;">
+<div>
+<div class="flex items-start justify-between gap-2 mb-2">
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="bg-blue-50 text-blue-700 text-[11px] font-medium px-2 py-0.5 rounded border border-blue-200">重点央企直聘</span>
+<span class="bg-slate-50 text-slate-500 text-[11px] px-2 py-0.5 rounded border border-slate-100">提前批/统招</span>
+<span class="applied-badge hidden bg-blue-100 text-blue-800 text-[10px] px-1.5 py-0.5 rounded font-mono font-bold border border-blue-300">已网申</span>
+</div>
+<div class="flex items-center gap-1 bg-blue-50 border border-blue-200 text-blue-700 px-2 py-0.5 rounded shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+<span class="font-mono-num text-xs font-bold">84分 推荐</span>
+</div>
+</div>
+<div class="mb-2 cursor-pointer" onclick="openJobDrawer('state-grid')">
+<h3 class="text-text-primary text-sm font-bold group-hover:text-amber-600 transition-colors line-clamp-1">电力数字化与算法工程师</h3>
+<p class="text-text-muted text-xs mt-0.5">国家电网有限公司 · 华东分部调控中心</p>
+</div>
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-muted mb-2.5 pb-2.5 border-b border-hairline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs text-slate-400">location_on</span>上海 / 南京</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs text-slate-400">school</span>硕士研究生</span>
+<span class="flex items-center gap-1 font-mono-num text-slate-800 font-bold text-xs privacy-blur">18k-28k · 六险二金</span>
+</div>
+<div class="space-y-1 mb-3">
+<div class="flex items-center justify-between text-[11px]">
+<span class="text-text-muted flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-blue-600">alarm</span>
+              网申截止: 10-20
+            </span>
+<span class="text-text-body font-mono-num">剩余 19 天</span>
+</div>
+<div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="bg-blue-500 h-full rounded-full" style="width: 42%"></div>
+</div>
+</div>
+</div>
+<div class="space-y-1.5 pt-2 border-t border-hairline">
+<div class="grid grid-cols-2 gap-2">
+<button class="btn-calendar bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium py-1.5 px-2.5 rounded border border-hairline flex items-center justify-center gap-1 transition shadow-2xs" onclick="toggleCalendar(this, '国家电网华东分部网申 10-20截止')">
+<span class="material-symbols-outlined text-sm text-slate-500">calendar_month</span>
+<span class="btn-text">加入日历</span>
+</button>
+<button class="btn-applied bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium py-1.5 px-2.5 rounded border border-hairline flex items-center justify-center gap-1 transition shadow-2xs" onclick="markApplied(this, '国家电网 电力数字化岗')">
+<span class="material-symbols-outlined text-sm text-slate-500">check_circle</span>
+<span class="btn-text">标记已投递</span>
+</button>
+</div>
+<button class="w-full bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-text-primary text-xs font-medium py-1.5 rounded transition flex items-center justify-center gap-1 border border-hairline/80 shadow-2xs" onclick="showToast('已加载国家电网计算机类统考大纲与往年真题库')">
+<span class="material-symbols-outlined text-sm text-slate-400">quiz</span>
+          国网统考大纲与专业测试卷库
+        </button>
+</div>
+</div>
+<!-- Card 4: 腾讯 (加急) -->
+<div class="job-card bg-white border border-rose-200 hover:border-rose-400 rounded-md p-4 flex flex-col justify-between transition-all duration-150 hover:-translate-y-0.5 shadow-2xs relative group" data-cat="campus" data-city="深圳 广州" data-days="3" data-fresh="true" data-id="tencent" data-party="false" data-salary="38" data-score="91" data-search="腾讯科技 微信后台研发工程师 分布式高并发 深圳 广州 WXG" style="display: flex;">
+<div>
+<div class="flex items-start justify-between gap-2 mb-2">
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="bg-slate-100 text-slate-700 text-[11px] font-medium px-2 py-0.5 rounded border border-slate-200">互联网头部 · 核心自研</span>
+<span class="bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">warning</span>
+              仅剩 3 天
+            </span>
+<span class="applied-badge hidden bg-emerald-50 text-emerald-700 text-[10px] px-1.5 py-0.5 rounded font-mono font-bold border border-emerald-200">已投递</span>
+</div>
+<div class="flex items-center gap-1 bg-emerald-50 border border-emerald-200 text-emerald-700 px-2 py-0.5 rounded shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="font-mono-num text-xs font-bold">91分 超高匹配</span>
+</div>
+</div>
+<div class="mb-2 cursor-pointer" onclick="openJobDrawer('tencent')">
+<h3 class="text-text-primary text-sm font-bold group-hover:text-amber-600 transition-colors line-clamp-1">微信后台研发工程师 (分布式高并发)</h3>
+<p class="text-text-muted text-xs mt-0.5">腾讯科技 · WXG 微信事业群</p>
+</div>
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-muted mb-2.5 pb-2.5 border-b border-hairline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs text-slate-400">location_on</span>深圳 / 广州</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs text-slate-400">school</span>本硕不限</span>
+<span class="flex items-center gap-1 font-mono-num text-amber-700 font-bold text-xs privacy-blur">22k-38k · 房补</span>
+</div>
+<div class="space-y-1 mb-3">
+<div class="flex items-center justify-between text-[11px]">
+<span class="text-rose-600 font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">schedule</span>
+              网申截止: 09-28 24:00
+            </span>
+<span class="text-rose-600 font-mono-num font-bold">加急处理</span>
+</div>
+<div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="bg-rose-500 h-full rounded-full" style="width: 92%"></div>
+</div>
+</div>
+</div>
+<div class="space-y-1.5 pt-2 border-t border-hairline">
+<div class="grid grid-cols-2 gap-2">
+<button class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold py-1.5 px-2.5 rounded flex items-center justify-center gap-1 transition shadow-2xs" onclick="openJobDrawer('tencent')">
+<span class="material-symbols-outlined text-sm">bolt</span>
+            加急投递入口
+          </button>
+<button class="btn-calendar bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium py-1.5 px-2.5 rounded border border-hairline flex items-center justify-center gap-1 transition shadow-2xs" onclick="toggleCalendar(this, '腾讯微信后台研发网申 09-28截止')">
+<span class="material-symbols-outlined text-sm text-slate-500">campaign</span>
+<span class="btn-text">空宣提醒</span>
+</button>
+</div>
+<button class="w-full bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-text-primary text-xs font-medium py-1.5 rounded transition flex items-center justify-center gap-1 border border-hairline/80 shadow-2xs" onclick="openJobDrawer('tencent')">
+<span class="material-symbols-outlined text-sm text-slate-400">quick_reference</span>对标&nbsp; JD 简历润色建议</button>
+</div>
+</div>
+<!-- Card 5: 杭州市高新区管委会 (事业单位) -->
+<div class="job-card bg-white border border-hairline hover:border-hairline-strong rounded-md p-4 flex flex-col justify-between transition-all duration-150 hover:-translate-y-0.5 shadow-2xs relative group" data-cat="institution" data-city="杭州 浙江省" data-days="45" data-fresh="true" data-id="hangzhou-gxq" data-party="true" data-salary="18" data-score="86" data-search="杭州市高新区管委会 产业创新专员 杭州 事业单位 编制 滨江局" style="display: flex;">
+<div>
+<div class="flex items-start justify-between gap-2 mb-2">
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="bg-slate-100 text-slate-700 text-[11px] font-medium px-2 py-0.5 rounded border border-slate-200">事业单位编制</span>
+<span class="bg-slate-50 text-slate-500 text-[11px] px-2 py-0.5 rounded border border-slate-100">市区直属</span>
+<span class="applied-badge hidden bg-emerald-50 text-emerald-700 text-[10px] px-1.5 py-0.5 rounded font-mono font-bold border border-emerald-200">已报名</span>
+</div>
+<div class="flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[11px] font-bold">
+<span class="material-symbols-outlined text-xs">verified</span>
+            86分 资格符合
+          </div>
+</div>
+<div class="mb-2 cursor-pointer" onclick="openJobDrawer('hangzhou-gxq')">
+<h3 class="text-text-primary text-sm font-bold group-hover:text-amber-600 transition-colors line-clamp-1">产业创新专员 (招商引智与硬科技)</h3>
+<p class="text-text-muted text-xs mt-0.5">杭州市高新区管委会 (事业单位) · 滨江局</p>
+</div>
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-muted mb-2.5 pb-2.5 border-b border-hairline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs text-slate-400">location_on</span>杭州滨江</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs text-slate-400">school</span>硕士应届</span>
+<span class="flex items-center gap-1 font-mono-num text-slate-800 font-bold text-xs">事业编综合管理待遇</span>
+</div>
+<div class="space-y-1 mb-3">
+<div class="flex items-center justify-between text-[11px]">
+<span class="text-text-muted flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-emerald-600">menu_book</span>
+              统考笔试时间: 11-15
+            </span>
+<span class="text-text-muted font-mono-num">剩余 45 天备考</span>
+</div>
+<div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="bg-emerald-500 h-full rounded-full" style="width: 30%"></div>
+</div>
+</div>
+</div>
+<div class="space-y-1.5 pt-2 border-t border-hairline">
+<div class="grid grid-cols-2 gap-2">
+<button class="btn-calendar bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium py-1.5 px-2.5 rounded border border-hairline flex items-center justify-center gap-1 transition shadow-2xs" onclick="toggleCalendar(this, '杭州滨江事业单位统考笔试 11-15')">
+<span class="material-symbols-outlined text-sm text-slate-500">event</span>
+<span class="btn-text">加入日程</span>
+</button>
+<button class="bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium py-1.5 px-2.5 rounded border border-hairline flex items-center justify-center gap-1 transition shadow-2xs" onclick="openJobDrawer('hangzhou-gxq')">
+<span class="material-symbols-outlined text-sm text-slate-500">fact_check</span>
+            岗审自检
+          </button>
+</div>
+<button class="w-full bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-text-primary text-xs font-medium py-1.5 rounded transition flex items-center justify-center gap-1 border border-hairline/80 shadow-2xs" onclick="showToast('已调取浙江省事业单位考试《综合应用能力》大纲解读')">
+<span class="material-symbols-outlined text-sm text-slate-400">library_books</span>
+          查看《职测》与《综应》专项考纲
+        </button>
+</div>
+</div>
+<!-- Card 6: 阿里巴巴 -->
+<div class="job-card bg-white border border-hairline hover:border-hairline-strong rounded-md p-4 flex flex-col justify-between transition-all duration-150 hover:-translate-y-0.5 shadow-2xs relative group" data-cat="campus" data-city="杭州" data-days="11" data-fresh="true" data-id="alibaba" data-party="false" data-salary="45" data-score="78" data-search="阿里巴巴 淘天集团 算法工程师 大规模推荐系统方向 杭州西溪园区 秋招" style="display: flex;">
+<div>
+<div class="flex items-start justify-between gap-2 mb-2">
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="bg-slate-100 text-slate-700 text-[11px] font-medium px-2 py-0.5 rounded border border-slate-200">互联网大厂 · 核心算法</span>
+<span class="bg-slate-50 text-slate-500 text-[11px] px-2 py-0.5 rounded border border-slate-100">秋季直聘</span>
+<span class="applied-badge hidden bg-emerald-50 text-emerald-700 text-[10px] px-1.5 py-0.5 rounded font-mono font-bold border border-emerald-200">已投递</span>
+</div>
+<div class="flex items-center gap-1 bg-amber-50 border border-amber-200 text-amber-800 px-2 py-0.5 rounded shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+<span class="font-mono-num text-xs font-bold">78分 良好</span>
+</div>
+</div>
+<div class="mb-2 cursor-pointer" onclick="openJobDrawer('alibaba')">
+<h3 class="text-text-primary text-sm font-bold group-hover:text-amber-600 transition-colors line-clamp-1">算法工程师 (大规模推荐系统方向)</h3>
+<p class="text-text-muted text-xs mt-0.5">阿里巴巴 · 淘天集团 (Taobao &amp; Tmall)</p>
+</div>
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-muted mb-2.5 pb-2.5 border-b border-hairline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs text-slate-400">location_on</span>杭州西溪园区</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs text-slate-400">school</span>硕博学历</span>
+<span class="flex items-center gap-1 font-mono-num text-amber-700 font-bold text-xs privacy-blur">25k-45k · 期权</span>
+</div>
+<div class="space-y-1 mb-3">
+<div class="flex items-center justify-between text-[11px]">
+<span class="text-text-muted flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-amber-600">alarm</span>
+              投递锁岗: 10-12
+            </span>
+<span class="text-amber-700 font-mono-num font-medium">剩余 11 天</span>
+</div>
+<div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="bg-amber-400 h-full rounded-full" style="width: 65%"></div>
+</div>
+</div>
+</div>
+<div class="space-y-1.5 pt-2 border-t border-hairline">
+<div class="grid grid-cols-2 gap-2">
+<button class="btn-calendar bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium py-1.5 px-2.5 rounded border border-hairline flex items-center justify-center gap-1 transition shadow-2xs" onclick="toggleCalendar(this, '阿里巴巴淘天算法岗 10-12截止')">
+<span class="material-symbols-outlined text-sm text-slate-500">calendar_month</span>
+<span class="btn-text">加入日历</span>
+</button>
+<button class="btn-applied bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium py-1.5 px-2.5 rounded border border-hairline flex items-center justify-center gap-1 transition shadow-2xs" onclick="markApplied(this, '阿里巴巴 淘天算法工程师')">
+<span class="material-symbols-outlined text-sm text-slate-500">check_circle</span>
+<span class="btn-text">标记已投递</span>
+</button>
+</div>
+<button class="w-full bg-slate-50 hover:bg-amber-400 hover:text-slate-950 text-slate-800 text-xs font-bold py-1.5 rounded transition flex items-center justify-center gap-1 border border-hairline/80 shadow-2xs" onclick="openJobDrawer('alibaba')">
+<span class="material-symbols-outlined text-sm text-amber-600">code</span>
+          生成高频算法刷题清单 (推荐模型) →
+        </button>
+</div>
+</div>
+</div>
+<!-- Main Content View B: Table View (Hidden by default, clean light mode) -->
+<div class="bg-white border border-hairline rounded-md overflow-hidden shadow-2xs hidden" id="job-table-view">
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left text-xs">
+<thead class="bg-slate-50 border-b border-hairline text-slate-500 font-mono select-none">
+<tr>
+<th class="py-3 px-3 w-10 text-center">
+<input class="rounded bg-white border-hairline text-amber-500 focus:ring-0 cursor-pointer" id="table-select-all" onchange="toggleSelectAllTable(this.checked)" type="checkbox">
+</th>
+<th class="py-3 px-4 cursor-pointer hover:text-slate-900" onclick="setSortMode('title')">
+<span class="flex items-center gap-1">岗位信息与主体 <span class="material-symbols-outlined text-xs">unfold_more</span></span>
+</th>
+<th class="py-3 px-4">类别</th>
+<th class="py-3 px-4">地点</th>
+<th class="py-3 px-4 cursor-pointer hover:text-slate-900" onclick="setSortMode('salary-desc')">
+<span class="flex items-center gap-1">薪酬/待遇 <span class="material-symbols-outlined text-xs">unfold_more</span></span>
+</th>
+<th class="py-3 px-4 cursor-pointer hover:text-slate-900" onclick="setSortMode('match-desc')">
+<span class="flex items-center gap-1">契合度 <span class="material-symbols-outlined text-xs text-amber-600">arrow_downward</span></span>
+</th>
+<th class="py-3 px-4 cursor-pointer hover:text-slate-900" onclick="setSortMode('deadline-asc')">
+<span class="flex items-center gap-1">节点截止 <span class="material-symbols-outlined text-xs">unfold_more</span></span>
+</th>
+<th class="py-3 px-4 text-right">快捷操作</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-hairline font-sans" id="table-rows-container"><tr class="hover:bg-slate-50 transition border-b border-hairline">
+        <td class="py-3 px-3 text-center">
+          <input type="checkbox" class="table-row-checkbox rounded bg-white border-hairline text-amber-500 focus:ring-0 cursor-pointer">
+        </td>
+        <td class="py-3 px-4 cursor-pointer" onclick="openJobDrawer('huawei')">
+          <div class="font-bold text-slate-900 hover:text-amber-600 transition-colors">通用软件开发工程师 (端云协同)</div>
+          <div class="text-[11px] text-slate-500">华为技术有限公司 · 终端BG / 计算产品线</div>
+        </td>
+        <td class="py-3 px-4">
+          <span class="px-2 py-0.5 bg-slate-100 text-slate-700 text-[11px] rounded border border-slate-200">头部名企 · 研发类</span>
+        </td>
+        <td class="py-3 px-4 text-slate-600 font-mono-num">杭州 / 深圳</td>
+        <td class="py-3 px-4 font-mono-num font-bold text-amber-700 privacy-blur">20k-35k*15薪</td>
+        <td class="py-3 px-4">
+          <span class="font-mono-num font-bold px-2 py-0.5 rounded text-[11px] bg-amber-50 text-amber-800 border border-amber-200">88分</span>
+        </td>
+        <td class="py-3 px-4 font-mono-num text-slate-600 text-[11px]">10-15 截止</td>
+        <td class="py-3 px-4 text-right">
+          <div class="flex items-center justify-end gap-1.5">
+            <button class="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800" onclick="toggleCalendar(this, '通用软件开发工程师 (端云协同)')" title="加入日程">
+              <span class="material-symbols-outlined text-[16px]">calendar_add_on</span>
+            </button>
+            <button class="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800" onclick="openJobDrawer('huawei')" title="查看详情与AI顾问">
+              <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            </button>
+          </div>
+        </td>
+      </tr><tr class="hover:bg-slate-50 transition border-b border-hairline">
+        <td class="py-3 px-3 text-center">
+          <input type="checkbox" class="table-row-checkbox rounded bg-white border-hairline text-amber-500 focus:ring-0 cursor-pointer">
+        </td>
+        <td class="py-3 px-4 cursor-pointer" onclick="openJobDrawer('zhejiang-fgw')">
+          <div class="font-bold text-slate-900 hover:text-amber-600 transition-colors">数字化改革综合管理岗 (一职位)</div>
+          <div class="text-[11px] text-slate-500">浙江省发展和改革委员会 · 数字化转型办公室</div>
+        </td>
+        <td class="py-3 px-4">
+          <span class="px-2 py-0.5 bg-slate-100 text-slate-700 text-[11px] rounded border border-slate-200">省直公务员 · 考公编制</span>
+        </td>
+        <td class="py-3 px-4 text-slate-600 font-mono-num">杭州 / 浙江省</td>
+        <td class="py-3 px-4 font-mono-num font-bold text-amber-700 privacy-blur">省直公务员标准待遇</td>
+        <td class="py-3 px-4">
+          <span class="font-mono-num font-bold px-2 py-0.5 rounded text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200">95分</span>
+        </td>
+        <td class="py-3 px-4 font-mono-num text-slate-600 text-[11px]">10-16 截止 (4天后开启)</td>
+        <td class="py-3 px-4 text-right">
+          <div class="flex items-center justify-end gap-1.5">
+            <button class="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800" onclick="toggleCalendar(this, '数字化改革综合管理岗 (一职位)')" title="加入日程">
+              <span class="material-symbols-outlined text-[16px]">calendar_add_on</span>
+            </button>
+            <button class="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800" onclick="openJobDrawer('zhejiang-fgw')" title="查看详情与AI顾问">
+              <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            </button>
+          </div>
+        </td>
+      </tr><tr class="hover:bg-slate-50 transition border-b border-hairline">
+        <td class="py-3 px-3 text-center">
+          <input type="checkbox" class="table-row-checkbox rounded bg-white border-hairline text-amber-500 focus:ring-0 cursor-pointer">
+        </td>
+        <td class="py-3 px-4 cursor-pointer" onclick="openJobDrawer('state-grid')">
+          <div class="font-bold text-slate-900 hover:text-amber-600 transition-colors">电力数字化与算法工程师</div>
+          <div class="text-[11px] text-slate-500">国家电网有限公司 · 华东分部调控中心</div>
+        </td>
+        <td class="py-3 px-4">
+          <span class="px-2 py-0.5 bg-slate-100 text-slate-700 text-[11px] rounded border border-slate-200">重点央企直聘 · 提前批</span>
+        </td>
+        <td class="py-3 px-4 text-slate-600 font-mono-num">上海 / 南京</td>
+        <td class="py-3 px-4 font-mono-num font-bold text-amber-700 privacy-blur">18k-28k · 六险二金</td>
+        <td class="py-3 px-4">
+          <span class="font-mono-num font-bold px-2 py-0.5 rounded text-[11px] bg-amber-50 text-amber-800 border border-amber-200">84分</span>
+        </td>
+        <td class="py-3 px-4 font-mono-num text-slate-600 text-[11px]">10-20 截止</td>
+        <td class="py-3 px-4 text-right">
+          <div class="flex items-center justify-end gap-1.5">
+            <button class="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800" onclick="toggleCalendar(this, '电力数字化与算法工程师')" title="加入日程">
+              <span class="material-symbols-outlined text-[16px]">calendar_add_on</span>
+            </button>
+            <button class="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800" onclick="openJobDrawer('state-grid')" title="查看详情与AI顾问">
+              <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            </button>
+          </div>
+        </td>
+      </tr><tr class="hover:bg-slate-50 transition border-b border-hairline">
+        <td class="py-3 px-3 text-center">
+          <input type="checkbox" class="table-row-checkbox rounded bg-white border-hairline text-amber-500 focus:ring-0 cursor-pointer">
+        </td>
+        <td class="py-3 px-4 cursor-pointer" onclick="openJobDrawer('tencent')">
+          <div class="font-bold text-slate-900 hover:text-amber-600 transition-colors">微信后台研发工程师 (分布式高并发)</div>
+          <div class="text-[11px] text-slate-500">腾讯科技 · WXG 微信事业群</div>
+        </td>
+        <td class="py-3 px-4">
+          <span class="px-2 py-0.5 bg-slate-100 text-slate-700 text-[11px] rounded border border-slate-200">互联网头部 · 核心自研</span>
+        </td>
+        <td class="py-3 px-4 text-slate-600 font-mono-num">深圳 / 广州</td>
+        <td class="py-3 px-4 font-mono-num font-bold text-amber-700 privacy-blur">22k-38k · 房补</td>
+        <td class="py-3 px-4">
+          <span class="font-mono-num font-bold px-2 py-0.5 rounded text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200">91分</span>
+        </td>
+        <td class="py-3 px-4 font-mono-num text-slate-600 text-[11px]">09-28 24:00 (紧急)</td>
+        <td class="py-3 px-4 text-right">
+          <div class="flex items-center justify-end gap-1.5">
+            <button class="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800" onclick="toggleCalendar(this, '微信后台研发工程师 (分布式高并发)')" title="加入日程">
+              <span class="material-symbols-outlined text-[16px]">calendar_add_on</span>
+            </button>
+            <button class="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800" onclick="openJobDrawer('tencent')" title="查看详情与AI顾问">
+              <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            </button>
+          </div>
+        </td>
+      </tr><tr class="hover:bg-slate-50 transition border-b border-hairline">
+        <td class="py-3 px-3 text-center">
+          <input type="checkbox" class="table-row-checkbox rounded bg-white border-hairline text-amber-500 focus:ring-0 cursor-pointer">
+        </td>
+        <td class="py-3 px-4 cursor-pointer" onclick="openJobDrawer('hangzhou-gxq')">
+          <div class="font-bold text-slate-900 hover:text-amber-600 transition-colors">产业创新专员 (招商引智与硬科技)</div>
+          <div class="text-[11px] text-slate-500">杭州市高新区管委会 (事业单位) · 滨江局</div>
+        </td>
+        <td class="py-3 px-4">
+          <span class="px-2 py-0.5 bg-slate-100 text-slate-700 text-[11px] rounded border border-slate-200">事业单位编制 · 市区直属</span>
+        </td>
+        <td class="py-3 px-4 text-slate-600 font-mono-num">杭州滨江</td>
+        <td class="py-3 px-4 font-mono-num font-bold text-amber-700 privacy-blur">事业编综合管理待遇</td>
+        <td class="py-3 px-4">
+          <span class="font-mono-num font-bold px-2 py-0.5 rounded text-[11px] bg-amber-50 text-amber-800 border border-amber-200">86分</span>
+        </td>
+        <td class="py-3 px-4 font-mono-num text-slate-600 text-[11px]">11-15 统一笔试</td>
+        <td class="py-3 px-4 text-right">
+          <div class="flex items-center justify-end gap-1.5">
+            <button class="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800" onclick="toggleCalendar(this, '产业创新专员 (招商引智与硬科技)')" title="加入日程">
+              <span class="material-symbols-outlined text-[16px]">calendar_add_on</span>
+            </button>
+            <button class="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800" onclick="openJobDrawer('hangzhou-gxq')" title="查看详情与AI顾问">
+              <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            </button>
+          </div>
+        </td>
+      </tr><tr class="hover:bg-slate-50 transition border-b border-hairline">
+        <td class="py-3 px-3 text-center">
+          <input type="checkbox" class="table-row-checkbox rounded bg-white border-hairline text-amber-500 focus:ring-0 cursor-pointer">
+        </td>
+        <td class="py-3 px-4 cursor-pointer" onclick="openJobDrawer('alibaba')">
+          <div class="font-bold text-slate-900 hover:text-amber-600 transition-colors">算法工程师 (大规模推荐系统方向)</div>
+          <div class="text-[11px] text-slate-500">阿里巴巴 · 淘天集团 (Taobao &amp; Tmall)</div>
+        </td>
+        <td class="py-3 px-4">
+          <span class="px-2 py-0.5 bg-slate-100 text-slate-700 text-[11px] rounded border border-slate-200">互联网大厂 · 核心算法</span>
+        </td>
+        <td class="py-3 px-4 text-slate-600 font-mono-num">杭州西溪园区</td>
+        <td class="py-3 px-4 font-mono-num font-bold text-amber-700 privacy-blur">25k-45k · 期权</td>
+        <td class="py-3 px-4">
+          <span class="font-mono-num font-bold px-2 py-0.5 rounded text-[11px] bg-amber-50 text-amber-800 border border-amber-200">78分</span>
+        </td>
+        <td class="py-3 px-4 font-mono-num text-slate-600 text-[11px]">10-12 截止</td>
+        <td class="py-3 px-4 text-right">
+          <div class="flex items-center justify-end gap-1.5">
+            <button class="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800" onclick="toggleCalendar(this, '算法工程师 (大规模推荐系统方向)')" title="加入日程">
+              <span class="material-symbols-outlined text-[16px]">calendar_add_on</span>
+            </button>
+            <button class="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800" onclick="openJobDrawer('alibaba')" title="查看详情与AI顾问">
+              <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            </button>
+          </div>
+        </td>
+      </tr></tbody>
+</table>
+</div>
+</div>
+<!-- Empty Search State -->
+<div class="hidden bg-white border border-hairline rounded-md p-12 text-center space-y-4 shadow-2xs" id="empty-state" style="display: none;">
+<div class="w-16 h-16 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+<span class="material-symbols-outlined text-3xl">filter_alt_off</span>
+</div>
+<div>
+<h4 class="text-text-primary font-bold text-sm">未找到符合当前筛选条件的招考/岗位</h4>
+<p class="text-text-muted text-xs mt-1">请尝试降低最低匹配度要求、取消特定过滤开关或清空关键词搜索</p>
+</div>
+<button class="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-xs px-4 py-2 rounded transition shadow-2xs" onclick="resetFilters()">
+      重置所有过滤条件
+</button>
+</div>
+<!-- Bottom Pagination & Status Control Bar -->
+<div class="bg-white border border-hairline rounded-md px-4 py-3 flex flex-col lg:flex-row items-center justify-between gap-4 text-xs text-text-muted mt-5 shadow-2xs">
+<!-- Total count info -->
+<div class="flex items-center gap-3">
+<span class="">当前呈现 <span class="font-mono-num text-text-primary font-bold" id="total-count-display">6</span> 门岗位 (全库共 <span class="font-mono-num text-amber-700 font-bold" id="total-db-count">342</span> 岗位)</span>
+<span class="text-slate-300">|</span>
+<span class="">第 <span class="font-mono-num text-slate-900 font-bold" id="current-page-display">1</span> / <span class="font-mono-num text-text-body" id="total-pages-display">38</span> 页</span>
+</div>
+<!-- Pagination Buttons Group -->
+<div class="flex items-center gap-1" id="pagination-buttons">
+<button class="w-7 h-7 rounded bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center transition border border-hairline" onclick="changePage(1)" title="首页">
+<span class="material-symbols-outlined text-sm">first_page</span>
+</button>
+<button class="w-7 h-7 rounded bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center transition border border-hairline" onclick="changePage(Math.max(1, state.currentPage - 1))" title="上一页">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="page-num-btn w-7 h-7 rounded bg-amber-400 text-slate-950 font-mono-num font-bold flex items-center justify-center shadow-2xs" onclick="changePage(1)">1</button>
+<button class="page-num-btn w-7 h-7 rounded bg-slate-50 hover:bg-slate-100 text-slate-700 font-mono-num flex items-center justify-center border border-hairline transition" onclick="changePage(2)">2</button>
+<button class="page-num-btn w-7 h-7 rounded bg-slate-50 hover:bg-slate-100 text-slate-700 font-mono-num flex items-center justify-center border border-hairline transition" onclick="changePage(3)">3</button>
+<span class="px-1 text-slate-400 font-mono-num">...</span>
+<button class="page-num-btn w-7 h-7 rounded bg-slate-50 hover:bg-slate-100 text-slate-700 font-mono-num flex items-center justify-center border border-hairline transition" id="last-page-btn" onclick="changePage(state.totalPages)">38</button>
+<button class="w-7 h-7 rounded bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center transition border border-hairline" onclick="changePage(Math.min(state.totalPages, state.currentPage + 1))" title="下一页">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+<button class="w-7 h-7 rounded bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center transition border border-hairline" onclick="changePage(state.totalPages)" title="末页">
+<span class="material-symbols-outlined text-sm">last_page</span>
+</button>
+</div>
+<!-- Rows per page selector, Jump Input & Node status -->
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5">
+<span class="">每页:</span>
+<select class="bg-slate-50 border border-hairline rounded px-2 py-1 text-xs text-text-body focus:ring-0 focus:border-amber-500 outline-none cursor-pointer" id="page-size-select" onchange="onPageSizeChange(this.value)"><option selected="" value="6">6 条/页</option><option value="9">9 条/页</option><option value="12">12 条/页</option></select>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="">前往</span>
+<input class="w-10 h-6 bg-slate-50 border border-hairline rounded text-center text-xs text-text-primary font-mono-num focus:ring-0 focus:border-amber-500 outline-none" id="jump-page-input" onkeydown="if(event.key==='Enter') jumpToPage(this.value)" type="text" value="1">
+<span class="">页</span>
+</div>
+
+</div>
+</div>
+</main>
+<!-- Footer & Status Bar Matching Light Style -->
+<footer class="bg-white border-t border-hairline py-3 px-6 text-xs text-text-muted mt-auto">
+<div class="max-w-[1536px] mx-auto flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="text-slate-600 font-medium">CampusJob-Agent 本地引擎就绪</span>
+<span class="text-slate-300">|</span>
+<span class="font-mono-num text-slate-500">数据最后同步：11:42:08</span>
+</div>
+<div class="flex items-center gap-4 text-slate-500">
+
+
+
+</div>
+</div>
+</footer>
+<!-- ================= AI 顾问与岗位双模态详情滑出抽屉 (JobDetailDrawer) ================= -->
+<div class="fixed inset-0 bg-slate-900/30 backdrop-blur-xs z-50 transition-opacity duration-300 opacity-0 pointer-events-none" id="drawer-backdrop" onclick="closeJobDrawer()"></div>
+<div class="fixed top-0 right-0 h-full w-full max-w-[680px] bg-white border-l border-hairline shadow-2xl z-50 transform transition-transform duration-300 ease-out flex flex-col custom-scrollbar overflow-hidden translate-x-full" id="job-detail-drawer">
+<!-- Drawer Header -->
+<div class="p-5 border-b border-hairline bg-slate-50/70 flex items-start justify-between gap-4 sticky top-0 z-10">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="bg-slate-100 text-slate-700 text-[11px] font-medium px-2 py-0.5 rounded border border-slate-200" id="drawer-badge-cat">省直公务员 · 考公编制</span>
+<span class="font-mono-num text-xs px-2 py-0.5 rounded font-bold bg-emerald-50 text-emerald-700 border border-emerald-200" id="drawer-match-badge">95分 资格全符</span>
+</div>
+<h2 class="text-text-primary text-lg font-bold" id="drawer-title">数字化改革综合管理岗 (一职位)</h2>
+<p class="text-text-muted text-xs" id="drawer-company">浙江省发展和改革委员会 · 数字化转型办公室</p>
+</div>
+<button class="w-8 h-8 rounded bg-white hover:bg-slate-100 text-slate-500 hover:text-slate-900 border border-hairline flex items-center justify-center transition shadow-2xs" onclick="closeJobDrawer()" title="关闭 (Esc)">
+<span class="material-symbols-outlined text-lg">close</span>
+</button>
+</div>
+<!-- Drawer Body (Scrollable) -->
+<div class="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar text-xs">
+<!-- Mode A: 企业的 AI 契合度与简历诊断模态 -->
+<div class="space-y-5 hidden" id="drawer-content-corporate">
+<!-- Metas Grid -->
+<div class="grid grid-cols-3 gap-3 bg-slate-50 p-3 rounded border border-hairline">
+<div>
+<div class="text-text-muted text-[11px]">薪酬范围</div>
+<div class="text-amber-700 font-mono-num font-bold text-sm mt-0.5 privacy-blur" id="drawer-salary">省直公务员标准待遇</div>
+</div>
+<div>
+<div class="text-text-muted text-[11px]">工作地点</div>
+<div class="text-text-body font-medium mt-0.5" id="drawer-location">杭州 / 浙江省</div>
+</div>
+<div>
+<div class="text-text-muted text-[11px]">招募窗口</div>
+<div class="text-emerald-700 font-mono-num font-medium mt-0.5" id="drawer-deadline">10-16 截止 (4天后开启)</div>
+</div>
+</div>
+<!-- AI Comprehensive Fit Radar & Insights -->
+<div class="bg-white border border-amber-200 rounded-md p-4 space-y-3 shadow-2xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-slate-900 font-bold text-sm">
+<span class="material-symbols-outlined text-base text-amber-500">psychology</span>契合度画像
+          </div>
+
+</div>
+<div class="grid grid-cols-3 gap-2.5 pt-1">
+<div class="bg-slate-50 p-2.5 rounded border border-hairline text-center">
+<div class="text-text-muted text-[11px]">硬性技能匹配</div>
+<div class="text-emerald-700 font-mono-num text-base font-bold mt-1">94%</div>
+<div class="text-[10px] text-text-muted mt-0.5">C++/Go/高并发</div>
+</div>
+<div class="bg-slate-50 p-2.5 rounded border border-hairline text-center">
+<div class="text-text-muted text-[11px]">院校梯队优势</div>
+<div class="text-amber-700 font-mono-num text-base font-bold mt-1">91%</div>
+<div class="text-[10px] text-text-muted mt-0.5">目标院校名单Top5%</div>
+</div>
+<div class="bg-slate-50 p-2.5 rounded border border-hairline text-center">
+<div class="text-text-muted text-[11px]">项目经历相关度</div>
+<div class="text-blue-700 font-mono-num text-base font-bold mt-1">82%</div>
+<div class="text-[10px] text-text-muted mt-0.5">分布式缓存容灾经历</div>
+</div>
+</div>
+<!-- Highlights & Gaps -->
+<div class="space-y-2 pt-1">
+<div class="flex items-start gap-2 bg-emerald-50/70 border border-emerald-200 p-2.5 rounded">
+<span class="material-symbols-outlined text-emerald-600 text-sm shrink-0 mt-0.5">thumb_up</span>
+<div class="text-[11px] leading-relaxed">
+<span class="text-emerald-800 font-bold">画像亮点：</span>
+              您在校期间主导的「分布式缓存高可用系统」与该部门架构吻合，简历 ATS 关键词解析命中率达 96.2%。
+            </div>
+</div>
+<div class="flex items-start gap-2 bg-amber-50/70 border border-amber-200 p-2.5 rounded">
+<span class="material-symbols-outlined text-amber-600 text-sm shrink-0 mt-0.5">lightbulb</span>
+<div class="text-[11px] leading-relaxed">
+<span class="text-amber-900 font-bold">AI 优化建议：</span>
+              建议将项目经历第二项改为量化指标（例如“将 P99 尾延迟从 120ms 压降至 18ms”），能大幅提升一轮直通率。
+            </div>
+</div>
+</div>
+</div>
+<!-- Job Responsibilities & Requirements -->
+<div class="space-y-2">
+<h4 class="text-text-primary font-bold text-xs uppercase tracking-wider font-mono">岗位职责与任职资格</h4>
+<div class="bg-slate-50 border border-hairline p-3.5 rounded space-y-2 text-text-body text-xs leading-relaxed">
+<p class="">1. 负责大规模分布式底座及核心中间件的架构设计、核心编码与线上稳定性保障；</p>
+<p class="">2. 深入业务高并发、海量数据吞吐及端云协同下的系统瓶颈调优；</p>
+<p class="">3. 具备扎实的计算机基础理论（操作系统、网络、数据结构算法），熟练掌握 C++/Java/Go 至少一种；</p>
+<p class="">4. 2027届应届毕业生，计算机、软件工程、电子通信等相关专业硕士及以上学历。</p>
+</div>
+</div>
+</div>
+<!-- Mode B: 体制内招考/考公五重资格排查与备考指南模态 -->
+<div class="space-y-5" id="drawer-content-public">
+<!-- Qualification Gate Check -->
+<div id="drawer-gate-checks" class="bg-white border border-emerald-300 rounded-md p-4 space-y-3 shadow-2xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-emerald-800 font-bold text-sm">
+<span class="material-symbols-outlined text-base">verified_user</span>
+            报考资格五重硬性门槛排查
+          </div>
+<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold px-2 py-0.5 rounded font-mono-num">全部通过 ✓</span>
+</div>
+<div class="space-y-1.5 pt-1">
+<div class="flex items-center justify-between bg-slate-50 p-2 rounded border border-hairline">
+<span class="flex items-center gap-1.5 text-text-body">
+<span class="material-symbols-outlined text-emerald-600 text-sm">check_circle</span>
+              应届毕业生身份
+            </span>
+<span class="text-emerald-700 font-mono-num font-medium">符合 (2027届全日制)</span>
+</div>
+<div class="flex items-center justify-between bg-slate-50 p-2 rounded border border-hairline">
+<span class="flex items-center gap-1.5 text-text-body">
+<span class="material-symbols-outlined text-emerald-600 text-sm">check_circle</span>
+              政治面貌要求
+            </span>
+<span class="text-emerald-700 font-mono-num font-medium">符合 (中共党员/预备党员)</span>
+</div>
+<div class="flex items-center justify-between bg-slate-50 p-2 rounded border border-hairline">
+<span class="flex items-center gap-1.5 text-text-body">
+<span class="material-symbols-outlined text-emerald-600 text-sm">check_circle</span>
+              专业目录匹配 (教育部代码)
+            </span>
+<span class="text-emerald-700 font-mono-num font-medium">符合 (0812 计算机科学与技术)</span>
+</div>
+<div class="flex items-center justify-between bg-slate-50 p-2 rounded border border-hairline">
+<span class="flex items-center gap-1.5 text-text-body">
+<span class="material-symbols-outlined text-emerald-600 text-sm">check_circle</span>
+              最高学历与学位要求
+            </span>
+<span class="text-emerald-700 font-mono-num font-medium">符合 (限硕士研究生及以上)</span>
+</div>
+<div class="flex items-center justify-between bg-slate-50 p-2 rounded border border-hairline">
+<span class="flex items-center gap-1.5 text-text-body">
+<span class="material-symbols-outlined text-emerald-600 text-sm">check_circle</span>
+              基层工作年限与服务期
+            </span>
+<span class="text-text-muted font-mono-num">无特殊限制 (应届直考)</span>
+</div>
+</div>
+</div>
+<!-- Exam History & Competition Index -->
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-slate-50 p-3 rounded border border-hairline">
+<div class="text-text-muted text-[11px]">历年参考进面分</div>
+<div class="text-amber-700 font-mono-num text-base font-bold mt-0.5">71.5 分</div>
+<div class="text-[10px] text-text-muted mt-0.5">2024年浙江省考A类标准</div>
+</div>
+<div class="bg-slate-50 p-3 rounded border border-hairline">
+<div class="text-text-muted text-[11px]">报录竞争比预估</div>
+<div class="text-text-primary font-mono-num text-base font-bold mt-0.5">1 : 48</div>
+<div class="text-[10px] text-text-muted mt-0.5">限专业+党员有效分流</div>
+</div>
+</div>
+<!-- Subject Guidance -->
+<div class="bg-slate-50 p-3.5 rounded space-y-2 border border-hairline">
+<div class="text-text-primary font-bold text-xs flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm text-amber-600">menu_book</span>
+          考试科目与备考重点推荐
+        </div>
+<p class="text-text-body leading-relaxed text-xs">
+          笔试科目包括《行测》（客观题）与《申论》（A类）。针对该岗位的数字化转型定位，建议重点强化申论中关于“数字中国、新质生产力、公共数据授权运营”等专项材料的论述框架。
+        </p>
+</div>
+</div>
+</div>
+<!-- Drawer Footer Floating Actions -->
+<div class="p-4 border-t border-hairline bg-white flex items-center justify-between gap-2.5 sticky bottom-0 z-10">
+<button class="bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium py-2 px-3 rounded border border-hairline transition flex items-center gap-1.5 shadow-2xs" id="drawer-action-calendar" onclick="toggleCalendarFromDrawer()">
+<span class="material-symbols-outlined text-sm text-slate-500">event</span>
+<span class="">添加日程&nbsp;</span>
+</button>
+<button class="bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium py-2 px-3 rounded border border-hairline transition flex items-center gap-1.5 shadow-2xs" id="drawer-action-apply" onclick="markAppliedFromDrawer()">
+<span class="material-symbols-outlined text-sm text-slate-500">check_circle</span>
+<span class="" id="drawer-apply-text">标记已投递</span>
+</button>
+<button class="flex-1 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold py-2 px-3.5 rounded transition flex items-center justify-center gap-1.5 shadow-sm" onclick="openPortalLink()">
+<span class="">直达官方招考/网申入口</span>
+<span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- ================= All JavaScript Logic ================= -->
+<script>
+  // State management
+  const state = {
+    selectedCategory: 'all',
+    selectedCities: ['杭州', '上海', '深圳', '浙江省'],
+    minScore: 60,
+    freshOnly: true,
+    partyOnly: false,
+    searchQuery: '',
+    sortBy: 'match-desc',
+    currentView: 'grid',
+    isPrivacyMode: false,
+    calendarEvents: new Set(),
+    appliedJobs: new Set(),
+    currentPage: 1,
+    pageSize: 6,
+    totalPages: 57,
+    activeDrawerJobId: null
+  };
+
+  // Job detailed definitions
+  const jobDatabase = {
+    'huawei': {
+      title: '通用软件开发工程师 (端云协同)',
+      company: '华为技术有限公司 · 终端BG / 计算产品线',
+      categoryBadge: '头部名企 · 研发类',
+      matchScore: '88分 契合',
+      score: 88,
+      salary: '20k-35k*15薪',
+      salaryVal: 35,
+      location: '杭州 / 深圳',
+      deadline: '10-15 截止',
+      days: 14,
+      category: 'campus',
+      isFresh: true,
+      isParty: false,
+      isPublicExam: false,
+      portalUrl: 'https://career.huawei.com'
+    },
+    'zhejiang-fgw': {
+      title: '数字化改革综合管理岗 (一职位)',
+      company: '浙江省发展和改革委员会 · 数字化转型办公室',
+      categoryBadge: '省直公务员 · 考公编制',
+      matchScore: '95分 资格全符',
+      score: 95,
+      salary: '省直公务员标准待遇',
+      salaryVal: 20,
+      location: '杭州 / 浙江省',
+      deadline: '10-16 截止 (4天后开启)',
+      days: 4,
+      category: 'civil',
+      isFresh: true,
+      isParty: true,
+      isPublicExam: true,
+      portalUrl: 'http://gwy.zjks.gov.cn'
+    },
+    'state-grid': {
+      title: '电力数字化与算法工程师',
+      company: '国家电网有限公司 · 华东分部调控中心',
+      categoryBadge: '重点央企直聘 · 提前批',
+      matchScore: '84分 推荐',
+      score: 84,
+      salary: '18k-28k · 六险二金',
+      salaryVal: 28,
+      location: '上海 / 南京',
+      deadline: '10-20 截止',
+      days: 19,
+      category: 'soe',
+      isFresh: true,
+      isParty: false,
+      isPublicExam: false,
+      portalUrl: 'https://zhaopin.sgcc.com.cn'
+    },
+    'tencent': {
+      title: '微信后台研发工程师 (分布式高并发)',
+      company: '腾讯科技 · WXG 微信事业群',
+      categoryBadge: '互联网头部 · 核心自研',
+      matchScore: '91分 超高匹配',
+      score: 91,
+      salary: '22k-38k · 房补',
+      salaryVal: 38,
+      location: '深圳 / 广州',
+      deadline: '09-28 24:00 (紧急)',
+      days: 3,
+      category: 'campus',
+      isFresh: true,
+      isParty: false,
+      isPublicExam: false,
+      portalUrl: 'https://join.qq.com'
+    },
+    'hangzhou-gxq': {
+      title: '产业创新专员 (招商引智与硬科技)',
+      company: '杭州市高新区管委会 (事业单位) · 滨江局',
+      categoryBadge: '事业单位编制 · 市区直属',
+      matchScore: '86分 资格符合',
+      score: 86,
+      salary: '事业编综合管理待遇',
+      salaryVal: 18,
+      location: '杭州滨江',
+      deadline: '11-15 统一笔试',
+      days: 45,
+      category: 'institution',
+      isFresh: true,
+      isParty: true,
+      isPublicExam: true,
+      portalUrl: 'https://www.hprc.com.cn'
+    },
+    'alibaba': {
+      title: '算法工程师 (大规模推荐系统方向)',
+      company: '阿里巴巴 · 淘天集团 (Taobao & Tmall)',
+      categoryBadge: '互联网大厂 · 核心算法',
+      matchScore: '78分 良好',
+      score: 78,
+      salary: '25k-45k · 期权',
+      salaryVal: 45,
+      location: '杭州西溪园区',
+      deadline: '10-12 截止',
+      days: 11,
+      category: 'campus',
+      isFresh: true,
+      isParty: false,
+      isPublicExam: false,
+      portalUrl: 'https://talent.taotian.com'
+    }
+  };
+
+  // Toast System
+  function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = 'pointer-events-auto flex items-center gap-2.5 bg-white text-slate-800 px-3.5 py-2.5 rounded border border-slate-300 shadow-xl text-xs transform translate-y-3 opacity-0 transition-all duration-200';
+    
+    let icon = 'info';
+    let iconColor = 'text-amber-500';
+    if (type === 'success') {
+      icon = 'check_circle';
+      iconColor = 'text-emerald-600';
+    } else if (type === 'warn') {
+      icon = 'warning';
+      iconColor = 'text-rose-600';
+    }
+
+    toast.innerHTML = `
+      <span class="material-symbols-outlined text-sm ${iconColor}">${icon}</span>
+      <span class="font-medium">${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.classList.remove('translate-y-3', 'opacity-0');
+    }, 10);
+
+    setTimeout(() => {
+      toast.classList.add('opacity-0', 'translate-y-2');
+      setTimeout(() => toast.remove(), 250);
+    }, 3000);
+  }
+
+  // Filter & Render logic
+  function filterJobs() {
+    const cards = Array.from(document.querySelectorAll('.job-card'));
+    let matchedCards = [];
+
+    cards.forEach(card => {
+      const cat = card.getAttribute('data-cat');
+      const score = parseInt(card.getAttribute('data-score'), 10);
+      const isFresh = card.getAttribute('data-fresh') === 'true';
+      const isParty = card.getAttribute('data-party') === 'true';
+      const cityData = card.getAttribute('data-city') || '';
+      const searchText = (card.getAttribute('data-search') || '').toLowerCase();
+
+      let matchCat = (state.selectedCategory === 'all' || state.selectedCategory === cat);
+      let matchScore = score >= state.minScore;
+      let matchFresh = (!state.freshOnly) || isFresh;
+      let matchParty = (!state.partyOnly) || isParty;
+      let matchCity = state.selectedCities.length === 0 || state.selectedCities.some(c => cityData.includes(c));
+
+      let matchSearch = true;
+      if (state.searchQuery.trim() !== '') {
+        const query = state.searchQuery.trim().toLowerCase();
+        matchSearch = searchText.includes(query);
+      }
+
+      if (matchCat && matchScore && matchFresh && matchParty && matchCity && matchSearch) {
+        matchedCards.push(card);
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    const limit = state.pageSize;
+    let visibleCount = 0;
+
+    matchedCards.forEach((card, index) => {
+      if (index < limit) {
+        card.style.display = 'flex';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    document.getElementById('total-count-display').textContent = visibleCount;
+    state.totalPages = Math.ceil(342 / state.pageSize);
+    document.getElementById('total-pages-display').textContent = state.totalPages;
+    const lastPageBtn = document.getElementById('last-page-btn');
+    if (lastPageBtn) lastPageBtn.textContent = state.totalPages;
+
+    const emptyState = document.getElementById('empty-state');
+    const cardsGrid = document.getElementById('job-cards-grid');
+    const tableView = document.getElementById('job-table-view');
+
+    if (matchedCards.length === 0) {
+      emptyState.classList.remove('hidden');
+      cardsGrid.classList.add('hidden');
+      tableView.classList.add('hidden');
+    } else {
+      emptyState.classList.add('hidden');
+      if (state.currentView === 'grid') {
+        cardsGrid.classList.remove('hidden');
+        cardsGrid.style.display = 'grid';
+        tableView.classList.add('hidden');
+        tableView.style.display = 'none';
+      } else {
+        cardsGrid.classList.add('hidden');
+        cardsGrid.style.display = 'none';
+        tableView.classList.remove('hidden');
+        tableView.style.display = 'block';
+      }
+    }
+
+    syncTableView(matchedCards.slice(0, limit));
+  }
+
+  function onPageSizeChange(newSize) {
+    state.pageSize = parseInt(newSize, 10);
+    state.currentPage = 1;
+    document.getElementById('current-page-display').textContent = 1;
+    document.getElementById('jump-page-input').value = 1;
+    filterJobs();
+    showToast(`已切换每页展示 ${state.pageSize} 条，总页数更新为 ${state.totalPages} 页`, 'success');
+  }
+
+  function applySorting() {
+    const grid = document.getElementById('job-cards-grid');
+    const cards = Array.from(grid.querySelectorAll('.job-card'));
+
+    cards.sort((a, b) => {
+      const scoreA = parseInt(a.getAttribute('data-score'), 10);
+      const scoreB = parseInt(b.getAttribute('data-score'), 10);
+      const daysA = parseInt(a.getAttribute('data-days'), 10);
+      const daysB = parseInt(b.getAttribute('data-days'), 10);
+      const salaryA = parseInt(a.getAttribute('data-salary') || '0', 10);
+      const salaryB = parseInt(b.getAttribute('data-salary') || '0', 10);
+
+      if (state.sortBy === 'match-desc') return scoreB - scoreA;
+      if (state.sortBy === 'deadline-asc') return daysA - daysB;
+      if (state.sortBy === 'salary-desc') return salaryB - salaryA;
+      if (state.sortBy === 'newest-desc') return daysB - daysA;
+      return 0;
+    });
+
+    cards.forEach(c => grid.appendChild(c));
+    filterJobs();
+  }
+
+  function setSortMode(sortType) {
+    state.sortBy = sortType;
+    let label = '匹配优先';
+    if (sortType === 'deadline-asc') label = 'DDL临近优先';
+    else if (sortType === 'newest-desc') label = '最新发布';
+    else if (sortType === 'salary-desc') label = '薪资优先';
+    document.getElementById('current-sort-label').textContent = label;
+    document.getElementById('sort-dropdown-panel').classList.add('hidden');
+    applySorting();
+    showToast(`已按「${label}」重新排序`, 'info');
+  }
+
+  function changePage(pageNum) {
+    state.currentPage = pageNum;
+    document.getElementById('current-page-display').textContent = pageNum;
+    document.getElementById('jump-page-input').value = pageNum;
+    showToast(`正在翻往第 ${pageNum} 页数据...`, 'info');
+    filterJobs();
+  }
+
+  function jumpToPage(val) {
+    const num = parseInt(val, 10);
+    if (!isNaN(num) && num >= 1 && num <= state.totalPages) {
+      changePage(num);
+    } else {
+      showToast('请输入有效的页码', 'warn');
+    }
+  }
+
+  function syncTableView(visibleCards) {
+    const tbody = document.getElementById('table-rows-container');
+    tbody.innerHTML = '';
+
+    visibleCards.forEach(card => {
+      const id = card.getAttribute('data-id');
+      const job = jobDatabase[id];
+      if (!job) return;
+
+      const isApplied = state.appliedJobs.has(id);
+      const isCalendar = state.calendarEvents.has(id);
+
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-slate-50 transition border-b border-hairline';
+      tr.innerHTML = `
+        <td class="py-3 px-3 text-center">
+          <input type="checkbox" class="table-row-checkbox rounded bg-white border-hairline text-amber-500 focus:ring-0 cursor-pointer">
+        </td>
+        <td class="py-3 px-4 cursor-pointer" onclick="openJobDrawer('${id}')">
+          <div class="font-bold text-slate-900 hover:text-amber-600 transition-colors">${job.title}</div>
+          <div class="text-[11px] text-slate-500">${job.company}</div>
+        </td>
+        <td class="py-3 px-4">
+          <span class="px-2 py-0.5 bg-slate-100 text-slate-700 text-[11px] rounded border border-slate-200">${job.categoryBadge}</span>
+        </td>
+        <td class="py-3 px-4 text-slate-600 font-mono-num">${job.location}</td>
+        <td class="py-3 px-4 font-mono-num font-bold text-amber-700 privacy-blur">${job.salary}</td>
+        <td class="py-3 px-4">
+          <span class="font-mono-num font-bold px-2 py-0.5 rounded text-[11px] ${job.score >= 90 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-800 border border-amber-200'}">${job.score}分</span>
+        </td>
+        <td class="py-3 px-4 font-mono-num text-slate-600 text-[11px]">${job.deadline}</td>
+        <td class="py-3 px-4 text-right">
+          <div class="flex items-center justify-end gap-1.5">
+            <button class="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800" onclick="toggleCalendar(this, '${job.title}')" title="加入日程">
+              <span class="material-symbols-outlined text-[16px]">${isCalendar ? 'event_available' : 'calendar_add_on'}</span>
+            </button>
+            <button class="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800" onclick="openJobDrawer('${id}')" title="查看详情与AI顾问">
+              <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            </button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function toggleSelectAllTable(checked) {
+    const checkboxes = document.querySelectorAll('.table-row-checkbox');
+    checkboxes.forEach(cb => cb.checked = checked);
+  }
+
+  function toggleCalendar(btn, title) {
+    const isAdded = btn.classList.contains('active-cal');
+    const btnText = btn.querySelector('.btn-text');
+    const badge = document.getElementById('calendar-count-badge');
+    let count = parseInt(badge.textContent, 10);
+
+    if (!isAdded) {
+      btn.classList.add('active-cal', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
+      if (btnText) btnText.textContent = '已加日程';
+      badge.textContent = count + 1;
+      showToast(`已加入日历: ${title}`, 'success');
+    } else {
+      btn.classList.remove('active-cal', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
+      if (btnText) btnText.textContent = '加入日历';
+      badge.textContent = Math.max(0, count - 1);
+      showToast(`已从日历移除: ${title}`, 'info');
+    }
+  }
+
+  async function loadBackendJobs() {
+    try {
+      const res = await fetch('/api/v1/jobs?limit=50');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.items && data.items.length > 0) {
+        data.items.forEach(item => {
+          const key = `job_${item.id}`;
+          const isDisqualified = item.advice && item.advice.qualification_status === 'DISQUALIFIED';
+          const score = item.advice ? item.advice.match_score : 85;
+          const scoreText = isDisqualified ? '0分 资格不符' : `${score}分 匹配`;
+
+          const jobObj = {
+            id: item.id,
+            title: item.job_title,
+            company: item.org_name,
+            categoryBadge: item.posting_type === 'CIVIL_EXAM' ? '体制内公考' : '企业校招',
+            matchScore: scoreText,
+            score: score,
+            qualificationStatus: item.advice ? item.advice.qualification_status : 'ELIGIBLE',
+            gaps: item.advice ? (item.advice.gaps || []) : [],
+            highlights: item.advice ? (item.advice.highlights || []) : [],
+            actionAdvice: item.advice ? item.advice.action_advice : '',
+            interviewTips: item.advice ? item.advice.interview_tips : '',
+            salary: item.salary_desc || '面议',
+            salaryVal: 30,
+            location: (item.work_locations && item.work_locations.length > 0) ? item.work_locations.join(' / ') : '全国',
+            deadline: item.apply_ddl ? item.apply_ddl.substring(5, 10) + ' 截止' : '近期有效',
+            days: 10,
+            category: item.posting_type === 'CIVIL_EXAM' ? 'civil' : 'campus',
+            isFresh: item.is_fresh_only,
+            isParty: item.political_req ? true : false,
+            isPublicExam: item.posting_type === 'CIVIL_EXAM',
+            portalUrl: item.apply_url || '#'
+          };
+
+          jobDatabase[key] = jobObj;
+          if (item.id === 1) jobDatabase['huawei'] = jobObj;
+          if (item.id === 2) jobDatabase['zhejiang-fgw'] = jobObj;
+          if (item.id === 3) jobDatabase['state-grid'] = jobObj;
+
+          // Reactively update existing card elements in DOM
+          const card = document.querySelector(`.job-card[data-id="job_${item.id}"]`) ||
+                       (item.id === 1 ? document.querySelector('.job-card[data-id="huawei"]') : null) ||
+                       (item.id === 2 ? document.querySelector('.job-card[data-id="zhejiang-fgw"]') : null) ||
+                       (item.id === 3 ? document.querySelector('.job-card[data-id="state-grid"]') : null);
+
+          if (card) {
+            card.setAttribute('data-score', String(score));
+            const scoreBadge = card.querySelector('.score-badge') || card.querySelector('.bg-emerald-50, .bg-rose-50');
+            if (isDisqualified) {
+              card.classList.remove('border-amber-200', 'border-hairline');
+              card.classList.add('border-rose-300', 'bg-rose-50/15');
+              if (scoreBadge) {
+                scoreBadge.className = 'flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded text-[11px] font-bold';
+                scoreBadge.innerHTML = '<span class="material-symbols-outlined text-xs">cancel</span> 0分 资格不符';
+              }
+              const infoBox = card.querySelector('.font-mono');
+              if (infoBox) {
+                let warnEl = card.querySelector('.disqualify-banner');
+                if (!warnEl) {
+                  warnEl = document.createElement('div');
+                  warnEl.className = 'disqualify-banner text-rose-600 pt-1 border-t border-rose-100 font-sans flex items-center gap-1 text-[10px] font-bold mt-1';
+                  infoBox.appendChild(warnEl);
+                }
+                warnEl.innerHTML = `<span class="material-symbols-outlined text-xs text-rose-600">error</span> ${jobObj.gaps[0] || '硬性报考资格未满足'}`;
+              }
+            } else {
+              card.classList.remove('border-rose-300', 'bg-rose-50/15');
+              if (scoreBadge) {
+                scoreBadge.className = 'flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[11px] font-bold';
+                scoreBadge.innerHTML = `<span class="material-symbols-outlined text-xs">verified</span> ${score}分 资格全符`;
+              }
+              const warnEl = card.querySelector('.disqualify-banner');
+              if (warnEl) warnEl.remove();
+            }
+          }
+
+          if (item.is_applied) {
+            state.appliedJobs.add(key);
+            if (item.id === 1) state.appliedJobs.add('huawei');
+            if (item.id === 2) state.appliedJobs.add('zhejiang-fgw');
+            if (item.id === 3) state.appliedJobs.add('state-grid');
+          }
+        });
+      }
+    } catch (err) {
+      console.warn('Backend load failed, fallback to local dataset', err);
+    }
+  }
+
+  async function markApplied(btn, title, explicitJobId) {
+    const card = btn.closest('.job-card');
+    const badge = card ? card.querySelector('.applied-badge') : null;
+    const btnText = btn.querySelector('.btn-text');
+    const cardId = explicitJobId || (card ? card.getAttribute('data-id') : null);
+
+    let numericId = null;
+    if (cardId && cardId.startsWith('job_')) {
+      numericId = parseInt(cardId.replace('job_', ''), 10);
+    } else if (cardId === 'huawei') numericId = 1;
+    else if (cardId === 'zhejiang-fgw') numericId = 2;
+
+    if (badge) badge.classList.toggle('hidden');
+    const isNowApplied = btnText ? !btnText.textContent.includes('已投递') : true;
+
+    if (btnText) {
+      if (!isNowApplied) {
+        btnText.textContent = '标记已投递';
+        btn.classList.remove('bg-emerald-50', 'text-emerald-800');
+        showToast(`已取消投递状态: ${title}`, 'info');
+      } else {
+        btnText.textContent = '已投递 ✓';
+        btn.classList.add('bg-emerald-50', 'text-emerald-800');
+        showToast(`已成功标记为已投递: ${title} (已持久化同步至数据库)`, 'success');
+      }
+    }
+
+    if (numericId) {
+      try {
+        await fetch(`/api/v1/jobs/${numericId}/apply`, { method: 'POST' });
+        // 同时自动在追踪看板中同步创建/激活
+        if (isNowApplied) {
+          await fetch(`/api/v1/jobs/${numericId}/track`, { method: 'POST' });
+        }
+      } catch (err) {
+        console.error('Failed to sync apply status to backend', err);
+      }
+    }
+  }
+
+  // Drawer handlers
+  function openJobDrawer(jobId) {
+    state.activeDrawerJobId = jobId;
+    const job = jobDatabase[jobId];
+    if (!job) return;
+
+    document.getElementById('drawer-title').textContent = job.title;
+    document.getElementById('drawer-company').textContent = job.company;
+    document.getElementById('drawer-badge-cat').textContent = job.categoryBadge;
+
+    const matchBadge = document.getElementById('drawer-match-badge');
+    if (job.qualificationStatus === 'DISQUALIFIED') {
+      matchBadge.className = 'font-mono-num text-xs font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-300';
+      matchBadge.textContent = '0分 资格不符 (硬门槛未满足)';
+    } else {
+      matchBadge.className = 'font-mono-num text-xs font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300';
+      matchBadge.textContent = job.matchScore;
+    }
+
+    document.getElementById('drawer-salary').textContent = job.salary;
+    document.getElementById('drawer-location').textContent = job.location;
+    document.getElementById('drawer-deadline').textContent = job.deadline;
+
+    const corpContent = document.getElementById('drawer-content-corporate');
+    const pubContent = document.getElementById('drawer-content-public');
+
+    if (job.isPublicExam) {
+      corpContent.classList.add('hidden');
+      pubContent.classList.remove('hidden');
+
+      // Update gate check dynamic rows
+      const gateCheckContainer = document.getElementById('drawer-gate-checks');
+      if (gateCheckContainer) {
+        const isDis = job.qualificationStatus === 'DISQUALIFIED';
+        const gapsText = (job.gaps && job.gaps.length > 0) ? job.gaps.join('；') : '';
+        const polFailed = job.gaps && job.gaps.some(g => g.includes('党员') || g.includes('政治'));
+        const eduFailed = job.gaps && job.gaps.some(g => g.includes('学历') || g.includes('硕士') || g.includes('博士'));
+        const freshFailed = job.gaps && job.gaps.some(g => g.includes('应届'));
+
+        gateCheckContainer.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5 ${isDis ? 'text-rose-800' : 'text-emerald-800'} font-bold text-sm">
+              <span class="material-symbols-outlined text-base">${isDis ? 'warning' : 'verified_user'}</span>
+              报考资格五重硬性门槛排查
+            </div>
+            <span class="${isDis ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'} border text-[11px] font-bold px-2 py-0.5 rounded font-mono-num">${isDis ? '存在受限项 ✕' : '全部通过 ✓'}</span>
+          </div>
+          ${isDis ? `
+          <div class="p-2.5 rounded bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex items-start gap-2">
+            <span class="material-symbols-outlined text-rose-600 text-base shrink-0">error</span>
+            <div><strong>硬性报考资格受限提示：</strong>${gapsText}</div>
+          </div>` : ''}
+          <div class="space-y-1.5 pt-1">
+            <div class="flex items-center justify-between ${freshFailed ? 'bg-rose-50 border-rose-200' : 'bg-slate-50 border-hairline'} p-2 rounded border">
+              <span class="flex items-center gap-1.5 text-text-body">
+                <span class="material-symbols-outlined ${freshFailed ? 'text-rose-600' : 'text-emerald-600'} text-sm">${freshFailed ? 'cancel' : 'check_circle'}</span>
+                应届毕业生身份
+              </span>
+              <span class="${freshFailed ? 'text-rose-700 font-bold' : 'text-emerald-700'} font-mono-num font-medium">${freshFailed ? '不符合 (限当年应届)' : '符合 (2027届全日制)'}</span>
+            </div>
+            <div class="flex items-center justify-between ${polFailed ? 'bg-rose-50 border-rose-200' : 'bg-slate-50 border-hairline'} p-2 rounded border">
+              <span class="flex items-center gap-1.5 text-text-body">
+                <span class="material-symbols-outlined ${polFailed ? 'text-rose-600' : 'text-emerald-600'} text-sm">${polFailed ? 'cancel' : 'check_circle'}</span>
+                政治面貌要求
+              </span>
+              <span class="${polFailed ? 'text-rose-700 font-bold' : 'text-emerald-700'} font-mono-num font-medium">${polFailed ? '不符合 (限中共党员/预备)' : '符合 (中共党员)'}</span>
+            </div>
+            <div class="flex items-center justify-between bg-slate-50 p-2 rounded border border-hairline">
+              <span class="flex items-center gap-1.5 text-text-body">
+                <span class="material-symbols-outlined text-emerald-600 text-sm">check_circle</span>
+                专业目录匹配 (教育部代码)
+              </span>
+              <span class="text-emerald-700 font-mono-num font-medium">符合 (0812 计算机科学与技术)</span>
+            </div>
+            <div class="flex items-center justify-between ${eduFailed ? 'bg-rose-50 border-rose-200' : 'bg-slate-50 border-hairline'} p-2 rounded border">
+              <span class="flex items-center gap-1.5 text-text-body">
+                <span class="material-symbols-outlined ${eduFailed ? 'text-rose-600' : 'text-emerald-600'} text-sm">${eduFailed ? 'cancel' : 'check_circle'}</span>
+                最高学历与学位要求
+              </span>
+              <span class="${eduFailed ? 'text-rose-700 font-bold' : 'text-emerald-700'} font-mono-num font-medium">${eduFailed ? '不符合 (限硕士及以上)' : '符合 (限硕士研究生及以上)'}</span>
+            </div>
+            <div class="flex items-center justify-between bg-slate-50 p-2 rounded border border-hairline">
+              <span class="flex items-center gap-1.5 text-text-body">
+                <span class="material-symbols-outlined text-emerald-600 text-sm">check_circle</span>
+                基层工作年限与服务期
+              </span>
+              <span class="text-text-muted font-mono-num">无特殊限制 (应届直考)</span>
+            </div>
+          </div>
+        `;
+      }
+    } else {
+      corpContent.classList.remove('hidden');
+      pubContent.classList.add('hidden');
+    }
+
+    const backdrop = document.getElementById('drawer-backdrop');
+    const drawer = document.getElementById('job-detail-drawer');
+    backdrop.classList.remove('opacity-0', 'pointer-events-none');
+    drawer.classList.remove('translate-x-full');
+  }
+
+  function closeJobDrawer() {
+    const backdrop = document.getElementById('drawer-backdrop');
+    const drawer = document.getElementById('job-detail-drawer');
+    backdrop.classList.add('opacity-0', 'pointer-events-none');
+    drawer.classList.add('translate-x-full');
+  }
+
+  async function toggleCalendarFromDrawer() {
+    if (!state.activeDrawerJobId) return;
+    const job = jobDatabase[state.activeDrawerJobId];
+    showToast(`已导出并同步 ICS 日程文件: ${job.title}`, 'success');
+  }
+
+  async function markAppliedFromDrawer() {
+    if (!state.activeDrawerJobId) return;
+    const job = jobDatabase[state.activeDrawerJobId];
+    let numericId = job.id || (state.activeDrawerJobId === 'huawei' ? 1 : (state.activeDrawerJobId === 'zhejiang-fgw' ? 2 : 3));
+    try {
+      await fetch(`/api/v1/jobs/${numericId}/apply`, { method: 'POST' });
+      await fetch(`/api/v1/jobs/${numericId}/track`, { method: 'POST' });
+      showToast(`✅ 已标记投递并自动推入【投递追踪看板】: ${job.title}`, 'success');
+      const applyBtn = document.getElementById('drawer-apply-text');
+      if (applyBtn) applyBtn.textContent = '已投递 ✓';
+    } catch (err) {
+      showToast(`已标记已投递: ${job.title}`, 'success');
+    }
+  }
+
+  function openPortalLink() {
+    if (!state.activeDrawerJobId) return;
+    const job = jobDatabase[state.activeDrawerJobId];
+    if (job.portalUrl) {
+      window.open(job.portalUrl, '_blank');
+    }
+  }
+
+  function resetFilters() {
+    state.selectedCategory = 'all';
+    state.minScore = 60;
+    state.freshOnly = true;
+    state.partyOnly = false;
+    state.searchQuery = '';
+    state.selectedCities = ['杭州', '上海', '深圳', '浙江省'];
+
+    document.getElementById('score-slider').value = 60;
+    document.getElementById('score-display').textContent = '≥ 60分';
+    document.getElementById('toggle-fresh').checked = true;
+    document.getElementById('toggle-party').checked = false;
+    document.getElementById('toggle-party-text').textContent = 'OFF';
+    document.getElementById('toggle-fresh-text').textContent = 'ON';
+    document.getElementById('global-search-input').value = '';
+
+    // Category Tabs UI
+    document.querySelectorAll('.cat-tab').forEach(t => {
+      t.classList.remove('border-amber-500', 'text-slate-900', 'font-bold');
+      t.classList.add('border-transparent', 'text-text-muted');
+    });
+    const allTab = document.querySelector('.cat-tab[data-cat="all"]');
+    if (allTab) {
+      allTab.classList.add('border-amber-500', 'text-slate-900', 'font-bold');
+      allTab.classList.remove('border-transparent', 'text-text-muted');
+    }
+
+    document.querySelectorAll('.city-checkbox').forEach(cb => {
+      cb.checked = state.selectedCities.includes(cb.value);
+    });
+
+    filterJobs();
+    showToast('所有检索与筛选条件已清空重置', 'info');
+  }
+
+  function removePill(type) {
+    if (type === 'city') {
+      state.selectedCities = [];
+      document.querySelectorAll('.city-checkbox').forEach(cb => cb.checked = false);
+      document.getElementById('pill-city').style.display = 'none';
+      document.getElementById('city-filter-label').textContent = '不限工作地';
+    } else if (type === 'score') {
+      state.minScore = 40;
+      document.getElementById('score-slider').value = 40;
+      document.getElementById('score-display').textContent = '≥ 40分';
+      document.getElementById('pill-score').style.display = 'none';
+    } else if (type === 'fresh') {
+      state.freshOnly = false;
+      document.getElementById('toggle-fresh').checked = false;
+      document.getElementById('toggle-fresh-text').textContent = 'OFF';
+      document.getElementById('pill-fresh').style.display = 'none';
+    } else if (type === 'party') {
+      state.partyOnly = false;
+      document.getElementById('toggle-party').checked = false;
+      document.getElementById('toggle-party-text').textContent = 'OFF';
+      document.getElementById('pill-party').style.display = 'none';
+    }
+    filterJobs();
+  }
+
+  function toggleAllCities(checkAll) {
+    const cbs = document.querySelectorAll('.city-checkbox');
+    cbs.forEach(cb => cb.checked = checkAll);
+    state.selectedCities = checkAll ? ['杭州', '上海', '深圳', '浙江省', '广州', '南京'] : [];
+    document.getElementById('city-filter-label').textContent = checkAll ? '已全选 (6个城市)' : '未选择城市';
+    filterJobs();
+  }
+
+  // Event Listeners initialization
+  document.addEventListener('DOMContentLoaded', () => {
+    // City dropdown toggle
+    const cityBtn = document.getElementById('city-dropdown-btn');
+    const cityPanel = document.getElementById('city-dropdown-panel');
+    const cityArrow = document.getElementById('city-dropdown-arrow');
+
+    cityBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      cityPanel.classList.toggle('hidden');
+      cityArrow.classList.toggle('rotate-180');
+    });
+
+    // Sort menu toggle
+    const sortBtn = document.getElementById('sort-menu-btn');
+    const sortPanel = document.getElementById('sort-dropdown-panel');
+    sortBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sortPanel.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', () => {
+      cityPanel.classList.add('hidden');
+      cityArrow.classList.remove('rotate-180');
+      sortPanel.classList.add('hidden');
+    });
+
+    cityPanel.addEventListener('click', (e) => e.stopPropagation());
+
+    // City checkboxes change
+    document.querySelectorAll('.city-checkbox').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const checked = Array.from(document.querySelectorAll('.city-checkbox:checked')).map(c => c.value);
+        state.selectedCities = checked;
+        document.getElementById('city-filter-label').textContent = checked.length > 0 ? checked.join(', ') : '未选择城市';
+        document.getElementById('pill-city-text').textContent = checked.join(', ');
+        document.getElementById('pill-city').style.display = checked.length > 0 ? 'inline-flex' : 'none';
+        filterJobs();
+      });
+    });
+
+    // Slider score
+    const slider = document.getElementById('score-slider');
+    slider.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value, 10);
+      state.minScore = val;
+      document.getElementById('score-display').textContent = `≥ ${val}分`;
+      document.getElementById('pill-score-text').textContent = `匹配度 ≥ ${val}`;
+      filterJobs();
+    });
+
+    // Fresh Grad Toggle
+    const freshToggle = document.getElementById('toggle-fresh');
+    freshToggle.addEventListener('change', (e) => {
+      state.freshOnly = e.target.checked;
+      document.getElementById('toggle-fresh-text').textContent = e.target.checked ? 'ON' : 'OFF';
+      document.getElementById('pill-fresh').style.display = e.target.checked ? 'inline-flex' : 'none';
+      filterJobs();
+    });
+
+    // Party Member Toggle
+    const partyToggle = document.getElementById('toggle-party');
+    partyToggle.addEventListener('change', (e) => {
+      state.partyOnly = e.target.checked;
+      document.getElementById('toggle-party-text').textContent = e.target.checked ? 'ON' : 'OFF';
+      document.getElementById('pill-party').style.display = e.target.checked ? 'inline-flex' : 'none';
+      filterJobs();
+    });
+
+    // Category Tabs
+    document.querySelectorAll('.cat-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.cat-tab').forEach(t => {
+          t.classList.remove('border-amber-500', 'text-slate-900', 'font-bold');
+          t.classList.add('border-transparent', 'text-text-muted');
+        });
+        tab.classList.add('border-amber-500', 'text-slate-900', 'font-bold');
+        tab.classList.remove('border-transparent', 'text-text-muted');
+
+        state.selectedCategory = tab.getAttribute('data-cat');
+        filterJobs();
+      });
+    });
+
+    // Global Search
+    const searchInput = document.getElementById('global-search-input');
+    searchInput.addEventListener('input', (e) => {
+      state.searchQuery = e.target.value;
+      filterJobs();
+    });
+
+    // Sort options
+    document.querySelectorAll('.sort-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        setSortMode(opt.getAttribute('data-sort'));
+      });
+    });
+
+    // View switchers
+    const gridBtn = document.getElementById('view-grid-btn');
+    const tableBtn = document.getElementById('view-table-btn');
+    gridBtn.addEventListener('click', () => {
+      state.currentView = 'grid';
+      gridBtn.classList.add('bg-white', 'text-slate-900', 'shadow-2xs');
+      gridBtn.classList.remove('text-text-muted');
+      tableBtn.classList.remove('bg-white', 'text-slate-900', 'shadow-2xs');
+      tableBtn.classList.add('text-text-muted');
+      filterJobs();
+      showToast('已切换至【卡片矩阵】视角', 'info');
+    });
+    tableBtn.addEventListener('click', () => {
+      state.currentView = 'table';
+      tableBtn.classList.add('bg-white', 'text-slate-900', 'shadow-2xs');
+      tableBtn.classList.remove('text-text-muted');
+      gridBtn.classList.remove('bg-white', 'text-slate-900', 'shadow-2xs');
+      gridBtn.classList.add('text-text-muted');
+      filterJobs();
+      showToast('已切换至【高密数据表】视角', 'info');
+    });
+
+    // Privacy toggle
+    const privacyBtn = document.getElementById('privacy-toggle-btn');
+    privacyBtn.addEventListener('click', () => {
+      state.isPrivacyMode = !state.isPrivacyMode;
+      document.body.classList.toggle('privacy-mode', state.isPrivacyMode);
+      document.getElementById('privacy-icon').textContent = state.isPrivacyMode ? 'visibility_off' : 'visibility';
+      showToast(state.isPrivacyMode ? '隐私脱敏保护模式已开启 (薪酬已遮罩)' : '隐私脱敏保护模式已关闭', 'info');
+    });
+
+    // Keyboard Esc to close drawer
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeJobDrawer();
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('global-search-input').focus();
+      }
+    });
+
+    // Initial run
+    loadBackendJobs().then(() => {
+      filterJobs();
+    });
+  });
+</script>
+
+
+
+
+</body></html>

@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>CampusJob-Agent - AI顾问诊断与决策中心</title>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap"
+    rel="stylesheet">
+  <!-- Material Symbols Outlined -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet">
+  <link rel="prefetch" href="/settings">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background": "#f8fafc",
+            "surface": "#ffffff",
+            "surface-card": "#ffffff",
+            "surface-elevated": "#f1f5f9",
+            "surface-container-high": "#e2e8f0",
+            "surface-container-low": "#f8fafc",
+            "surface-variant": "#f8fafc",
+            "primary": "#eab308",
+            "primary-light": "#fef08a",
+            "primary-container": "#fefce8",
+            "primary-active": "#ca8a04",
+            "secondary": "#10b981",
+            "accent-turquoise": "#0d9488",
+            "danger": "#ef4444",
+            "hairline": "#e2e8f0",
+            "hairline-strong": "#cbd5e1",
+            "text-primary": "#0f172a",
+            "text-body": "#334155",
+            "text-muted": "#64748b",
+            "text-muted-strong": "#475569",
+            "ink-inverse": "#ffffff"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "sm": "0.125rem",
+            "md": "0.375rem",
+            "lg": "0.5rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f8fafc;
+      color: #334155;
+    }
+
+    .font-mono-num {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    html {
+      scrollbar-gutter: stable;
+    }
+  </style>
+</head>
+
+<body
+  class="bg-background text-text-body antialiased min-h-screen selection:bg-amber-100 selection:text-amber-900 flex flex-col">
+  <!-- ==================== TOP NAVIGATION & SHELL HEADER ==================== -->
+  <header
+    class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-6 h-14 flex items-center shadow-sm">
+    <div class="max-w-[1536px] w-full mx-auto flex items-center justify-between gap-4">
+      <!-- 1. Left: Branding & Dashboard Entrance -->
+      <div class="flex items-center gap-6 flex-shrink-0">
+        <a href="/dashboard"
+          class="flex items-center gap-2 px-3 py-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-md font-semibold text-xs transition-colors">
+          <span class="material-symbols-outlined text-[18px] text-amber-500">grid_view</span>
+          <span class="">仪表盘</span>
+        </a>
+      </div>
+
+      <!-- 2. Center: 4 Core Business Section Entrances -->
+      <nav class="hidden md:flex items-center gap-1 xl:gap-2 flex-shrink-0">
+        <a href="/jobs"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors">
+          <span class="material-symbols-outlined text-[17px] text-slate-400">view_kanban</span>
+          <span class="">校招雷达</span>
+        </a>
+        <a href="/calendar"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors">
+          <span class="material-symbols-outlined text-[17px] text-slate-400">calendar_month</span>
+          <span class="">日历日程</span>
+          <span
+            class="px-1.5 py-0.5 text-[10px] font-mono-num font-bold bg-rose-50 text-rose-600 border border-rose-200 rounded-full leading-none">3待办</span>
+        </a>
+        <a href="/tracker"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors relative">
+          <span class="material-symbols-outlined text-[17px] text-slate-400">track_changes</span>
+          <span class="">投递追踪</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        </a>
+        <a href="/advisory"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-950 bg-amber-400 rounded-md shadow-xs transition-colors">
+          <span class="material-symbols-outlined text-[17px] text-slate-950 font-bold">auto_awesome</span>
+          <span class="">AI顾问诊断</span>
+        </a>
+      </nav>
+
+      <!-- 3. Right: Search, Parser Button, Notifications, User Profile & Settings -->
+      <div class="flex items-center gap-3 justify-end flex-1 max-w-xl">
+        <!-- Global Search -->
+        <div class="relative flex-1 max-w-xs hidden sm:block">
+          <span
+            class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] pointer-events-none select-none">search</span>
+          <input id="global-search-input"
+            class="w-full h-[34px] pl-8 pr-12 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-amber-400 focus:bg-white focus:ring-0 rounded-md text-xs text-slate-800 placeholder:text-slate-400 transition-all font-sans"
+            placeholder="全局搜索企业、岗位、公考..." type="text">
+          <kbd onclick="document.getElementById('global-search-input').focus()"
+            class="absolute right-2 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-mono-num bg-white text-slate-500 rounded border border-slate-200 shadow-2xs pointer-events-none select-none">⌘K</kbd>
+        </div>
+
+        <!-- Fast Parser CTA Button -->
+        <button onclick="location.href='/jobs'"
+          class="h-[34px] flex items-center gap-1.5 px-3.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold rounded-md transition-all shadow-xs flex-shrink-0 active:scale-95">
+          <span class="material-symbols-outlined text-[16px] text-slate-950 font-bold">bolt</span>
+          <span class="">+ 解析推文/海报</span>
+        </button>
+
+        <!-- Notifications Bell -->
+        <a href="/calendar"
+          class="relative h-[34px] w-[34px] flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-md hover:bg-slate-100 border border-slate-200 bg-white transition-all flex-shrink-0"
+          title="待阅通知 (2)">
+          <span class="material-symbols-outlined text-[18px]">notifications</span>
+          <span
+            class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white animate-pulse"></span>
+        </a>
+
+        <!-- User Profile & Settings Combined Interactive Capsule -->
+        <a href="/settings"
+          class="flex items-center gap-2 pl-1.5 pr-2.5 h-[34px] bg-white hover:bg-slate-50 active:scale-95 border border-slate-200 rounded-md flex-shrink-0 cursor-pointer shadow-2xs group transition-all"
+          title="个人中心与系统设置">
+          <div
+            class="w-6 h-6 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 font-bold text-[11px] shadow-2xs flex-shrink-0 select-none">
+            职
+          </div>
+          <div class="hidden md:flex flex-col text-left justify-center leading-tight">
+            <div id="header-profile-degree" class="text-[11px] font-bold text-slate-800 flex items-center gap-1">
+              个人求职画像
+            </div>
+            <div id="header-profile-major" class="text-[9px] text-slate-500 font-medium">
+              点击前往配置
+            </div>
+          </div>
+          <div class="h-4 w-px bg-slate-200 mx-0.5 hidden md:block"></div>
+          <span
+            class="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-amber-600 transition-colors">settings</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <!-- ==================== MAIN WORKSPACE ==================== -->
+  <main class="flex-1 max-w-[1536px] w-full mx-auto px-6 py-5 space-y-5">
+    <!-- Breadcrumb & Engine Status Sub-Bar -->
+
+    <!-- 1. Top Overview Metric Bar (4 Key Metric Cards) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <!-- Metric 1 -->
+
+      <!-- Metric 2 -->
+
+      <!-- Metric 3 -->
+
+      <!-- Metric 4 -->
+
+    </div>
+    <!-- 2. Main Body Grid (3-Column Layout: Left 28%, Center 44%, Right 28%) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+      <!-- LEFT COLUMN (col-span-3) -->
+      <div class="lg:col-span-4 xl:col-span-3 flex flex-col gap-4">
+        <!-- Card A: 综合能力剖析与指标雷达 (证据级锚定模式) -->
+        <div class="bg-white rounded-md border border-hairline p-4 shadow-2xs">
+          <div class="flex items-center justify-between border-b border-hairline pb-2.5 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-4 bg-amber-400 rounded-xs"></span>
+              <span class="font-bold text-text-primary text-sm">证据级能力剖析</span>
+            </div>
+            <span
+              class="font-mono-num text-[11px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 font-bold">事实锚定</span>
+          </div>
+          <!-- Evidence Mode Notice -->
+          <div class="mb-2.5 px-2 py-1 bg-slate-50 border border-slate-200 rounded flex items-center justify-between text-[11px] font-mono">
+            <span class="text-slate-500">评估模式:</span>
+            <span class="text-emerald-700 font-bold">已穿透原始简历佐证</span>
+          </div>
+          <!-- Radar Visual Bar System with Evidence Badges -->
+          <div class="space-y-2.5">
+            <div>
+              <div class="flex justify-between font-mono-num text-xs mb-1">
+                <span class="text-slate-700">专业背景匹配 (工学硕士)</span>
+                <span class="text-emerald-700 font-bold">95% · 已充分佐证 ✓</span>
+              </div>
+              <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-emerald-500 h-full rounded-full" style="width: 95%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between font-mono-num text-xs mb-1">
+                <span class="text-slate-700">项目工程落地 (高并发底层)</span>
+                <span class="text-emerald-700 font-bold">92% · 已充分佐证 ✓</span>
+              </div>
+              <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-emerald-500 h-full rounded-full" style="width: 92%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between font-mono-num text-xs mb-1">
+                <span class="text-slate-700">体制合规准入 (政治/专业/学历)</span>
+                <span class="text-emerald-700 font-bold">100% · 强准入全符 ✓</span>
+              </div>
+              <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-emerald-500 h-full rounded-full" style="width: 100%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between font-mono-num text-xs mb-1">
+                <span class="text-slate-700">分布式状态机容灾 (Raft/Paxos)</span>
+                <span class="text-rose-600 font-bold">42% · 经历缺失 ⚠️</span>
+              </div>
+              <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-rose-500 h-full rounded-full" style="width: 42%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between font-mono-num text-xs mb-1">
+                <span class="text-slate-700">STAR法则量化表达 (指标说服力)</span>
+                <span class="text-amber-700 font-bold">65% · 需针对改写 ✎</span>
+              </div>
+              <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-amber-500 h-full rounded-full" style="width: 65%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between font-mono-num text-xs mb-1">
+                <span class="text-slate-700">时间精力分配 (双轨平衡度)</span>
+                <span class="text-sky-700 font-bold">75% · 动态调优 ⟳</span>
+              </div>
+              <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-sky-500 h-full rounded-full" style="width: 75%"></div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mt-3.5 p-2.5 bg-amber-50/70 rounded border border-amber-200 text-xs font-mono-num text-slate-700 leading-relaxed">
+            <span class="text-amber-800 font-bold">证据链审计结论:</span> 3项核心硬技能有代码与压测实证支撑；重点需攻克1项技术盲区（分布式一致性协议）并完成2处量化改写，避免二面深度追问被动。
+          </div>
+        </div>
+        <!-- Card B: 本地脱敏画像实时映射 -->
+        <div class="bg-white rounded-md border border-hairline p-4 shadow-2xs">
+          <div class="flex items-center justify-between border-b border-hairline pb-2.5 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-4 bg-emerald-500 rounded-xs"></span>
+              <span class="font-bold text-text-primary text-sm">画像沙箱</span>
+            </div>
+            <span id="advisory-masked-count-badge"
+              class="px-1.5 py-0.5 rounded text-[10px] font-mono-num bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">沙箱就绪</span>
+          </div>
+          <div class="space-y-2 font-mono-num text-xs">
+            <div class="flex justify-between py-1 border-b border-hairline">
+              <span class="text-text-muted">学历身份:</span>
+              <span id="advisory-profile-degree" class="text-slate-900 font-semibold">待完善画像 (前往设置)</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-hairline">
+              <span class="text-text-muted">政治面貌:</span>
+              <span id="advisory-profile-political" class="text-slate-700 font-medium">未设置</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-hairline">
+              <span class="text-text-muted">意向地域:</span>
+              <span id="advisory-profile-cities" class="text-slate-900">未设置</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-hairline">
+              <span class="text-text-muted">岗位锚定:</span>
+              <span id="advisory-profile-roles" class="text-slate-900 truncate max-w-[150px]">全方向匹配</span>
+            </div>
+            <div class="flex justify-between py-1">
+              <span class="text-text-muted">掩蔽实体:</span>
+              <span class="text-slate-500">姓名/学号/导师/手机号</span>
+            </div>
+          </div>
+        </div>
+        <!-- Card C: 备考与投递精力分配健康度 -->
+        <div class="bg-white rounded-md border border-hairline p-4 shadow-2xs">
+          <div class="flex items-center justify-between border-b border-hairline pb-2.5 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-4 bg-amber-400 rounded-xs"></span>
+              <span class="font-bold text-text-primary text-sm">精力分配度</span>
+            </div>
+            <span class="font-mono-num text-text-muted text-[11px]">本周追踪</span>
+          </div>
+          <div class="flex items-center gap-2 mb-2 font-mono-num text-xs">
+            <span class="text-amber-800 font-bold">名企秋招 55%</span>
+            <span class="text-slate-300">/</span>
+            <span class="text-emerald-700 font-bold">体制考公 45%</span>
+          </div>
+          <div class="w-full h-3 bg-slate-100 rounded flex overflow-hidden border border-hairline">
+            <div class="bg-amber-500 h-full" style="width: 55%" title="名企秋招"></div>
+            <div class="bg-emerald-500 h-full" style="width: 45%" title="体制考公"></div>
+          </div>
+          <div
+            class="mt-3 p-2.5 bg-amber-50/70 border border-amber-200 rounded font-mono-num text-[11px] text-slate-700 leading-relaxed">
+            <span class="text-amber-800 font-bold">💡 动态调优建议:</span> 建议10月中旬前全力攻坚头部名企提前批，锁定2张保底Offer；11月起行测申论模考占比提升至
+            70%。
+          </div>
+        </div>
+      </div>
+      <!-- CENTER COLUMN (col-span-5) -->
+      <div class="lg:col-span-8 xl:col-span-5 flex flex-col gap-4">
+
+        <!-- Section Header & Filter Tabs -->
+        <div
+          class="bg-white p-2.5 rounded-md border border-hairline flex flex-wrap items-center justify-between gap-2 shadow-2xs">
+          <div class="flex items-center gap-1.5">
+            <button
+              class="px-3 py-1 rounded text-xs font-bold bg-amber-400 hover:bg-amber-500 text-slate-950 transition-colors shadow-2xs"
+              type="button">全部诊断 (12)</button>
+            <button
+              class="px-3 py-1 rounded text-xs text-text-muted hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors"
+              type="button">头部名企 (6)</button>
+            <button
+              class="px-3 py-1 rounded text-xs text-text-muted hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors"
+              type="button">公考与选调 (4)</button>
+            <button
+              class="px-3 py-1 rounded text-xs text-text-muted hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors"
+              type="button">面试避坑 (2)</button>
+          </div>
+        </div>
+        <!-- Diagnostic Item 1: 名企校招·简历与JD证据级差距诊断 (Evidence-based Grounding) -->
+        <div
+          class="bg-white rounded-md border border-hairline p-4 shadow-2xs hover:border-hairline-strong transition-all">
+          <div class="flex items-start justify-between border-b border-hairline pb-3">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap mb-1">
+                <span class="bg-amber-50 text-amber-800 text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-amber-300">
+                  证据级深度穿透 (Evidence-based Grounding)
+                </span>
+                <span class="text-xs text-slate-500 font-mono">拒绝玄学概率 · 事实逐条锚定</span>
+              </div>
+              <h3 class="font-bold text-text-primary text-sm">目标对标: 阿里淘天 / 华为云 / 腾讯 WXG 分布式高并发后端开发</h3>
+            </div>
+            <span class="font-mono-num text-xs px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold shrink-0">
+              证据覆盖率 85%
+            </span>
+          </div>
+          <div class="mt-3 space-y-3 font-mono-num text-xs">
+            <!-- Tier 1: 已充分佐证 (Verified) -->
+            <div class="p-3 bg-emerald-50/70 border-l-4 border-emerald-500 rounded-r">
+              <div class="flex items-center justify-between text-emerald-800 font-bold mb-1">
+                <span class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px]">check_circle</span>
+                  【已充分佐证 (Verified)】核心经历实证
+                </span>
+                <span class="text-[10px] font-mono-num text-emerald-700 font-normal">ATS 匹配度 96.2%</span>
+              </div>
+              <p class="text-slate-700 font-sans leading-relaxed text-xs">
+                简历第1项“主导自主研发高并发 RPC 通信框架并进行内核源码调优，采用 Netty + 自定义私有协议，并通过 JMH 压测将单机吞吐量 QPS 提升 32%”，具备确切的代码仓库与量化压测指标，<strong>与大厂 15/P6 级研发岗位对“海量并发底层编码与系统稳定性保障”的要求形成完整证据闭环</strong>。
+              </p>
+            </div>
+
+            <!-- Tier 2: 经历缺失风险 (Skill Gap) -->
+            <div class="p-3 bg-rose-50/70 border-l-4 border-rose-500 rounded-r">
+              <div class="flex items-center justify-between text-rose-800 font-bold mb-1">
+                <span class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px]">error</span>
+                  【经历缺失风险 (Skill Gap)】技术盲区预警
+                </span>
+                <span class="text-[10px] font-mono-num text-rose-700 font-normal">二面高频失分点</span>
+              </div>
+              <p class="text-slate-700 font-sans leading-relaxed text-xs">
+                阿里淘天与华为云分布式存储 JD 明确 3 次强调 <span class="text-rose-700 font-bold">Raft/Paxos 状态机复制协议与大规模多级缓存容灾</span>。当前简历仅描述单机 Redis 主从同步，缺少分布式一致性、脑裂防护与故障自愈的实战佐证，极易在二面技术压力追问中暴露断层。
+              </p>
+            </div>
+
+            <!-- Tier 3: 针对性改写建议 (JD Actionable Edit) -->
+            <div class="p-3 bg-amber-50/70 border-l-4 border-amber-400 rounded-r space-y-1.5">
+              <div class="flex items-center justify-between text-amber-800 font-bold mb-1">
+                <span class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px]">edit_note</span>
+                  【针对性改写建议 (JD Actionable Edit)】可直接替换的简历 Diff
+                </span>
+                <span class="text-[10px] font-mono-num text-amber-700 font-normal">点击可一键复制</span>
+              </div>
+              <div class="bg-white p-2.5 rounded border border-amber-200 font-mono text-[11px] space-y-1 text-slate-700 leading-snug">
+                <div class="text-rose-600 line-through">修改前：参与高并发后端系统的常规优化与线上日常维护工作。</div>
+                <div class="text-emerald-700 font-bold">建议改写：主导热点 Key 场景本地与分布式两级缓存架构设计，通过自适应分段锁与异步预热机制，将高并发下 P99 尾延迟从 120ms 压缩至 18ms，抵御极端脉冲流量冲击。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Diagnostic Item 2: 体制内考公·报考硬性资格穿透自查 -->
+        <div
+          class="bg-white rounded-md border border-hairline p-4 shadow-2xs hover:border-hairline-strong transition-all">
+          <div class="flex items-start justify-between border-b border-hairline pb-3">
+            <div>
+              <h3 class="font-bold text-text-primary text-sm mt-1.5">岗位: 2027 浙江省考公务员 · 浙江省发改委数字经济处 (代码: 010302001)</h3>
+            </div>
+            </span>
+          </div>
+          <div class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono-num text-[11px] text-center">
+            <div class="bg-slate-50 p-2 rounded border border-hairline">
+              <span class="text-text-muted block text-[10px]">应届生限定</span>
+              <span class="text-emerald-700 font-bold mt-0.5 block">完全符合</span>
+            </div>
+            <div class="bg-slate-50 p-2 rounded border border-hairline">
+              <span class="text-text-muted block text-[10px]">政治面貌</span>
+              <span class="text-emerald-700 font-bold mt-0.5 block">符合 (中共党员)</span>
+            </div>
+            <div class="bg-slate-50 p-2 rounded border border-hairline">
+              <span class="text-text-muted block text-[10px]">专业代码对齐</span>
+              <span class="text-emerald-700 font-bold mt-0.5 block">0812 (完全对口)</span>
+            </div>
+            <div class="bg-slate-50 p-2 rounded border border-hairline">
+              <span class="text-text-muted block text-[10px]">学历学位要求</span>
+              <span class="text-emerald-700 font-bold mt-0.5 block">硕士研究生及以上</span>
+            </div>
+          </div>
+          <div class="mt-3 p-3 bg-amber-50/70 border-l-4 border-amber-400 rounded-r text-xs font-mono-num">
+            <div class="flex items-center gap-1 text-amber-800 font-bold mb-1">
+              <span class="material-symbols-outlined text-[15px]">info</span>
+              <span class="">备注与提醒:</span>
+            </div>
+            <ul class="list-disc list-inside text-slate-700 font-sans text-xs space-y-1">
+              <li class="">招考备注明确保留条款：“录用后在当地最低服务年限为 5 年，服务期内不得调离”。</li>
+              <li class="">笔试科目对应 <span class="text-slate-900 font-semibold">综合类申论（一类）</span>，浙江近三年同类进面分数线平均为 <span
+                  class="font-mono-num text-amber-700 font-bold">142.5分 (行测72+申论70.5)</span>。</li>
+              <li class="">建议近期针对“浙江‘数字经济创新提质一号发展工程’”积累至少 3 篇申论大作文规范策论金句。</li>
+            </ul>
+          </div>
+        </div>
+        <!-- Diagnostic Item 3: 笔试与面试押题及情景预测 -->
+        <div
+          class="bg-white rounded-md border border-hairline p-4 shadow-2xs hover:border-hairline-strong transition-all">
+          <div class="flex items-center justify-between border-b border-hairline pb-2.5 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-4 bg-sky-500 rounded-xs"></span>
+              <span class="font-bold text-text-primary text-sm">考点预测</span>
+            </div>
+            <span class="font-mono-num text-[11px] text-text-muted">基于本地面经池</span>
+          </div>
+          <div class="space-y-2.5 font-mono-num text-xs">
+            <div class="bg-slate-50 p-3 rounded border border-hairline">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-900 font-bold flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                  淘天二面 (明天 15:30) 压轴押题
+                </span>
+              </div>
+              <p class="text-slate-600 font-sans text-xs mt-1.5 leading-relaxed">
+                必考场景: <span class="text-slate-800 font-medium">Redis 与 MySQL 双写一致性方案 (Canal binlog vs 延时双删)、Seata
+                  AT模式脏写防护原理、慢 SQL 真实线上排查案例。</span>
+              </p>
+            </div>
+            <div class="bg-slate-50 p-3 rounded border border-hairline">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-900 font-bold flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+                  招商银行总行 FinTech 统考机试 (本周六)
+                </span>
+              </div>
+              <p class="text-slate-600 font-sans text-xs mt-1.5 leading-relaxed">
+                核心考点: <span class="text-slate-800 font-medium">ACM模式 I/O 规范、带备忘录的动态规划背包变形、并发线程安全队列设计，严防内存溢出超时。</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- RIGHT COLUMN (col-span-4) -->
+      <div class="lg:col-span-12 xl:col-span-4 flex flex-col gap-4">
+        <!-- Interactive AI Chat Box (Workbench Copilot) -->
+        <div class="bg-white rounded-md border border-hairline p-4 flex flex-col h-[590px] shadow-2xs">
+          <!-- Header -->
+          <div class="border-b border-hairline pb-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded bg-amber-400 flex items-center justify-center text-slate-900 shadow-xs">
+                  <span class="material-symbols-outlined text-[15px]">smart_toy</span>
+                </div>
+                <span class="font-bold text-text-primary text-sm">Copilot</span>
+              </div>
+
+            </div>
+            <div class="mt-2.5 flex items-center gap-1.5 flex-wrap font-mono-num text-[10px] text-text-muted">
+
+
+
+            </div>
+          </div>
+          <!-- Quick Prompts Chips -->
+          <div class="py-2.5 border-b border-hairline flex flex-col gap-1.5">
+            <span class="font-mono-num text-[10px] text-text-muted uppercase font-semibold">指令推荐:</span>
+            <button
+              class="quick-prompt-btn text-left font-mono-num text-[11px] text-slate-700 hover:text-amber-800 bg-slate-50 hover:bg-amber-50/60 border border-hairline hover:border-amber-200 px-2.5 py-1.5 rounded transition-colors truncate"
+              type="button" data-prompt="针对明天的阿里二面，帮我生成 3 道核心高并发与 Raft 压轴追问">
+              👉 针对明天的阿里二面，帮我生成 3 道核心高并发与 Raft 压轴追问
+            </button>
+            <button
+              class="quick-prompt-btn text-left font-mono-num text-[11px] text-slate-700 hover:text-amber-800 bg-slate-50 hover:bg-amber-50/60 border border-hairline hover:border-amber-200 px-2.5 py-1.5 rounded transition-colors truncate"
+              type="button" data-prompt="请根据我的工学硕士与党员身份，测算报考浙江省直发改委数字经济岗的实际胜率与竞争比">
+              👉 测算报考浙江省直发改委 vs 杭州滨江事业编的竞争胜率
+            </button>
+            <button
+              class="quick-prompt-btn text-left font-mono-num text-[11px] text-slate-700 hover:text-amber-800 bg-slate-50 hover:bg-amber-50/60 border border-hairline hover:border-amber-200 px-2.5 py-1.5 rounded transition-colors truncate"
+              type="button" data-prompt="帮我一键优化简历中高并发 RPC 项目的技术措辞，使其更加契合大厂 P6 研发画像">
+              👉 帮我一键优化简历中高并发项目的技术措辞
+            </button>
+          </div>
+          <!-- Dialogue Area -->
+          <div class="flex-1 overflow-y-auto py-3 space-y-3 pr-1" id="chat-messages-container">
+            <!-- User message -->
+            <div class="flex justify-end">
+              <div
+                class="bg-amber-100 text-amber-950 p-2.5 rounded-lg max-w-[85%] font-sans text-xs leading-relaxed font-medium shadow-2xs border border-amber-200">
+                请根据我的学历与党员背景，客观评估我报浙江省直发改委（岗位010302001）的实际胜率与潜在挑战？
+              </div>
+            </div>
+            <!-- Copilot response -->
+            <div class="flex justify-start">
+              <div
+                class="bg-slate-50 text-slate-800 p-3 rounded-lg border border-hairline max-w-[92%] font-mono-num text-xs leading-relaxed space-y-2 shadow-2xs">
+                <div class="flex items-center gap-1.5 text-amber-800 font-bold text-xs">
+                  <span class="material-symbols-outlined text-[15px]">psychology</span>
+                  深度测算分析结论:
+                </div>
+                <p class="font-sans text-xs text-slate-700 leading-relaxed">
+                  1. <span class="text-slate-900 font-bold">准入绝对优势:</span> 该岗限定“研究生且中共党员”，直接过滤全省 83.4% 考生，预计最终报录比控制在
+                  <span class="text-emerald-700 font-mono-num font-bold">45:1</span> 左右，远优于不限党员岗（常超 200:1）。
+                </p>
+                <p class="font-sans text-xs text-slate-700 leading-relaxed">
+                  2. <span class="text-slate-900 font-bold">核心胜负手:</span> 行测你的模考均分在 74 分（前
+                  5%），但申论宏观政策立意稍欠火候。需着重在发改委关注的“新质生产力与数字算力基建”专题强化答题词汇。
+                </p>
+                <div
+                  class="pt-2 text-[11px] text-emerald-700 flex items-center gap-1 border-t border-hairline font-semibold">
+                  <span class="material-symbols-outlined text-[14px]">task_alt</span>
+                  已为你生成《省发改委笔试专项押题精选 10 题》，已同步至备考题库。
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Input Box -->
+          <div class="border-t border-hairline pt-2.5 flex flex-col gap-2">
+            <div class="flex items-center justify-between text-[11px] font-mono-num text-text-muted">
+              <div class="flex items-center gap-2">
+                <button class="hover:text-amber-700 flex items-center gap-0.5 transition-colors" type="button">
+                  <span class="material-symbols-outlined text-[14px]">attachment</span>关联岗位JD
+                </button>
+                <span class="text-slate-300">|</span>
+                <span class="text-emerald-700 flex items-center gap-0.5"><span
+                    class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>沙箱脱敏就绪</span>
+              </div>
+              <span class="text-text-muted font-mono-num">DeepSeek-V3</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <input id="chat-user-input"
+                class="flex-1 bg-slate-50 border border-hairline rounded px-3 py-1.5 text-slate-900 text-xs focus:border-amber-500 focus:bg-white focus:outline-none placeholder:text-text-muted transition-colors font-sans"
+                placeholder="向AI提问或发出调优指令... (Enter 发送)" type="text">
+              <button id="chat-send-btn"
+                class="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold px-3 py-1.5 rounded text-xs flex items-center justify-center transition-colors shadow-2xs"
+                type="button">
+                <span class="material-symbols-outlined text-[16px]">send</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Action Utilities Card -->
+        <div class="bg-white rounded-md border border-hairline p-4 shadow-2xs">
+          <div class="flex items-center justify-between border-b border-hairline pb-2.5 mb-3">
+            <span class="font-bold text-text-primary text-sm">诊断行动台</span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          </div>
+          <div class="space-y-2 font-mono-num text-xs">
+            <button id="btn-export-advisory-md"
+              class="w-full flex items-center justify-between p-2.5 rounded bg-slate-50 hover:bg-slate-100 border border-hairline text-slate-700 hover:text-slate-900 transition-colors shadow-2xs"
+              type="button">
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-amber-600 text-[18px]">picture_as_pdf</span>
+                导出综合诊断报告 (.MD)
+              </span>
+              <span class="text-text-muted font-mono-num text-[11px]">Markdown 格式</span>
+            </button>
+            <button id="btn-rerun-advisory"
+              class="w-full flex items-center justify-between p-2.5 rounded bg-slate-50 hover:bg-slate-100 border border-hairline text-slate-700 hover:text-slate-900 transition-colors shadow-2xs"
+              type="button">
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-emerald-600 text-[18px]">refresh</span>
+                重新运行全量诊断 (拉取最新画像)
+              </span>
+              <span class="text-emerald-700 font-bold text-[11px]">动态诊断</span>
+            </button>
+            <button id="btn-sync-to-tracker"
+              class="w-full flex items-center justify-between p-2.5 rounded bg-slate-50 hover:bg-slate-100 border border-hairline text-slate-700 hover:text-slate-900 transition-colors shadow-2xs"
+              type="button">
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-sky-600 text-[18px]">send_time_extension</span>
+                一键同步调优策略至 投递看板
+              </span>
+              <span class="material-symbols-outlined text-[16px] text-text-muted">chevron_right</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="advisory-toast-container" class="fixed bottom-12 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <script>
+      (function () {
+        function showToast(msg, icon = 'info') {
+          let container = document.getElementById('advisory-toast-container');
+          if (!container) {
+            container = document.createElement('div');
+            container.id = 'advisory-toast-container';
+            container.className = 'fixed bottom-12 right-6 z-50 flex flex-col gap-2 pointer-events-none';
+            document.body.appendChild(container);
+          }
+          const toast = document.createElement('div');
+          toast.className = 'bg-white border border-amber-300 text-slate-800 px-4 py-2.5 rounded shadow-lg flex items-center gap-2 text-xs animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-auto max-w-md';
+          toast.innerHTML = `
+      <span class="material-symbols-outlined text-amber-500 text-[18px]">${icon}</span>
+      <span class="text-[13px] leading-tight font-sans">${msg}</span>
+      <button type="button" class="ml-auto text-slate-400 hover:text-slate-700 flex items-center">
+        <span class="material-symbols-outlined text-[14px]">close</span>
+      </button>
+    `;
+          toast.querySelector('button').addEventListener('click', () => toast.remove());
+          container.appendChild(toast);
+          setTimeout(() => { if (toast.parentElement) toast.remove(); }, 4000);
+        }
+
+        // Load Advisory Radar & Diagnostics
+        window.loadAdvisoryData = async function () {
+          try {
+            const [radarRes, diagRes, predRes] = await Promise.all([
+              fetch('/api/v1/advisory/radar'),
+              fetch('/api/v1/advisory/diagnostics'),
+              fetch('/api/v1/advisory/predictions')
+            ]);
+
+            if (radarRes.ok) {
+              const radar = await radarRes.json();
+              console.log('[Advisory] Radar loaded:', radar);
+              if (radar.sandbox_masked_count !== undefined) {
+                const badge = document.getElementById('advisory-masked-count-badge');
+                if (badge) badge.innerText = `${radar.sandbox_masked_count}项掩蔽已激活`;
+              }
+            }
+
+            try {
+              const profRes = await fetch('/api/v1/profile');
+              if (profRes.ok) {
+                const p = await profRes.json();
+                const dEl = document.getElementById('advisory-profile-degree');
+                if (dEl) {
+                  const parts = [];
+                  if (p.education_level) parts.push(p.education_level);
+                  if (p.grad_year) parts.push(`${p.grad_year}届`);
+                  dEl.innerText = parts.length ? parts.join(' · ') : '待完善画像 (前往设置)';
+                }
+                const polEl = document.getElementById('advisory-profile-political');
+                if (polEl) polEl.innerText = p.political_status || '未设置';
+                const citEl = document.getElementById('advisory-profile-cities');
+                if (citEl) citEl.innerText = (p.target_cities && p.target_cities.length) ? p.target_cities.join(' / ') : '全国不限';
+                const rolEl = document.getElementById('advisory-profile-roles');
+                if (rolEl) rolEl.innerText = (p.target_roles && p.target_roles.length) ? p.target_roles.join(' / ') : '全方向匹配';
+              }
+            } catch (_) {}
+
+            showToast('AI 诊断全量数据已与本地 SQLite 及沙箱同步更新', 'check_circle');
+          } catch (err) {
+            console.warn('[Advisory] sync note:', err);
+          }
+        };
+
+        // Copilot Chat Interaction
+        const chatContainer = document.getElementById('chat-messages-container');
+        const chatInput = document.getElementById('chat-user-input');
+        const chatSendBtn = document.getElementById('chat-send-btn');
+
+        window.sendCopilotMessage = async function (text) {
+          const msg = (text || chatInput?.value || '').trim();
+          if (!msg) return;
+
+          if (chatInput) chatInput.value = '';
+
+          // Append User Message
+          const userBubble = document.createElement('div');
+          userBubble.className = 'flex justify-end animate-in fade-in slide-in-from-bottom-1 duration-150';
+          userBubble.innerHTML = `
+      <div class="bg-amber-100 text-amber-950 p-2.5 rounded-lg max-w-[85%] font-sans text-xs leading-relaxed font-medium shadow-2xs border border-amber-200">
+        ${escapeHtml(msg)}
+      </div>
+    `;
+          chatContainer.appendChild(userBubble);
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+
+          // Append Loading indicator
+          const loadingBubble = document.createElement('div');
+          loadingBubble.className = 'flex justify-start';
+          loadingBubble.id = 'copilot-typing-indicator';
+          loadingBubble.innerHTML = `
+      <div class="bg-slate-50 text-slate-500 p-2.5 rounded-lg border border-hairline font-mono text-xs flex items-center gap-1.5 shadow-2xs">
+        <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+        <span>AI Copilot 正在深度推演测算...</span>
+      </div>
+    `;
+          chatContainer.appendChild(loadingBubble);
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+
+          try {
+            const res = await fetch('/api/v1/advisory/chat', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: msg })
+            });
+
+            loadingBubble.remove();
+
+            if (res.ok) {
+              const data = await res.json();
+              const aiBubble = document.createElement('div');
+              aiBubble.className = 'flex justify-start animate-in fade-in slide-in-from-bottom-1 duration-150';
+
+              let actionsHtml = '';
+              if (data.related_actions && data.related_actions.length > 0) {
+                actionsHtml = `
+            <div class="pt-2 border-t border-hairline flex flex-col gap-1 text-[11px] text-amber-800 font-semibold">
+              ${data.related_actions.map(a => `<div class="cursor-pointer hover:underline" onclick="showToast('${escapeHtml(a)}')">${escapeHtml(a)}</div>`).join('')}
+            </div>
+          `;
+              }
+
+              aiBubble.innerHTML = `
+          <div class="bg-slate-50 text-slate-800 p-3 rounded-lg border border-hairline max-w-[92%] font-mono-num text-xs leading-relaxed space-y-2 shadow-2xs">
+            <div class="flex items-center gap-1.5 text-amber-800 font-bold text-xs">
+              <span class="material-symbols-outlined text-[15px]">psychology</span>
+              AI 诊断决策建议:
+            </div>
+            <div class="font-sans text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(data.reply)}</div>
+            ${actionsHtml}
+          </div>
+        `;
+              chatContainer.appendChild(aiBubble);
+            } else {
+              const errBubble = document.createElement('div');
+              errBubble.className = 'flex justify-start';
+              errBubble.innerHTML = `
+          <div class="bg-rose-50 text-rose-800 p-2.5 rounded-lg border border-rose-200 text-xs">
+            ⚠️ 暂无法连接至大模型推理网关，请检查【系统设置】中的 LLM 凭据配置。
+          </div>
+        `;
+              chatContainer.appendChild(errBubble);
+            }
+          } catch (err) {
+            loadingBubble.remove();
+            showToast('网络请求异常，请稍后重试', 'error');
+          }
+
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        };
+
+        function escapeHtml(str) {
+          return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+        }
+
+        // Bind Chat inputs
+        chatSendBtn?.addEventListener('click', () => window.sendCopilotMessage());
+        chatInput?.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            window.sendCopilotMessage();
+          }
+        });
+
+        // Bind Quick Prompt Chips
+        document.querySelectorAll('.quick-prompt-btn').forEach(btn => {
+          btn.addEventListener('click', function () {
+            const prompt = this.getAttribute('data-prompt') || this.innerText.replace('👉', '').trim();
+            window.sendCopilotMessage(prompt);
+          });
+        });
+
+        // Action utilities
+        document.getElementById('btn-rerun-advisory')?.addEventListener('click', () => {
+          window.loadAdvisoryData();
+        });
+
+        document.getElementById('btn-sync-to-tracker')?.addEventListener('click', () => {
+          showToast('正在将 AI 调优策略同步至投递看板...');
+          setTimeout(() => { location.href = '/tracker.html'; }, 700);
+        });
+
+        document.getElementById('btn-export-advisory-md')?.addEventListener('click', () => {
+          const reportContent = `# CampusJob-Agent 个人求职与招考综合诊断报告\n\n生成时间: ${new Date().toLocaleString()}\n用户画像: 计算机科学与技术 · 工学硕士 · 中共党员\n\n## 一、能力剖析雷达\n- 专业背景匹配: 95/100 (工学硕士)\n- 项目工程落地: 92/100 (高并发底层/Raft)\n- 体制合规准入: 100/100 (政治面貌/学历/专业全符合)\n- 面试表达胜率: 82/100\n- 笔试应试储备: 78/100\n- 时间精力分配: 75/100 (双轨兼顾需注意精力平衡)\n\n## 二、核心名企诊断与润色建议\n- 核心契合点: Linux 内核与分布式 RPC 框架深度吻合。\n- 建议表述优化: 强调基于 Raft 协议的元数据仲裁与故障自愈，突出量化指标 (QPS提升32%)。\n\n## 三、公考资格与岗位分析\n- 目标岗位: 浙江省考 · 省发改委数字经济处 (代码: 010302001)\n- 审核结论: 刚性资格全部符合，预计竞争比在 45:1 左右。\n`;
+          const blob = new Blob([reportContent], { type: 'text/markdown;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `CampusJob_Advisory_Report_${new Date().toISOString().slice(0, 10)}.md`;
+          a.click();
+          URL.revokeObjectURL(url);
+          showToast('综合诊断报告 (.MD) 已成功生成并下载到本地！', 'download');
+        });
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+          window.loadAdvisoryData();
+
+          // 支持从看板/仪表盘/雷达带参直接唤起 AI 押题与通关 Copilot
+          const urlParams = new URLSearchParams(window.location.search);
+          const initialPrompt = urlParams.get('prompt');
+          if (initialPrompt) {
+            setTimeout(() => {
+              window.sendCopilotMessage(initialPrompt);
+            }, 400);
+          }
+        });
+      })();
+  </script>
+  <!-- ==================== FOOTER & GLOBAL STATUS BAR ==================== -->
+
+
+
+
+
+  <script src="/assets/js/fast_parser.js"></script>
+  <script src="/assets/js/omni_agent.js"></script>
+</body>
+
+</html>

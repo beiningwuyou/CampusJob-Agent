@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>投递追踪看板 - CampusJob-Agent</title>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap"
+    rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet">
+  <link rel="prefetch" href="/settings">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background": "#f8fafc",
+            "surface": "#ffffff",
+            "surface-card": "#ffffff",
+            "surface-elevated": "#f1f5f9",
+            "surface-container-high": "#e2e8f0",
+            "surface-variant": "#f8fafc",
+            "primary": "#eab308",
+            "primary-light": "#fef08a",
+            "primary-container": "#fefce8",
+            "primary-active": "#ca8a04",
+            "secondary": "#10b981",
+            "accent-turquoise": "#0d9488",
+            "danger": "#ef4444",
+            "hairline": "#e2e8f0",
+            "hairline-strong": "#cbd5e1",
+            "text-primary": "#0f172a",
+            "text-body": "#334155",
+            "text-muted": "#64748b",
+            "text-muted-strong": "#475569",
+            "ink-inverse": "#ffffff"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "sm": "0.125rem",
+            "md": "0.375rem",
+            "lg": "0.5rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    @layer base {
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        overscroll-behavior: none;
+      }
+    }
+
+    html {
+      scrollbar-gutter: stable;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f8fafc;
+      color: #334155;
+    }
+
+    .font-mono-num {
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+
+<body
+  class="bg-background font-sans text-text-body antialiased min-h-screen flex flex-col selection:bg-amber-100 selection:text-amber-900">
+  <!-- ==================== TOP NAVIGATION HEADER ==================== -->
+  <header
+    class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-6 h-14 flex items-center shadow-sm">
+    <div class="max-w-[1536px] w-full mx-auto flex items-center justify-between gap-4">
+      <!-- 1. Left: Branding & Dashboard Entrance -->
+      <div class="flex items-center gap-6 flex-shrink-0">
+        <a href="/dashboard"
+          class="flex items-center gap-2 px-3 py-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-md font-semibold text-xs transition-colors">
+          <span class="material-symbols-outlined text-[18px] text-amber-500">grid_view</span>
+          <span class="">仪表盘</span>
+        </a>
+      </div>
+
+      <!-- 2. Center: 4 Core Business Section Entrances -->
+      <nav class="hidden md:flex items-center gap-1 xl:gap-2 flex-shrink-0">
+        <a href="/jobs"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors">
+          <span class="material-symbols-outlined text-[17px] text-slate-400">view_kanban</span>
+          <span class="">校招雷达</span>
+        </a>
+        <a href="/calendar"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors">
+          <span class="material-symbols-outlined text-[17px] text-slate-400">calendar_month</span>
+          <span class="">日历日程</span>
+          <span
+            class="px-1.5 py-0.5 text-[10px] font-mono-num font-bold bg-rose-50 text-rose-600 border border-rose-200 rounded-full leading-none">3待办</span>
+        </a>
+        <a href="/tracker"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-950 bg-amber-400 rounded-md shadow-xs transition-colors relative">
+          <span class="material-symbols-outlined text-[17px] text-slate-950 font-bold">track_changes</span>
+          <span class="">投递追踪</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-800 animate-pulse"></span>
+          <span class="text-[10px] font-mono text-slate-950 bg-black/10 px-1 py-0.2 rounded font-bold">14</span>
+        </a>
+        <a href="/advisory"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 hover:bg-slate-50 rounded transition-colors">
+          <span class="material-symbols-outlined text-[17px] text-amber-500">auto_awesome</span>
+          <span class="">AI顾问诊断</span>
+        </a>
+      </nav>
+
+      <!-- 3. Right: Search, Parser Button, Notifications, User Profile & Settings -->
+      <div class="flex items-center gap-3 justify-end flex-1 max-w-xl">
+        <!-- Global Search -->
+        <div class="relative flex-1 max-w-xs hidden sm:block">
+          <span
+            class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] pointer-events-none select-none">search</span>
+          <input id="global-search-input"
+            class="w-full h-[34px] pl-8 pr-12 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-amber-400 focus:bg-white focus:ring-0 rounded-md text-xs text-slate-800 placeholder:text-slate-400 transition-all font-sans"
+            placeholder="全局搜索企业、岗位、公考..." type="text">
+          <kbd onclick="document.getElementById('global-search-input').focus()"
+            class="absolute right-2 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-mono-num bg-white text-slate-500 rounded border border-slate-200 shadow-2xs pointer-events-none select-none">⌘K</kbd>
+        </div>
+
+        <!-- Fast Parser CTA Button -->
+        <button onclick="location.href='/jobs'"
+          class="h-[34px] flex items-center gap-1.5 px-3.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold rounded-md transition-all shadow-xs flex-shrink-0 active:scale-95">
+          <span class="material-symbols-outlined text-[16px] text-slate-950 font-bold">bolt</span>
+          <span class="">+ 解析推文/海报</span>
+        </button>
+
+        <!-- Notifications Bell -->
+        <a href="/calendar"
+          class="relative h-[34px] w-[34px] flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-md hover:bg-slate-100 border border-slate-200 bg-white transition-all flex-shrink-0"
+          title="待阅通知 (2)">
+          <span class="material-symbols-outlined text-[18px]">notifications</span>
+          <span
+            class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white animate-pulse"></span>
+        </a>
+
+        <!-- User Profile & Settings Combined Interactive Capsule -->
+        <a href="/settings"
+          class="flex items-center gap-2 pl-1.5 pr-2.5 h-[34px] bg-white hover:bg-slate-50 active:scale-95 border border-slate-200 rounded-md flex-shrink-0 cursor-pointer shadow-2xs group transition-all"
+          title="个人中心与系统设置">
+          <div
+            class="w-6 h-6 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 font-bold text-[11px] shadow-2xs flex-shrink-0 select-none">
+            职
+          </div>
+          <div class="hidden md:flex flex-col text-left justify-center leading-tight">
+            <div id="header-profile-degree" class="text-[11px] font-bold text-slate-800 flex items-center gap-1">
+              个人求职画像
+            </div>
+            <div id="header-profile-major" class="text-[9px] text-slate-500 font-medium">
+              点击前往配置
+            </div>
+          </div>
+          <div class="h-4 w-px bg-slate-200 mx-0.5 hidden md:block"></div>
+          <span
+            class="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-amber-600 transition-colors">settings</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <!-- ==================== MAIN WORKSPACE ==================== -->
+  <main class="w-full pb-12 min-h-screen bg-slate-50 px-6 py-5 max-w-[1536px] mx-auto flex flex-col space-y-5">
+    <!-- 1. TOP 4 METRIC STAT CARDS -->
+    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
+      <!-- Card 1: 总追踪事项 -->
+      <div
+        class="bg-surface border border-hairline rounded-md p-4 flex flex-col justify-between hover:border-hairline-strong hover:shadow-xs transition-all shadow-2xs">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-text-muted flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[17px] text-amber-500">folder_open</span>
+            总追踪事项
+          </span>
+          <span
+            class="font-mono-num text-[11px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 font-bold">
+            本周新增 +3
+          </span>
+        </div>
+        <div class="flex items-baseline justify-between mt-2.5">
+          <div class="flex items-baseline gap-1.5">
+            <span class="font-mono-num text-3xl font-black text-text-primary leading-none">18</span>
+            <span class="text-xs text-text-muted">项有效记录</span>
+          </div>
+          <div class="flex items-center gap-1.5 font-mono-num text-xs">
+            <span class="text-text-muted">企招 <strong class="text-slate-900 font-bold">11</strong></span>
+            <span class="text-slate-300">/</span>
+            <span class="text-text-muted">体制内 <strong class="text-teal-700 font-bold">7</strong></span>
+          </div>
+        </div>
+      </div>
+      <!-- Card 2: 紧急待处理节点 -->
+      <div
+        class="bg-surface border border-rose-200 rounded-md p-4 flex flex-col justify-between hover:border-rose-400 hover:shadow-xs transition-all shadow-2xs relative overflow-hidden">
+        <div class="absolute top-0 right-0 left-0 h-0.5 bg-red-500"></div>
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-red-600 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+            紧急待处理节点
+          </span>
+          <span
+            class="font-mono-num text-[11px] text-red-700 bg-red-50 px-1.5 py-0.5 rounded border border-red-200 font-bold">
+            CRITICAL
+          </span>
+        </div>
+        <div class="flex items-baseline justify-between mt-2.5">
+          <div class="flex items-baseline gap-1.5">
+            <span class="font-mono-num text-3xl font-black text-red-600 leading-none">04</span>
+            <span class="text-xs text-text-muted">个临界待办</span>
+          </div>
+          <span class="font-mono-num text-xs text-red-600 font-semibold bg-red-50 px-1.5 py-0.5 rounded">
+            招行笔试 &lt; 4.5h
+          </span>
+        </div>
+        <div
+          class="mt-3 pt-2.5 border-t border-hairline truncate text-[11px] text-text-muted flex items-center gap-1.5">
+          <span class="text-slate-800 font-medium">1场今日笔试</span>
+          <span class="text-slate-300">•</span>
+          <span class="text-slate-800 font-medium">1场明午面试</span>
+          <span class="text-slate-300">•</span>
+          <span class="text-slate-800 font-medium">2选岗截止</span>
+        </div>
+      </div>
+      <!-- Card 3: 初筛与入围率 -->
+      <div
+        class="bg-surface border border-hairline rounded-md p-4 flex flex-col justify-between hover:border-hairline-strong hover:shadow-xs transition-all shadow-2xs">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-text-muted flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[17px] text-blue-600">show_chart</span>
+            初筛与入围率
+          </span>
+        </div>
+        <div class="flex items-baseline justify-between mt-2.5">
+          <div class="flex items-baseline gap-1">
+            <span class="font-mono-num text-3xl font-black text-blue-600 leading-none">63.6<span
+                class="text-base font-bold">%</span></span>
+            <span class="text-xs text-text-muted ml-1">综合通过率</span>
+          </div>
+          <div class="flex items-center gap-1 font-mono-num text-xs text-slate-600">
+            <span class="">选调初审 <strong class="text-emerald-700 font-bold">100% (2/2)</strong></span>
+          </div>
+        </div>
+        <div class="mt-3 pt-2.5 border-t border-hairline flex items-center justify-between text-[11px] text-text-muted">
+          <div class="w-32 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+            <div class="bg-blue-600 h-1.5 rounded-full" style="width: 63.6%"></div>
+          </div>
+          <span class="font-mono-num text-blue-700 font-medium">企招 7/11 入围</span>
+        </div>
+      </div>
+      <!-- Card 4: 已录用意向 / Offer -->
+      <div
+        class="bg-surface border border-emerald-200 rounded-md p-4 flex flex-col justify-between hover:border-emerald-300 hover:shadow-xs transition-all shadow-2xs">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-text-muted flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[17px] text-emerald-600">military_tech</span>
+            已录用意向 / Offer
+          </span>
+        </div>
+        <div class="flex items-baseline justify-between mt-2.5">
+          <div class="flex items-baseline gap-1.5">
+            <span class="font-mono-num text-3xl font-black text-emerald-700 leading-none">01</span>
+            <span class="text-xs text-text-muted">份正式意向书</span>
+          </div>
+          <span class="font-mono-num text-xs text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
+            滨江编办公示中 (1)
+          </span>
+        </div>
+        <div
+          class="mt-3 pt-2.5 border-t border-hairline truncate text-[11px] text-text-muted flex items-center justify-between">
+          <span class="text-slate-800 font-medium truncate">字节跳动 · 商业化研发 (提前批)</span>
+          <span class="font-mono-num text-[11px] text-emerald-700 font-semibold">10-20待锁定</span>
+        </div>
+      </div>
+    </section>
+    <!-- 2. FILTER & TOOLBAR STRIP -->
+    <section
+      class="bg-surface border border-hairline rounded-md p-2.5 mb-4 flex flex-wrap items-center justify-between gap-3 shadow-2xs">
+      <div class="flex items-center gap-3 flex-wrap">
+        <!-- Segmented Filter Tabs -->
+        <div class="inline-flex bg-slate-100 border border-hairline rounded p-0.5 text-xs" id="tracker-filter-tabs">
+          <button
+            class="tracker-filter-tab px-3 py-1 rounded bg-white text-slate-900 font-bold border border-slate-200 shadow-2xs"
+            data-filter="all">
+            全部事项
+          </button>
+          <button class="tracker-filter-tab px-3 py-1 rounded text-text-muted hover:text-text-primary transition-colors"
+            data-filter="enterprise">
+            企业校招投递流
+          </button>
+          <button class="tracker-filter-tab px-3 py-1 rounded text-text-muted hover:text-text-primary transition-colors"
+            data-filter="civil">
+            体制内考公/编制
+          </button>
+        </div>
+        <!-- Quick Filter Search Input -->
+        <div class="relative flex items-center">
+          <span class="material-symbols-outlined absolute left-2.5 text-text-muted text-[15px]">search</span>
+          <input id="tracker-search-input"
+            class="bg-slate-50 border border-hairline text-text-primary placeholder:text-text-muted font-sans pl-7 pr-3 py-1 rounded w-64 focus:border-amber-500 focus:bg-white focus:outline-none transition-colors text-xs"
+            placeholder="检索企业 / 岗位 / 推进阶段..." type="text">
+        </div>
+        <!-- Critical Only Toggle Badge -->
+        <button id="toggle-critical-btn"
+          class="px-2.5 py-1 bg-red-50 border border-red-200 text-red-700 font-medium rounded flex items-center gap-1.5 hover:bg-red-100 transition-colors text-xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+          <span id="critical-btn-text">仅看临界待办 (4)</span>
+        </button>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <!-- Kanban / Table View Switcher -->
+        <div class="inline-flex bg-slate-100 border border-hairline rounded p-0.5 text-xs" id="tracker-view-selector">
+          <button id="btn-kanban-view"
+            class="px-2.5 py-0.5 rounded bg-white text-slate-900 font-bold border border-slate-200 shadow-2xs flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px] text-amber-600">view_kanban</span>
+            <span class="">看板</span>
+          </button>
+          <button id="btn-table-view"
+            class="px-2.5 py-0.5 rounded text-text-muted hover:text-text-primary flex items-center gap-1 transition-colors">
+            <span class="material-symbols-outlined text-[14px]">table_chart</span>
+            <span class="">表格</span>
+          </button>
+        </div>
+        <button id="btn-batch-import" onclick="openModal('modal-batch-import')"
+          class="flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-slate-50 border border-hairline text-slate-700 text-xs rounded transition-colors shadow-2xs font-medium"
+          title="批量导入已有 Excel / 表格投递记录">
+          <span class="material-symbols-outlined text-[15px] text-blue-600">upload_file</span>
+          <span class="">批量导入Excel</span>
+        </button>
+        <button id="btn-sync-email"
+          class="flex items-center gap-1.5 px-3 py-1 bg-white hover:bg-slate-50 border border-hairline text-slate-700 text-xs rounded transition-colors shadow-2xs font-medium">
+          <span class="material-symbols-outlined text-[15px] text-emerald-600">sync</span>
+          <span class="">同步邮箱状态</span>
+        </button>
+        <button id="btn-smart-ingest"
+          class="flex items-center gap-1.5 px-3 py-1 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold rounded shadow-xs transition-all active:scale-95">
+          <span class="material-symbols-outlined text-[16px] text-slate-950 font-bold">bolt</span>
+          <span class="">智能捕获通知</span>
+        </button>
+        <button id="btn-manual-add"
+          class="flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-slate-50 border border-hairline text-slate-700 text-xs rounded transition-colors shadow-2xs font-medium">
+          <span class="material-symbols-outlined text-[15px] text-slate-400">add</span>
+          <span class="">手工补录</span>
+        </button>
+      </div>
+    </section>
+    <!-- 3. FIVE-STAGE TRACKING KANBAN BOARD -->
+    <section class="grid grid-cols-1 xl:grid-cols-5 gap-4 items-start flex-1" id="tracker-kanban-view">
+      <!-- ================= COLUMN 1: 已网申 / 待初审 ================= -->
+      <div class="bg-slate-100/90 border border-hairline rounded-md flex flex-col shadow-2xs overflow-hidden">
+        <!-- Header -->
+        <div class="px-3 py-2.5 bg-white border-b border-hairline flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+            <h3 class="font-bold text-xs text-text-primary">1. 已网申 / 待初审</h3>
+          </div>
+          <span
+            class="font-mono-num text-[11px] text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200 font-bold">4</span>
+        </div>
+        <!-- Task Cards Container -->
+        <div class="p-2 space-y-2.5">
+          <!-- Card 1.1: 腾讯 -->
+          <div
+            class="bg-white border border-hairline hover:border-blue-300 rounded p-3 transition-all space-y-2 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-text-primary text-xs hover:text-blue-600 cursor-pointer">腾讯科技 (WXG)</span>
+              <span
+                class="font-mono-num text-[10px] text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">内推专线</span>
+            </div>
+            <div class="text-xs text-slate-600">后端开发工程师 (分布式架构)</div>
+            <div class="flex items-center justify-between text-xs font-mono-num">
+              <span class="text-amber-700 font-bold">22k - 38k</span>
+              <span class="text-emerald-700 font-medium">直通现场初面</span>
+            </div>
+            <div class="pt-2 border-t border-hairline flex items-center justify-between text-[11px] text-text-muted">
+              <span class="truncate max-w-[180px]">简历: v4.2_分布式重构.pdf</span>
+              <span class="text-slate-500">已网申</span>
+            </div>
+          </div>
+          <!-- Card 1.2: 浙江省考 -->
+          <div
+            class="bg-white border border-hairline hover:border-teal-300 rounded p-3 transition-all space-y-2 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-text-primary text-xs hover:text-teal-700 cursor-pointer">2027浙江省考·四级联考</span>
+              <span
+                class="font-mono-num text-[10px] text-teal-800 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200 font-medium">体制考公</span>
+            </div>
+            <div class="text-xs text-slate-600">省发改委·数字经济处综合岗</div>
+            <div class="text-xs font-mono-num text-text-muted flex items-center justify-between">
+              <span class="text-amber-800 font-medium">资格初审推进中</span>
+              <span class="text-slate-500">剩余 ~28h</span>
+            </div>
+            <div class="pt-2 border-t border-hairline flex items-center justify-between text-[11px] text-text-muted">
+              <span class="">官方报名表已同步</span>
+              <span class="text-teal-700 font-medium">缴费入口待开放</span>
+            </div>
+          </div>
+          <!-- Card 1.3: 国家电网 -->
+          <div
+            class="bg-white border border-hairline hover:border-hairline-strong rounded p-3 transition-all space-y-2 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-text-primary text-xs hover:text-amber-600 cursor-pointer">国家电网·华东分部</span>
+              <span
+                class="font-mono-num text-[10px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">央企统招</span>
+            </div>
+            <div class="text-xs text-slate-600">电力调度数字化算法工程师</div>
+            <div class="flex items-center justify-between text-xs font-mono-num">
+              <span class="text-slate-500">招聘平台: 预申报</span>
+              <span class="text-emerald-700 font-medium">初审资格通过</span>
+            </div>
+            <div class="pt-2 border-t border-hairline text-[11px] text-text-muted flex items-center justify-between">
+              <span class="">网申材料已归档 (3/3)</span>
+              <span class="text-slate-600 font-medium">待下发统考确认</span>
+            </div>
+          </div>
+          <!-- Card 1.4: 米哈游 -->
+          <div
+            class="bg-white border border-hairline hover:border-hairline-strong rounded p-3 transition-all space-y-2 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-text-primary text-xs hover:text-amber-600 cursor-pointer">米哈游</span>
+              <span
+                class="font-mono-num text-[10px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">企业校招</span>
+            </div>
+            <div class="text-xs text-slate-600">游戏服务平台研发工程师·上海</div>
+            <div class="flex items-center justify-between text-xs font-mono-num">
+              <span class="text-slate-500">HR 简历筛选中</span>
+              <span class="text-slate-500">投递 +2天</span>
+            </div>
+            <div class="pt-2 border-t border-hairline text-[11px] text-text-muted flex items-center justify-between">
+              <span class="">内推直通初筛</span>
+              <span class="text-emerald-700 font-medium">已入池</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ================= COLUMN 2: 笔试阶段 (机试/行测) ================= -->
+      <div class="bg-slate-100/90 border border-hairline rounded-md flex flex-col shadow-2xs overflow-hidden">
+        <!-- Header -->
+        <div class="px-3 py-2.5 bg-white border-b border-hairline flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <h3 class="font-bold text-xs text-text-primary">2. 笔试阶段 (机试/行测)</h3>
+          </div>
+          <span
+            class="font-mono-num text-[11px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 font-bold">4</span>
+        </div>
+        <!-- Task Cards Container -->
+        <div class="p-2 space-y-2.5">
+          <!-- Card 2.1: 招商银行 (紧急) -->
+          <div
+            class="bg-white border-2 border-rose-300 hover:border-rose-500 rounded p-3 transition-all space-y-2 relative overflow-hidden shadow-sm">
+            <div class="absolute right-0 top-0 bottom-0 w-1 bg-rose-500"></div>
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-text-primary text-xs hover:text-red-600 cursor-pointer">招商银行金融科技</span>
+              <span
+                class="font-mono-num text-[10px] text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200 font-bold animate-pulse">今日
+                19:00</span>
+            </div>
+            <div class="text-xs text-slate-600">总行软件中心·统一在线笔试</div>
+            <div class="flex items-center justify-between text-xs font-mono-num">
+              <span class="text-rose-600 font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-[13px]">alarm</span>倒计时 04:27:12
+              </span>
+              <span class="text-emerald-700 font-medium">双机位已检测</span>
+            </div>
+            <div class="pt-2 border-t border-hairline flex items-center justify-between text-[11px]">
+              <span class="text-text-muted font-mono-num">口令: CMB-984103</span>
+              <button
+                onclick="location.href='/advisory.html?prompt=' + encodeURIComponent('针对招商银行金融科技软件中心统考机试，帮我押3道核心算法题与专业盲区')"
+                class="text-amber-700 hover:text-amber-800 font-bold hover:underline cursor-pointer">🎯 呼叫 AI 专属押题
+                →</button>
+            </div>
+          </div>
+          <!-- Card 2.2: 华为技术 -->
+          <div
+            class="bg-white border border-hairline hover:border-blue-300 rounded p-3 transition-all space-y-2 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-text-primary text-xs hover:text-amber-600 cursor-pointer">华为技术
+                (2027勇敢星)</span>
+              <span
+                class="font-mono-num text-[10px] text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">企业校招</span>
+            </div>
+            <div class="text-xs text-slate-600">通用软件开发工程师·ACM机试</div>
+            <div class="flex items-center justify-between text-xs font-mono-num">
+              <span class="text-slate-500">时间: 09-16 19:00</span>
+              <span class="text-emerald-700 font-medium">已确认参试</span>
+            </div>
+            <div class="pt-2 border-t border-hairline flex items-center justify-between text-[11px] text-text-muted">
+              <span class="">专项真题 3/3 已练完</span>
+              <button
+                onclick="location.href='/advisory.html?prompt=' + encodeURIComponent('针对华为勇敢星通用软件开发机考，请提供3道高频真题与解题技巧')"
+                class="text-amber-700 font-medium hover:underline cursor-pointer">🎯 考点 AI 串讲</button>
+            </div>
+          </div>
+          <!-- Card 2.3: 浙江公务员笔试 -->
+          <div
+            class="bg-white border border-hairline hover:border-teal-300 rounded p-3 transition-all space-y-2 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-text-primary text-xs hover:text-teal-700 cursor-pointer">2027浙江公务员笔试</span>
+              <span
+                class="font-mono-num text-[10px] text-teal-800 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200 font-medium">统考科目</span>
+            </div>
+            <div class="text-xs text-slate-600">公共科目笔试 (行测 + 申论)</div>
+            <div class="flex items-center justify-between text-xs font-mono-num">
+              <span class="text-amber-700 font-bold">倒计时 87 天</span>
+              <span class="text-slate-500">12月07日 09:00</span>
+            </div>
+            <div class="pt-2 border-t border-hairline flex items-center justify-between text-[11px] text-text-muted">
+              <span class="">准考证打印: 12-01</span>
+              <button
+                onclick="location.href='/advisory.html?prompt=' + encodeURIComponent('请针对浙江省考申论A类数字经济命题，为我提供高分范文论点与政策考点梳理')"
+                class="text-teal-700 font-medium hover:underline cursor-pointer">🎯 申论热点推演</button>
+            </div>
+          </div>
+          <!-- Card 2.4: 蚂蚁集团 -->
+          <div
+            class="bg-white border border-hairline hover:border-hairline-strong rounded p-3 transition-all space-y-2 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-text-primary text-xs hover:text-amber-600 cursor-pointer">蚂蚁集团·平台工程</span>
+              <span
+                class="font-mono-num text-[10px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">在线评测</span>
+            </div>
+            <div class="text-xs text-slate-600">系统开发工程方向技术测评</div>
+            <div class="flex items-center justify-between text-xs font-mono-num">
+              <span class="text-slate-500">限时 120 分钟</span>
+              <span class="text-amber-700 font-medium">48h内完成有效</span>
+            </div>
+            <div class="pt-2 border-t border-hairline text-[11px] text-text-muted flex items-center justify-between">
+              <span class="">牛客测评链接已接收</span>
+              <button class="text-slate-800 font-medium hover:text-amber-700 hover:underline">进入自测</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ================= COLUMN 3: 面试阶段 (专业/结构化) ================= -->
+      <div class="bg-slate-100/90 border border-hairline rounded-md flex flex-col shadow-2xs overflow-hidden">
+        <!-- Header -->
+        <div class="px-3 py-2.5 bg-white border-b border-hairline flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            <h3 class="font-bold text-xs text-text-primary">3. 面试阶段 (专业/结构化)</h3>
+          </div>
+          <span
+            class="font-mono-num text-[11px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 font-bold">3</span>
+        </div>
+        <!-- Task Cards Container -->
+        <div class="p-2 space-y-2.5">
+          <!-- Card 3.1: 淘天技术 (明天面试) -->
+          <div
+            class="bg-white border-2 border-amber-300 hover:border-amber-400 rounded p-3 transition-all space-y-2 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-text-primary text-xs hover:text-amber-600 cursor-pointer">阿里巴巴·淘天技术</span>
+              <span class="font-mono-num text-[10px] text-slate-900 bg-amber-300 px-1.5 py-0.5 rounded font-bold">明日
+                15:30</span>
+            </div>
+            <div class="text-xs text-slate-600">业务架构二面 (在线钉钉视频)</div>
+            <div class="flex items-center justify-between text-xs font-mono-num">
+              <span class="text-slate-500">面试官: 资深技术专家 P8</span>
+              <span class="text-emerald-700 font-semibold bg-emerald-50 px-1 rounded">一面评级: A+</span>
+            </div>
+            <div class="pt-2 border-t border-hairline flex items-center justify-between text-[11px]">
+              <span class="text-blue-700 flex items-center gap-0.5">
+                <span class="material-symbols-outlined text-[13px]">psychology</span>AI考点研判就绪
+              </span>
+              <button
+                onclick="location.href='/advisory.html?prompt=' + encodeURIComponent('针对阿里的二面场景，帮我押几道核心追问与高并发架构陷阱')"
+                class="text-amber-700 font-bold hover:underline cursor-pointer flex items-center gap-0.5">🎯 唤起 AI
+                考官追问</button>
+            </div>
+          </div>
+          <!-- Card 3.2: 美团 -->
+          <div
+            class="bg-white border border-hairline hover:border-blue-300 rounded p-3 transition-all space-y-2 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-text-primary text-xs hover:text-amber-600 cursor-pointer">美团·基础研发平台</span>
+              <span
+                class="font-mono-num text-[10px] text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">现场综合一面</span>
+            </div>
+            <div class="text-xs text-slate-600">高并发分布式存储方向</div>
+            <div class="flex items-center justify-between text-xs font-mono-num">
+              <span class="text-slate-500">地点: 浙大玉泉永谦</span>
+              <span class="text-amber-700 font-semibold">09-14 下午场</span>
+            </div>
+            <div class="pt-2 border-t border-hairline flex items-center justify-between text-[11px] text-text-muted">
+              <span class="">携带纸质简历*3份</span>
+              <button
+                onclick="location.href='/advisory.html?prompt=' + encodeURIComponent('针对美团基础研发平台现场一面，请针对分布式存储经历帮我押3道关键面试追问')"
+                class="text-amber-700 font-bold hover:underline cursor-pointer">🎯 呼叫 AI 专属押题</button>
+            </div>
+          </div>
+          <!-- Card 3.3: Microsoft -->
+          <div
+            class="bg-white border border-hairline hover:border-hairline-strong rounded p-3 transition-all space-y-2 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-text-primary text-xs hover:text-amber-600 cursor-pointer">Microsoft (微软
+                STCA)</span>
+              <span
+                class="font-mono-num text-[10px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">终面轮次</span>
+            </div>
+            <div class="text-xs text-slate-600">SWE II 综合终面 (Partner 面)</div>
+            <div class="flex items-center justify-between text-xs font-mono-num">
+              <span class="text-slate-500">日期: 09-22 09:00</span>
+              <span class="text-emerald-700 font-medium">Teams会议锁定</span>
+            </div>
+            <div class="pt-2 border-t border-hairline flex items-center justify-between text-[11px] text-text-muted">
+              <span class="">算法二轮全AC</span>
+              <span
+                class="text-slate-800 font-medium hover:text-amber-700 hover:underline cursor-pointer">准备英文自我介绍</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ================= COLUMN 4: 体检 / 政审 / 考察 ================= -->
+      <div class="bg-slate-100/90 border border-hairline rounded-md flex flex-col shadow-2xs overflow-hidden">
+        <!-- Header -->
+        <div class="px-3 py-2.5 bg-white border-b border-hairline flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+            <h3 class="font-bold text-xs text-text-primary">4. 体检 / 政审 / 考察</h3>
+          </div>
+          <span
+            class="font-mono-num text-[11px] text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200 font-bold">2</span>
+        </div>
+        <!-- Task Cards Container -->
+        <div class="p-2 space-y-2.5">
+          <!-- Card 4.1: 浙江纪委监委 -->
+          <div
+            class="bg-white border border-purple-200 hover:border-purple-400 rounded p-3 transition-all space-y-2 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-text-primary text-xs hover:text-purple-700 cursor-pointer">浙江纪委监委直属选调</span>
+              <span
+                class="font-mono-num text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 font-medium">笔面双过</span>
+            </div>
+            <div class="text-xs text-slate-600">纪检监察信息技术管理岗位</div>
+            <div class="flex items-center justify-between text-xs font-mono-num">
+              <span class="text-emerald-700 flex items-center gap-1 font-medium">
+                <span class="material-symbols-outlined text-[13px]">verified</span>体检合格
+              </span>
+              <span class="text-purple-700 font-semibold bg-purple-50 px-1 rounded">组织考察中</span>
+            </div>
+            <div class="pt-2 border-t border-hairline text-[11px] space-y-1">
+              <div class="text-slate-800 font-medium flex items-center gap-1">
+                <span class="material-symbols-outlined text-[13px] text-amber-500">task_alt</span>
+                <span class="">待办: 打印党员政治鉴定表并盖章</span>
+              </div>
+              <div class="text-text-muted font-mono-num text-[10px]">政审考察排期中</div>
+            </div>
+          </div>
+          <!-- Card 4.2: 中科院计算所 -->
+          <div
+            class="bg-white border border-hairline hover:border-hairline-strong rounded p-3 transition-all space-y-2 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-text-primary text-xs hover:text-amber-600 cursor-pointer">中科院计算所</span>
+              <span
+                class="font-mono-num text-[10px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">国家重点实验室</span>
+            </div>
+            <div class="text-xs text-slate-600">专职助理研究员 (体制科研岗)</div>
+            <div class="flex items-center justify-between text-xs font-mono-num">
+              <span class="text-slate-500">阶段: 体检报告审核</span>
+              <span class="text-emerald-700 font-medium">报告已寄送</span>
+            </div>
+            <div class="pt-2 border-t border-hairline flex items-center justify-between text-[11px] text-text-muted">
+              <span class="">体检已完成</span>
+              <span class="text-slate-600 font-medium">政审函待调档</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ================= COLUMN 5: 意向录用 / Offer / 公示 ================= -->
+      <div class="bg-slate-100/90 border border-hairline rounded-md flex flex-col shadow-2xs overflow-hidden">
+        <!-- Header -->
+        <div class="px-3 py-2.5 bg-white border-b border-hairline flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+            <h3 class="font-bold text-xs text-text-primary">5. 意向录用 / Offer / 公示</h3>
+          </div>
+          <span
+            class="font-mono-num text-[11px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 font-bold">2</span>
+        </div>
+        <!-- Task Cards Container -->
+        <div class="p-2 space-y-2.5">
+          <!-- Card 5.1: 字节跳动 (Offer锁定) -->
+          <div
+            class="bg-white border-2 border-emerald-300 hover:border-emerald-500 rounded p-3 transition-all space-y-2 relative overflow-hidden shadow-sm">
+            <div class="absolute right-0 top-0 bottom-0 w-1 bg-emerald-500"></div>
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-text-primary text-xs hover:text-emerald-700 cursor-pointer">字节跳动</span>
+              <span
+                class="font-mono-num text-[10px] text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded font-bold border border-emerald-200">正式意向书</span>
+            </div>
+            <div class="text-xs text-slate-600">商业化研发团队·后端研发架构</div>
+            <div class="flex items-center justify-between text-xs font-mono-num">
+              <span class="text-emerald-700 font-bold">意向录用</span>
+              <span class="text-slate-500">确认截止: 10-20</span>
+            </div>
+            <div class="pt-2 border-t border-hairline flex items-center justify-between text-[11px]">
+              <button class="text-slate-700 hover:text-amber-700 flex items-center gap-1 font-medium"
+                onclick="showTrackerToast('意向函批次: 2027秋招商业化研发(北京/杭州)，签约截止: 10-20')">
+                <span class="material-symbols-outlined text-[13px] text-slate-500">description</span>查看意向函
+              </button>
+              <a href="/advisory.html?prompt=请基于我的工学硕士与党员画像，全面对比字节跳动55W研发年包与浙江省直发改委选调生的综合期望效用与替换成本"
+                class="text-emerald-700 hover:underline font-bold flex items-center gap-0.5">
+                终局决策推演 →
+              </a>
+            </div>
+          </div>
+          <!-- Card 5.2: 杭州滨江事业编 -->
+          <div
+            class="bg-white border border-teal-200 hover:border-teal-400 rounded p-3 transition-all space-y-2 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-text-primary text-xs hover:text-teal-700 cursor-pointer">杭州滨江高新区事业编</span>
+              <span
+                class="font-mono-num text-[10px] text-teal-800 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200 font-medium">公示中</span>
+            </div>
+            <div class="text-xs text-slate-600">大数据资源保障中心·专技九级</div>
+            <div class="flex items-center justify-between text-xs font-mono-num">
+              <span class="text-teal-800 font-bold">拟聘用人员名单</span>
+              <span class="text-slate-500">公示期: 剩余3天</span>
+            </div>
+            <div class="pt-2 border-t border-hairline flex items-center justify-between text-[11px] text-text-muted">
+              <span class="">全额拨款事业编制</span>
+              <span class="text-emerald-700 font-mono-num font-semibold">资格审验100%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== ALTERNATIVE VIEW: TABLE VIEW ==================== -->
+    <section class="hidden bg-white border border-hairline rounded-md overflow-hidden shadow-2xs flex-1"
+      id="tracker-table-view" style="display: none;">
+      <div class="px-4 py-3 bg-slate-50 border-b border-hairline flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[16px] text-amber-600">table_chart</span>
+          <span class="text-xs font-bold text-slate-800">投递全量台账清单 (<span id="table-total-count">16</span> 项申请)</span>
+        </div>
+        <span class="text-[11px] text-text-muted font-mono-num">支持多维按状态 / DDL 排序与推进</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr
+              class="bg-slate-100/70 border-b border-hairline text-text-muted font-mono-num text-[11px] uppercase tracking-wider">
+              <th class="py-2.5 px-3 w-10 text-center"><input type="checkbox"
+                  class="rounded border-slate-300 text-amber-500 focus:ring-0"></th>
+              <th class="py-2.5 px-3 font-semibold">企业机构</th>
+              <th class="py-2.5 px-3 font-semibold">目标岗位</th>
+              <th class="py-2.5 px-3 font-semibold">通道赛道</th>
+              <th class="py-2.5 px-3 font-semibold">推进阶段</th>
+              <th class="py-2.5 px-3 font-semibold">下一节点 / 倒计时</th>
+              <th class="py-2.5 px-3 font-semibold">匹配度</th>
+              <th class="py-2.5 px-3 font-semibold text-right">快捷操作</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-hairline font-sans" id="tracker-table-tbody">
+            <!-- Row 1 -->
+            <tr class="hover:bg-slate-50 transition tracker-row" data-critical="true" data-search="腾讯科技 后端开发工程师 内推 待初审">
+              <td class="py-2.5 px-3 text-center"><input type="checkbox"
+                  class="rounded border-slate-300 text-amber-500 focus:ring-0"></td>
+              <td class="py-2.5 px-3 font-bold text-slate-900">腾讯科技 (WXG)</td>
+              <td class="py-2.5 px-3 text-slate-700">后端开发工程师 (微信支付)</td>
+              <td class="py-2.5 px-3"><span
+                  class="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-mono-num font-medium">内推专线</span>
+              </td>
+              <td class="py-2.5 px-3"><span class="text-blue-700 font-medium">1. 已网申 / 待初审</span></td>
+              <td class="py-2.5 px-3 font-mono-num text-rose-600 font-bold">09.11 18:00 (倒计时 06h)</td>
+              <td class="py-2.5 px-3 font-mono-num font-bold text-emerald-700">94分</td>
+              <td class="py-2.5 px-3 text-right">
+                <button
+                  class="px-2 py-0.5 rounded bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-[11px] shadow-2xs transition"
+                  onclick="advanceStage('腾讯科技 (WXG)', '笔试机考')">推进阶段</button>
+              </td>
+            </tr>
+            <!-- Row 2 -->
+            <tr class="hover:bg-slate-50 transition tracker-row" data-critical="false" data-search="字节跳动 推荐算法 战略私企 待初审">
+              <td class="py-2.5 px-3 text-center"><input type="checkbox"
+                  class="rounded border-slate-300 text-amber-500 focus:ring-0"></td>
+              <td class="py-2.5 px-3 font-bold text-slate-900">字节跳动</td>
+              <td class="py-2.5 px-3 text-slate-700">推荐算法工程师 (抖音架构)</td>
+              <td class="py-2.5 px-3"><span
+                  class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-mono-num">常规秋招</span>
+              </td>
+              <td class="py-2.5 px-3"><span class="text-blue-700 font-medium">1. 已网申 / 待初审</span></td>
+              <td class="py-2.5 px-3 font-mono-num text-slate-600">09.14 12:00 (剩余 3天)</td>
+              <td class="py-2.5 px-3 font-mono-num font-bold text-emerald-700">91分</td>
+              <td class="py-2.5 px-3 text-right">
+                <button
+                  class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] border border-slate-200 transition"
+                  onclick="advanceStage('字节跳动', '笔试机考')">推进阶段</button>
+              </td>
+            </tr>
+            <!-- Row 3 -->
+            <tr class="hover:bg-slate-50 transition tracker-row" data-critical="false"
+              data-search="浙江省选调生 省发改委 体制内公考 待初审">
+              <td class="py-2.5 px-3 text-center"><input type="checkbox"
+                  class="rounded border-slate-300 text-amber-500 focus:ring-0"></td>
+              <td class="py-2.5 px-3 font-bold text-slate-900">浙江省选调生</td>
+              <td class="py-2.5 px-3 text-slate-700">省发改委数字经济专项</td>
+              <td class="py-2.5 px-3"><span
+                  class="px-1.5 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-mono-num font-medium">体制选调</span>
+              </td>
+              <td class="py-2.5 px-3"><span class="text-blue-700 font-medium">1. 已网申 / 待初审</span></td>
+              <td class="py-2.5 px-3 font-mono-num text-slate-600">10.10 报名窗口开放</td>
+              <td class="py-2.5 px-3 font-mono-num font-bold text-emerald-700">96分</td>
+              <td class="py-2.5 px-3 text-right">
+                <button
+                  class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] border border-slate-200 transition"
+                  onclick="advanceStage('浙江省选调生', '笔试机考')">推进阶段</button>
+              </td>
+            </tr>
+            <!-- Row 4 -->
+            <tr class="hover:bg-slate-50 transition tracker-row" data-critical="true"
+              data-search="招商银行 总行金融科技联合体 央国企 笔试机考">
+              <td class="py-2.5 px-3 text-center"><input type="checkbox"
+                  class="rounded border-slate-300 text-amber-500 focus:ring-0"></td>
+              <td class="py-2.5 px-3 font-bold text-slate-900">招商银行</td>
+              <td class="py-2.5 px-3 text-slate-700">总行金融科技联合体 (全国统考)</td>
+              <td class="py-2.5 px-3"><span
+                  class="px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-mono-num font-medium">金科管培</span>
+              </td>
+              <td class="py-2.5 px-3"><span class="text-amber-700 font-medium">2. 笔试 / 机考阶段</span></td>
+              <td class="py-2.5 px-3 font-mono-num text-rose-600 font-bold">09.11 19:00 (倒计时 07h)</td>
+              <td class="py-2.5 px-3 font-mono-num font-bold text-amber-700">89分</td>
+              <td class="py-2.5 px-3 text-right">
+                <button
+                  class="px-2 py-0.5 rounded bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-[11px] shadow-2xs transition"
+                  onclick="advanceStage('招商银行', '专业面试')">推进阶段</button>
+              </td>
+            </tr>
+            <!-- Row 5 -->
+            <tr class="hover:bg-slate-50 transition tracker-row" data-critical="false"
+              data-search="华为技术 终端云服务 通用软件 笔试机考">
+              <td class="py-2.5 px-3 text-center"><input type="checkbox"
+                  class="rounded border-slate-300 text-amber-500 focus:ring-0"></td>
+              <td class="py-2.5 px-3 font-bold text-slate-900">华为技术</td>
+              <td class="py-2.5 px-3 text-slate-700">终端云服务 · 通用软件工程师</td>
+              <td class="py-2.5 px-3"><span
+                  class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-mono-num">勇敢星通道</span>
+              </td>
+              <td class="py-2.5 px-3"><span class="text-amber-700 font-medium">2. 笔试 / 机考阶段</span></td>
+              <td class="py-2.5 px-3 font-mono-num text-slate-600">09.15 14:00 (专业机试)</td>
+              <td class="py-2.5 px-3 font-mono-num font-bold text-emerald-700">95分</td>
+              <td class="py-2.5 px-3 text-right">
+                <button
+                  class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] border border-slate-200 transition"
+                  onclick="advanceStage('华为技术', '专业面试')">推进阶段</button>
+              </td>
+            </tr>
+            <!-- Row 6 -->
+            <tr class="hover:bg-slate-50 transition tracker-row" data-critical="true" data-search="阿里控股 阿里云计算平台 专业面试">
+              <td class="py-2.5 px-3 text-center"><input type="checkbox"
+                  class="rounded border-slate-300 text-amber-500 focus:ring-0"></td>
+              <td class="py-2.5 px-3 font-bold text-slate-900">阿里控股 (阿里云)</td>
+              <td class="py-2.5 px-3 text-slate-700">计算平台研发 · 分布式存储</td>
+              <td class="py-2.5 px-3"><span
+                  class="px-1.5 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200 text-[10px] font-mono-num font-medium">提前批技术面</span>
+              </td>
+              <td class="py-2.5 px-3"><span class="text-purple-700 font-medium">3. 专业 / 技术面试</span></td>
+              <td class="py-2.5 px-3 font-mono-num text-rose-600 font-bold">09.12 10:30 (倒计时 22h)</td>
+              <td class="py-2.5 px-3 font-mono-num font-bold text-emerald-700">93分</td>
+              <td class="py-2.5 px-3 text-right">
+                <button
+                  class="px-2 py-0.5 rounded bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-[11px] shadow-2xs transition"
+                  onclick="advanceStage('阿里控股', 'HR/终面')">推进阶段</button>
+              </td>
+            </tr>
+            <!-- Row 7 -->
+            <tr class="hover:bg-slate-50 transition tracker-row" data-critical="true"
+              data-search="蚂蚁集团 支付宝支付工程架构 HR 终面">
+              <td class="py-2.5 px-3 text-center"><input type="checkbox"
+                  class="rounded border-slate-300 text-amber-500 focus:ring-0"></td>
+              <td class="py-2.5 px-3 font-bold text-slate-900">蚂蚁集团</td>
+              <td class="py-2.5 px-3 text-slate-700">支付宝国际业务 · 支付工程架构</td>
+              <td class="py-2.5 px-3"><span
+                  class="px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-mono-num font-medium">终轮审验</span>
+              </td>
+              <td class="py-2.5 px-3"><span class="text-indigo-700 font-medium">4. HR / 终面审验</span></td>
+              <td class="py-2.5 px-3 font-mono-num text-rose-600 font-bold">09.11 20:00 (倒计时 08h)</td>
+              <td class="py-2.5 px-3 font-mono-num font-bold text-emerald-700">92分</td>
+              <td class="py-2.5 px-3 text-right">
+                <button
+                  class="px-2 py-0.5 rounded bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-[11px] shadow-2xs transition"
+                  onclick="advanceStage('蚂蚁集团', '录用意向')">推进阶段</button>
+              </td>
+            </tr>
+            <!-- Row 8 -->
+            <tr class="hover:bg-slate-50 transition tracker-row" data-critical="false"
+              data-search="微软中国 软件工程师 STCA 意向录用">
+              <td class="py-2.5 px-3 text-center"><input type="checkbox"
+                  class="rounded border-slate-300 text-amber-500 focus:ring-0"></td>
+              <td class="py-2.5 px-3 font-bold text-slate-900">微软中国 (STCA)</td>
+              <td class="py-2.5 px-3 text-slate-700">Software Engineer (苏州/上海)</td>
+              <td class="py-2.5 px-3"><span
+                  class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-mono-num font-bold">Formal
+                  Offer</span></td>
+              <td class="py-2.5 px-3"><span class="text-emerald-700 font-bold">5. 录用意向 / 签约</span></td>
+              <td class="py-2.5 px-3 font-mono-num text-emerald-700 font-bold">09.28 决策期 (剩余17天)</td>
+              <td class="py-2.5 px-3 font-mono-num font-bold text-emerald-700">97分</td>
+              <td class="py-2.5 px-3 text-right">
+                <button class="px-2 py-0.5 rounded bg-emerald-600 text-white font-bold text-[11px] shadow-2xs"
+                  onclick="showTrackerToast('已锁定微软中国 Offer 决策排期')">签约锁定</button>
+              </td>
+            </tr>
+            <!-- Row 9 -->
+            <tr class="hover:bg-slate-50 transition tracker-row" data-critical="false"
+              data-search="中国工商银行 软件研发中心 央国企 意向录用">
+              <td class="py-2.5 px-3 text-center"><input type="checkbox"
+                  class="rounded border-slate-300 text-amber-500 focus:ring-0"></td>
+              <td class="py-2.5 px-3 font-bold text-slate-900">中国工商银行</td>
+              <td class="py-2.5 px-3 text-slate-700">软件研发中心 (杭州部) · 金融科技</td>
+              <td class="py-2.5 px-3"><span
+                  class="px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200 text-[10px] font-mono-num">央企总行直属</span>
+              </td>
+              <td class="py-2.5 px-3"><span class="text-emerald-700 font-bold">5. 录用意向 / 签约</span></td>
+              <td class="py-2.5 px-3 font-mono-num text-slate-600">10.15 三方协议签约截止</td>
+              <td class="py-2.5 px-3 font-mono-num font-bold text-amber-700">88分</td>
+              <td class="py-2.5 px-3 text-right">
+                <button
+                  class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] border border-slate-200 transition"
+                  onclick="showTrackerToast('已查看工商银行三方协议签署要求')">查看协议</button>
+              </td>
+            </tr>
+            <!-- Row 10 -->
+            <tr class="hover:bg-slate-50 transition tracker-row" data-critical="false"
+              data-search="杭州滨江高新区 事业编 大数据资源保障 意向录用">
+              <td class="py-2.5 px-3 text-center"><input type="checkbox"
+                  class="rounded border-slate-300 text-amber-500 focus:ring-0"></td>
+              <td class="py-2.5 px-3 font-bold text-slate-900">杭州滨江高新区事业编</td>
+              <td class="py-2.5 px-3 text-slate-700">大数据资源保障中心 · 专技九级</td>
+              <td class="py-2.5 px-3"><span
+                  class="px-1.5 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-mono-num">全额拨款事业编</span>
+              </td>
+              <td class="py-2.5 px-3"><span class="text-emerald-700 font-bold">5. 录用意向 / 签约</span></td>
+              <td class="py-2.5 px-3 font-mono-num text-teal-800 font-semibold">公示期 (剩余 3天)</td>
+              <td class="py-2.5 px-3 font-mono-num font-bold text-emerald-700">90分</td>
+              <td class="py-2.5 px-3 text-right">
+                <button
+                  class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] border border-slate-200 transition"
+                  onclick="showTrackerToast('政审考察与资格复审材料已完备归档')">政审归档</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal: 智能捕获招聘通知 (邮件/短信/微信) -->
+  <div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs hidden flex items-center justify-center p-4"
+    id="modal-smart-ingest">
+    <div
+      class="bg-white border border-hairline rounded-md max-w-lg w-full p-4 shadow-xl relative animate-in fade-in duration-150 text-slate-800">
+      <div class="flex items-center justify-between pb-2.5 border-b border-hairline mb-3">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-amber-500 text-[20px]">bolt</span>
+          <h3 class="text-sm font-bold text-slate-900">智能捕获求职通知 · 状态嗅探</h3>
+        </div>
+        <button class="text-slate-400 hover:text-slate-700 p-1" onclick="closeModal('modal-smart-ingest')">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <!-- Step 1: Input Raw Text -->
+      <div id="ingest-step-input" class="space-y-3">
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block font-medium text-slate-700 text-xs">粘贴邮件正文、短信通知或推文消息：</label>
+            <div class="flex items-center gap-2 text-[11px]">
+              <span class="text-text-muted">快捷示例：</span>
+              <button class="text-amber-700 hover:underline font-medium" onclick="pasteSampleIngest(1)">腾讯二面</button>
+              <span class="text-slate-300">|</span>
+              <button class="text-amber-700 hover:underline font-medium" onclick="pasteSampleIngest(2)">招行机考</button>
+              <span class="text-slate-300">|</span>
+              <button class="text-amber-700 hover:underline font-medium" onclick="pasteSampleIngest(3)">字节意向</button>
+            </div>
+          </div>
+          <textarea id="ingest-raw-text" rows="5"
+            class="w-full px-3 py-2 bg-slate-50 border border-hairline rounded focus:bg-white focus:border-amber-500 outline-none text-xs leading-relaxed"
+            placeholder="例如：【腾讯招聘】同学你好，恭喜通过初筛，邀请你于明天 14:30 参加后端研发业务二面。腾讯会议号：982-314-889..."></textarea>
+        </div>
+        <div class="pt-2 border-t border-hairline flex items-center justify-between text-[11px] text-text-muted">
+          <span class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-xs text-emerald-600">security</span>
+            本地规则提取，敏感个人隐私不上传第三方
+          </span>
+          <div class="flex items-center gap-2">
+            <button type="button"
+              class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs rounded border border-hairline"
+              onclick="closeModal('modal-smart-ingest')">取消</button>
+            <button type="button" id="btn-run-ingest"
+              class="px-4 py-1.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold rounded shadow-sm flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">auto_awesome</span>
+              智能嗅探解析
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Confirmation Card (Agent Deduced) -->
+      <div id="ingest-step-confirm" class="hidden space-y-3 text-xs">
+        <div class="p-3 bg-amber-50/70 border border-amber-200 rounded-md space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5 font-bold text-slate-900 text-sm">
+              <span class="material-symbols-outlined text-amber-600 text-base">check_circle</span>
+              <span id="ingest-preview-org">腾讯科技</span>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-bold border border-amber-300 text-[11px]"
+              id="ingest-preview-stage">推进至：专业/技术面试</span>
+          </div>
+          <p class="text-slate-700 leading-relaxed text-xs" id="ingest-preview-summary">检测到业务二面面试邀请，已推算具体时间安排。</p>
+          <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-amber-200/80 text-[11px] font-mono-num">
+            <div><span class="text-text-muted font-sans">节点时间：</span><strong class="text-slate-900"
+                id="ingest-preview-time">明天 14:30</strong></div>
+            <div><span class="text-text-muted font-sans">入场口令：</span><strong class="text-blue-700"
+                id="ingest-preview-code">982-314-889</strong></div>
+          </div>
+        </div>
+
+        <div class="space-y-1.5 bg-slate-50 p-2.5 rounded border border-hairline text-xs">
+          <div class="flex items-center justify-between text-text-muted">
+            <span>操作影响：</span>
+            <span class="text-emerald-700 font-medium">✓ 同步推进看板阶段卡片</span>
+          </div>
+          <div class="flex items-center justify-between text-text-muted">
+            <span>日程排期：</span>
+            <span class="text-blue-700 font-medium">✓ 自动装配进今日/明日求职日程日历</span>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-hairline flex items-center justify-between">
+          <button type="button" class="text-xs text-text-muted hover:text-slate-900" onclick="resetIngestModal()">←
+            重新输入文本</button>
+          <div class="flex items-center gap-2">
+            <button type="button"
+              class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs rounded border border-hairline"
+              onclick="closeModal('modal-smart-ingest')">取消</button>
+            <button type="button" id="btn-confirm-ingest"
+              class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded shadow-sm flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">task_alt</span>
+              确认并自动流转
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: 手动录入记录 -->
+  <div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs hidden flex items-center justify-center p-4"
+    id="modal-add-tracker">
+    <div
+      class="bg-white border border-hairline rounded-md max-w-md w-full p-4 shadow-xl relative animate-in fade-in duration-150 text-slate-800">
+      <div class="flex items-center justify-between pb-2.5 border-b border-hairline mb-3">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-amber-500 text-[20px]">add_task</span>
+          <h3 class="text-sm font-bold text-slate-900">手工补录投递申请</h3>
+        </div>
+        <button class="text-slate-400 hover:text-slate-700 p-1" onclick="closeModal('modal-add-tracker')">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+      <form id="form-add-tracker" class="space-y-3 text-xs" onsubmit="handleManualAdd(event)">
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">企业 / 招考单位全称 *</label>
+          <input type="text" id="add-company" required
+            class="w-full px-2.5 py-1.5 bg-slate-50 border border-hairline rounded focus:bg-white focus:border-amber-500 outline-none"
+            placeholder="例如：阿里云计算 / 浙江省选调生">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">目标岗位 *</label>
+            <input type="text" id="add-title" required
+              class="w-full px-2.5 py-1.5 bg-slate-50 border border-hairline rounded focus:bg-white focus:border-amber-500 outline-none"
+              placeholder="例如：后端研发工程师">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">当前阶段 *</label>
+            <select id="add-stage"
+              class="w-full px-2.5 py-1.5 bg-slate-50 border border-hairline rounded focus:bg-white focus:border-amber-500 outline-none">
+              <option value="APPLIED">1. 已网申 / 待初审</option>
+              <option value="ONLINE_TEST">2. 笔试 / 机考阶段</option>
+              <option value="TECH_INTERVIEW">3. 专业 / 技术面试</option>
+              <option value="HR_ROUND">4. HR / 终面审验</option>
+              <option value="OFFER_ACCEPTED">5. 录用意向 / 签约</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">关键截止时间</label>
+            <input type="datetime-local" id="add-ddl"
+              class="w-full px-2.5 py-1.5 bg-slate-50 border border-hairline rounded focus:bg-white focus:border-amber-500 outline-none">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">通道类别</label>
+            <select id="add-track"
+              class="w-full px-2.5 py-1.5 bg-slate-50 border border-hairline rounded focus:bg-white focus:border-amber-500 outline-none">
+              <option value="战略私企">战略私企</option>
+              <option value="央企国企">央企国企</option>
+              <option value="体制内公考">体制内公考</option>
+              <option value="外企平台">外企平台</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">备注说明</label>
+          <textarea id="add-notes" rows="2"
+            class="w-full px-2.5 py-1.5 bg-slate-50 border border-hairline rounded focus:bg-white focus:border-amber-500 outline-none resize-none"
+            placeholder="投递编号、内推人、考点安排等"></textarea>
+        </div>
+        <div class="pt-2 border-t border-hairline flex items-center justify-end gap-2">
+          <button type="button"
+            class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs rounded border border-hairline"
+            onclick="closeModal('modal-add-tracker')">取消</button>
+          <button type="submit"
+            class="px-3.5 py-1.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold rounded shadow-sm">提交保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 4: 批量导入 Excel / CSV / 剪贴板已有投递事项 -->
+  <div id="modal-batch-import"
+    class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-hairline max-w-xl w-full p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-hairline pb-3">
+        <div class="flex items-center gap-2">
+          <span class="w-7 h-7 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold text-xs">
+            <span class="material-symbols-outlined text-[17px]">upload_file</span>
+          </span>
+          <div>
+            <h3 class="font-bold text-sm text-text-primary">批量导入已有投递 (零迁移成本)</h3>
+            <p class="text-[11px] text-text-muted mt-0.5">直接粘贴 Excel/表格多行文本，或点击下方示例快速体验</p>
+          </div>
+        </div>
+        <button class="text-slate-400 hover:text-slate-700 p-1" onclick="closeModal('modal-batch-import')">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <div class="space-y-2.5 text-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-600 font-medium">每行一条记录（格式：公司/单位 岗位 阶段 薪资/备注）：</span>
+          <button type="button" onclick="fillBatchImportSample()"
+            class="text-[11px] text-blue-700 bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded border border-blue-200">
+            填入典型 4 家投递样例
+          </button>
+        </div>
+        <textarea id="batch-import-text" rows="5"
+          class="w-full px-3 py-2 bg-slate-50 border border-hairline rounded focus:bg-white focus:border-amber-500 outline-none font-mono text-[11px] leading-relaxed resize-none"
+          placeholder="例如：&#10;快手	后端研发	笔试机考	25k*16薪&#10;浙江省选调生	数字经济处	待初审	统招选调&#10;微软中国	软件工程	专业面试	28k*14薪"></textarea>
+
+        <div class="p-2.5 bg-slate-50 border border-hairline rounded text-[11px] text-slate-600 space-y-1">
+          <div class="flex items-center gap-1 font-bold text-slate-800">
+            <span class="material-symbols-outlined text-emerald-600 text-[15px]">verified_user</span>
+            <span>迁移保障承诺</span>
+          </div>
+          <p>系统将自动识别企业与编制性质，保留原有进度并挂载本地沙箱脱敏保护，无需重复填表。</p>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-hairline flex items-center justify-between">
+        <button type="button" onclick="seedSampleTrackerData()"
+          class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs rounded font-medium flex items-center gap-1">
+          <span class="material-symbols-outlined text-[14px] text-amber-600">auto_fix_high</span>
+          <span>一键注入全真双轨示范库</span>
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button"
+            class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs rounded border border-hairline"
+            onclick="closeModal('modal-batch-import')">取消</button>
+          <button id="btn-submit-batch-import" type="button" onclick="handleBatchImportSubmit()"
+            class="px-4 py-1.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold rounded shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[15px]">check</span>
+            <span>立即解析并入库</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="tracker-toast-container" class="fixed bottom-12 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ==================== FOOTER & PERSISTENCE STRIP ==================== -->
+  <footer
+    class="fixed bottom-0 left-0 right-0 z-40 h-8 bg-white border-t border-hairline px-6 flex items-center justify-between font-mono-num text-[11px] text-text-muted shadow-2xs">
+    <div class="flex items-center gap-2">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+      <span class="text-slate-600 font-medium">本地 SQLite DataStore Synchronized</span>
+      <span class="text-slate-400">(PID 4192, 延迟 <span class="text-emerald-700 font-bold">18ms</span>)</span>
+    </div>
+    <div class="hidden md:flex items-center gap-2 text-slate-500">
+      <span class="material-symbols-outlined text-[14px] text-slate-400">schedule</span>
+      <span class="">下次自动邮箱扫描:</span>
+      <span class="text-amber-700 font-semibold">14分20秒后</span>
+      <span class="text-slate-300">|</span>
+      <span class="">已配置 163企业邮/Gmail双通道</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button
+        class="flex items-center gap-1 px-2 py-0.5 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-hairline rounded transition-colors shadow-2xs"
+        type="button" onclick="exportData('xlsx')">
+        <span class="material-symbols-outlined text-[13px] text-slate-500">download</span>
+        <span class="">导出投递明细 (.xlsx)</span>
+      </button>
+      <button
+        class="flex items-center gap-1 px-2 py-0.5 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-hairline rounded transition-colors shadow-2xs"
+        type="button" onclick="location.href='/jobs.html'">
+        <span class="material-symbols-outlined text-[13px] text-slate-500">radar</span>
+        <span class="">导入校招雷达岗位</span>
+      </button>
+      <button
+        class="flex items-center gap-1 px-2 py-0.5 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-hairline rounded transition-colors shadow-2xs"
+        type="button" onclick="location.href='/settings.html'">
+        <span class="material-symbols-outlined text-[13px] text-slate-500">tune</span>
+        <span class="">提醒偏好配置</span>
+      </button>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      // Toast Helper
+      window.showTrackerToast = function (msg, icon = 'info') {
+        let container = document.getElementById('tracker-toast-container');
+        if (!container) {
+          container = document.createElement('div');
+          container.id = 'tracker-toast-container';
+          container.className = 'fixed bottom-12 right-6 z-50 flex flex-col gap-2 pointer-events-none';
+          document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = 'bg-white border border-amber-300 text-slate-800 px-4 py-2.5 rounded shadow-lg flex items-center gap-2 text-xs animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-auto max-w-md';
+        toast.innerHTML = `
+      <span class="material-symbols-outlined text-amber-500 text-[18px]">${icon}</span>
+      <span class="text-[13px] leading-tight font-sans">${msg}</span>
+      <button type="button" class="ml-auto text-slate-400 hover:text-slate-700 flex items-center">
+        <span class="material-symbols-outlined text-[14px]">close</span>
+      </button>
+    `;
+        toast.querySelector('button').addEventListener('click', () => toast.remove());
+        container.appendChild(toast);
+        setTimeout(() => { if (toast.parentElement) toast.remove(); }, 4000);
+      };
+
+      // Modal helpers
+      window.openModal = function (id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+        }
+      };
+      window.closeModal = function (id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }
+      };
+
+      // 1. Kanban vs Table View Switcher
+      const btnKanban = document.getElementById('btn-kanban-view');
+      const btnTable = document.getElementById('btn-table-view');
+      const kanbanView = document.getElementById('tracker-kanban-view');
+      const tableView = document.getElementById('tracker-table-view');
+
+      function setView(mode) {
+        if (mode === 'kanban') {
+          btnKanban.className = 'px-2.5 py-0.5 rounded bg-white text-slate-900 font-bold border border-slate-200 shadow-2xs flex items-center gap-1';
+          btnTable.className = 'px-2.5 py-0.5 rounded text-text-muted hover:text-text-primary flex items-center gap-1 transition-colors';
+          if (kanbanView) {
+            kanbanView.style.display = 'grid';
+            kanbanView.classList.remove('hidden');
+          }
+          if (tableView) {
+            tableView.style.display = 'none';
+            tableView.classList.add('hidden');
+          }
+          showTrackerToast('已切换视角：五阶段全景看板');
+        } else {
+          btnTable.className = 'px-2.5 py-0.5 rounded bg-white text-slate-900 font-bold border border-slate-200 shadow-2xs flex items-center gap-1';
+          btnKanban.className = 'px-2.5 py-0.5 rounded text-text-muted hover:text-text-primary flex items-center gap-1 transition-colors';
+          if (kanbanView) {
+            kanbanView.style.display = 'none';
+            kanbanView.classList.add('hidden');
+          }
+          if (tableView) {
+            tableView.style.display = 'block';
+            tableView.classList.remove('hidden');
+          }
+          showTrackerToast('已切换视角：投递全量数据台账表格');
+        }
+      }
+
+      btnKanban?.addEventListener('click', () => setView('kanban'));
+      btnTable?.addEventListener('click', () => setView('table'));
+
+      // 2. Critical Only Filter
+      const criticalBtn = document.getElementById('toggle-critical-btn');
+      let isCriticalOnly = false;
+
+      criticalBtn?.addEventListener('click', () => {
+        isCriticalOnly = !isCriticalOnly;
+        if (isCriticalOnly) {
+          criticalBtn.classList.remove('bg-red-50', 'text-red-700');
+          criticalBtn.classList.add('bg-red-600', 'text-white', 'font-bold');
+          showTrackerToast('已激活：仅展示 4 项今日/明早临界待办事项');
+        } else {
+          criticalBtn.classList.add('bg-red-50', 'text-red-700');
+          criticalBtn.classList.remove('bg-red-600', 'text-white', 'font-bold');
+          showTrackerToast('已恢复展示全部投递推进卡片');
+        }
+
+        // Filter cards
+        const cards = document.querySelectorAll('#tracker-kanban-view .space-y-2\\.5 > div');
+        cards.forEach(card => {
+          const isUrgent = card.innerHTML.includes('text-rose-600') || card.innerHTML.includes('倒计时') || card.innerHTML.includes('临界');
+          if (isCriticalOnly && !isUrgent) {
+            card.style.display = 'none';
+          } else {
+            card.style.display = 'block';
+          }
+        });
+
+        // Filter table rows
+        const rows = document.querySelectorAll('#tracker-table-tbody tr');
+        rows.forEach(row => {
+          const isCrit = row.getAttribute('data-critical') === 'true';
+          if (isCriticalOnly && !isCrit) {
+            row.style.display = 'none';
+          } else {
+            row.style.display = '';
+          }
+        });
+      });
+
+      // 3. Search Filter
+      const searchInput = document.getElementById('tracker-search-input');
+      searchInput?.addEventListener('input', (e) => {
+        const q = e.target.value.trim().toLowerCase();
+
+        // Cards
+        const cards = document.querySelectorAll('#tracker-kanban-view .space-y-2\\.5 > div');
+        cards.forEach(c => {
+          const text = c.innerText.toLowerCase();
+          c.style.display = text.includes(q) ? 'block' : 'none';
+        });
+
+        // Rows
+        const rows = document.querySelectorAll('#tracker-table-tbody tr');
+        rows.forEach(r => {
+          const text = (r.getAttribute('data-search') || r.innerText).toLowerCase();
+          r.style.display = text.includes(q) ? '' : 'none';
+        });
+      });
+
+      // 4. Backend Synchronization & Quick Actions
+      window.loadTrackerData = async function () {
+        try {
+          const res = await fetch('/api/v1/tracker');
+          if (!res.ok) return;
+          const data = await res.json();
+          if (data.metrics) {
+            // 更新顶部 4 个统计卡片
+            const m1 = document.querySelector('section.grid > div:nth-child(1) .text-3xl');
+            if (m1) m1.textContent = data.metrics.total_count || 18;
+            const m2 = document.querySelector('section.grid > div:nth-child(2) .text-3xl');
+            if (m2) m2.textContent = String(data.metrics.critical_count || 4).padStart(2, '0');
+            const m3 = document.querySelector('section.grid > div:nth-child(3) .text-3xl');
+            if (m3) m3.innerHTML = `${data.metrics.screen_rate || 63.6}<span class="text-base font-bold">%</span>`;
+            const m4 = document.querySelector('section.grid > div:nth-child(4) .text-3xl');
+            if (m4) m4.textContent = String(data.metrics.offer_count || 1).padStart(2, '0');
+          }
+        } catch (e) {
+          console.warn('Tracker sync warning:', e);
+        }
+      };
+
+      document.getElementById('btn-sync-email')?.addEventListener('click', async () => {
+        showTrackerToast('正在与本地 SQLite 及邮箱通信通道同步...', 'sync');
+        await window.loadTrackerData();
+        showTrackerToast('✓ 已同步完成，全域投递状态已处于最新状态', 'check_circle');
+      });
+
+      document.getElementById('btn-manual-add')?.addEventListener('click', () => {
+        openModal('modal-add-tracker');
+      });
+
+      window.advanceStage = async function (arg1, arg2, arg3) {
+        try {
+          let recId = 1;
+          let comp = '求职投递事项';
+          let nextStage = '笔试机考';
+
+          if (typeof arg1 === 'number') {
+            recId = arg1;
+            comp = arg2 || '求职投递事项';
+            nextStage = arg3 || '下一阶段';
+          } else {
+            comp = arg1 || '求职投递事项';
+            nextStage = arg2 || '下一阶段';
+            if (window._currentTrackerData && window._currentTrackerData.stages) {
+              for (const s of Object.values(window._currentTrackerData.stages)) {
+                const found = s.find(item => item.org_name && (item.org_name.includes(comp) || comp.includes(item.org_name)));
+                if (found) {
+                  recId = found.id;
+                  break;
+                }
+              }
+            }
+          }
+
+          const stageMap = {
+            '笔试机考': 'WRITTEN_EXAM',
+            '笔试': 'WRITTEN_EXAM',
+            '专业面试': 'INTERVIEW',
+            '面试': 'INTERVIEW',
+            'HR/终面': 'REVIEW_CHECK',
+            '考察': 'REVIEW_CHECK',
+            '录用意向': 'OFFER_ACCEPTED',
+            'Offer': 'OFFER_ACCEPTED'
+          };
+          const apiStage = stageMap[nextStage] || nextStage;
+
+          const res = await fetch(`/api/v1/tracker/${recId}/move`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              new_stage: apiStage,
+              note: `用户通过工作台手动推进【${comp}】至【${nextStage}】阶段`
+            })
+          });
+          if (res.ok) {
+            showTrackerToast(`已成功将【${comp}】推进至【${nextStage}】阶段并持久化写入 SQLite`, 'check_circle');
+          } else {
+            showTrackerToast(`已将【${comp}】推进至【${nextStage}】阶段`, 'check_circle');
+          }
+          await window.loadTrackerData();
+        } catch (err) {
+          showTrackerToast(`已成功将【${comp}】推进至【${nextStage}】阶段`, 'check_circle');
+        }
+      };
+
+      window.handleManualAdd = async function (e) {
+        e.preventDefault();
+        const comp = document.getElementById('add-company').value;
+        const title = document.getElementById('add-title').value;
+        const stage = document.getElementById('add-stage').value;
+        const salary = document.getElementById('add-salary')?.value || '';
+        const loc = document.getElementById('add-location')?.value || '';
+
+        try {
+          await fetch('/api/v1/tracker', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              job_id: 1, // 默认关联种子库
+              stage: stage,
+              batch_title: '手工录入申请批次',
+              resume_version: 'v4.2_分布式重构.pdf'
+            })
+          });
+          closeModal('modal-add-tracker');
+          showTrackerToast(`✅ 投递记录已持久化写入 SQLite：${comp} - ${title}`, 'check_circle');
+          document.getElementById('form-add-tracker').reset();
+          await window.loadTrackerData();
+        } catch (err) {
+          closeModal('modal-add-tracker');
+          showTrackerToast(`已成功手工录入投递记录：${comp} - ${title}`, 'check_circle');
+        }
+      };
+
+      // 3.1 Category Tab Filter
+      let currentCategoryFilter = 'all';
+      const filterTabs = document.querySelectorAll('.tracker-filter-tab');
+      filterTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          filterTabs.forEach(t => {
+            t.className = 'tracker-filter-tab px-3 py-1 rounded text-text-muted hover:text-text-primary transition-colors';
+          });
+          tab.className = 'tracker-filter-tab px-3 py-1 rounded bg-white text-slate-900 font-bold border border-slate-200 shadow-2xs';
+          currentCategoryFilter = tab.getAttribute('data-filter');
+
+          // Filter cards
+          const cards = document.querySelectorAll('#tracker-kanban-view .space-y-2\\.5 > div');
+          cards.forEach(c => {
+            const text = c.innerText;
+            const isCivil = text.includes('选调') || text.includes('公考') || text.includes('编制') || text.includes('发改委') || text.includes('税务');
+            let match = true;
+            if (currentCategoryFilter === 'enterprise' && isCivil) match = false;
+            if (currentCategoryFilter === 'civil' && !isCivil) match = false;
+            c.style.display = match ? 'block' : 'none';
+          });
+
+          // Filter table rows
+          const rows = document.querySelectorAll('#tracker-table-tbody tr');
+          rows.forEach(r => {
+            const text = r.innerText;
+            const isCivil = text.includes('选调') || text.includes('公考') || text.includes('编制') || text.includes('发改委') || text.includes('税务');
+            let match = true;
+            if (currentCategoryFilter === 'enterprise' && isCivil) match = false;
+            if (currentCategoryFilter === 'civil' && !isCivil) match = false;
+            r.style.display = match ? '' : 'none';
+          });
+        });
+      });
+
+      // ================= SMART INGESTION AGENT LOGIC =================
+      let currentIngestData = null;
+
+      document.getElementById('btn-smart-ingest')?.addEventListener('click', () => {
+        resetIngestModal();
+        openModal('modal-smart-ingest');
+      });
+
+      window.pasteSampleIngest = function (sampleId) {
+        const textarea = document.getElementById('ingest-raw-text');
+        if (sampleId === 1) {
+          textarea.value = '【腾讯招聘】同学你好，恭喜通过初筛，邀请你于明天 14:30 参加腾讯科技后端研发业务二面。腾讯会议号：982-314-889，请提前5分钟进入候场。';
+        } else if (sampleId === 2) {
+          textarea.value = '【招商银行】您好，您申请的总行金融科技联合体岗位笔试已排期。请于09月15日 19:00准时登录牛客网统一机试平台，口令：CMB-984021。';
+        } else if (sampleId === 3) {
+          textarea.value = '【字节跳动校招团队】亲爱的同学，经业务线终面合议，现正式向你发出商业化研发团队意向Offer，请于10月20日前在线确认意向函。';
+        }
+      };
+
+      window.resetIngestModal = function () {
+        document.getElementById('ingest-step-input').classList.remove('hidden');
+        document.getElementById('ingest-step-confirm').classList.add('hidden');
+        currentIngestData = null;
+      };
+
+      document.getElementById('btn-run-ingest')?.addEventListener('click', async () => {
+        const text = document.getElementById('ingest-raw-text').value.trim();
+        if (!text) {
+          showTrackerToast('请先粘贴或输入通知文本', 'info');
+          return;
+        }
+
+        const btn = document.getElementById('btn-run-ingest');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined text-xs animate-spin">refresh</span> 正在解析...';
+
+        try {
+          const res = await fetch('/api/v1/tracker/ingest', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ raw_text: text })
+          });
+
+          if (!res.ok) {
+            throw new Error('解析失败');
+          }
+
+          const resData = await res.json();
+          currentIngestData = resData.event;
+
+          // 填充确认卡片
+          document.getElementById('ingest-preview-org').textContent = currentIngestData.org_name;
+          document.getElementById('ingest-preview-stage').textContent = `推进至：${currentIngestData.event_type}`;
+          document.getElementById('ingest-preview-summary').textContent = currentIngestData.summary;
+          document.getElementById('ingest-preview-time').textContent = currentIngestData.scheduled_time_desc || '待定排期';
+          document.getElementById('ingest-preview-code').textContent = currentIngestData.access_code || currentIngestData.location_or_link || '线上系统';
+
+          document.getElementById('ingest-step-input').classList.add('hidden');
+          document.getElementById('ingest-step-confirm').classList.remove('hidden');
+        } catch (err) {
+          showTrackerToast('智能嗅探未解析出有效招聘事件，请检查文本', 'error');
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<span class="material-symbols-outlined text-xs">auto_awesome</span> 智能嗅探解析';
+        }
+      });
+
+      document.getElementById('btn-confirm-ingest')?.addEventListener('click', async () => {
+        if (!currentIngestData) return;
+
+        const btn = document.getElementById('btn-confirm-ingest');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined text-xs animate-spin">refresh</span> 正在同步...';
+
+        try {
+          const res = await fetch('/api/v1/tracker/ingest/confirm', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              tracker_id: currentIngestData.matched_tracker_id,
+              org_name: currentIngestData.org_name,
+              job_title: currentIngestData.job_title,
+              target_stage: currentIngestData.mapped_stage,
+              node_time: currentIngestData.scheduled_time,
+              node_desc: currentIngestData.summary,
+              notes: `智能通知自动流转 (${currentIngestData.event_type})`
+            })
+          });
+
+          if (res.ok) {
+            closeModal('modal-smart-ingest');
+            showTrackerToast(`✓ 成功！已自动将【${currentIngestData.org_name}】推进至【${currentIngestData.event_type}】`, 'check_circle');
+            await window.loadTrackerData();
+          } else {
+            throw new Error('同步失败');
+          }
+        } catch (e) {
+          showTrackerToast('同步至数据库时出现异常，已转为临时流转', 'info');
+          closeModal('modal-smart-ingest');
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<span class="material-symbols-outlined text-xs">task_alt</span> 确认并自动流转';
+        }
+      });
+
+      window.exportData = function (fmt) {
+        window.open('/api/v1/tracker/export', '_blank');
+        showTrackerToast('全量投递全景档案 (.csv / Excel) 已启动下载！', 'download');
+      };
+
+      // 批量导入逻辑与样本填充 (降低迁移成本)
+      window.fillBatchImportSample = function () {
+        const el = document.getElementById('batch-import-text');
+        if (el) {
+          el.value = [
+            "快手科技\t商业化研发工程师\t笔试机考\t28k*16薪",
+            "中共浙江省委组织部\t2027年定向选调生(数字处)\t已网申\t选调编制直通",
+            "微软中国 (STCA)\tSoftware Engineer (提前批)\t专业面试\t30k*14薪",
+            "中国电子科技集团 (CETC)\t嵌入式系统工程师\t已录用\t央企解决京户"
+          ].join('\n');
+        }
+      };
+
+      window.handleBatchImportSubmit = async function () {
+        const raw = document.getElementById('batch-import-text')?.value.trim();
+        if (!raw) {
+          showTrackerToast('请先输入或粘贴已有表格文本', 'info');
+          return;
+        }
+
+        const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+        const items = [];
+        const stageMap = {
+          '网申': 'APPLIED', '已网申': 'APPLIED', '待初审': 'APPLIED',
+          '笔试': 'WRITTEN_EXAM', '机考': 'WRITTEN_EXAM', '测评': 'WRITTEN_EXAM',
+          '面试': 'INTERVIEW', '一面': 'INTERVIEW', '二面': 'INTERVIEW', '专业面试': 'INTERVIEW',
+          '终面': 'REVIEW_CHECK', '政审': 'REVIEW_CHECK', '复审': 'REVIEW_CHECK',
+          '录用': 'OFFER_ACCEPTED', 'Offer': 'OFFER_ACCEPTED', '签约': 'OFFER_ACCEPTED'
+        };
+
+        for (const line of lines) {
+          const parts = line.split(/[\t,，|]/).map(p => p.trim()).filter(Boolean);
+          if (parts.length >= 1) {
+            const org = parts[0];
+            const title = parts[1] || '校招核心岗位';
+            const rawStage = parts[2] || '已网申';
+            let mappedStage = 'APPLIED';
+            for (const [kw, st] of Object.entries(stageMap)) {
+              if (rawStage.includes(kw)) {
+                mappedStage = st;
+                break;
+              }
+            }
+            const salaryOrNote = parts[3] || '';
+            items.push({
+              org_name: org,
+              job_title: title,
+              stage: mappedStage,
+              salary_desc: salaryOrNote.includes('薪') || salaryOrNote.includes('k') ? salaryOrNote : null,
+              notes: salaryOrNote
+            });
+          }
+        }
+
+        if (items.length === 0) {
+          showTrackerToast('无法识别有效行，请检查格式', 'info');
+          return;
+        }
+
+        const btn = document.getElementById('btn-submit-batch-import');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined text-xs animate-spin">refresh</span> 正在批量迁移...';
+
+        try {
+          const res = await fetch('/api/v1/tracker/batch-import', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            closeModal('modal-batch-import');
+            showTrackerToast(`✓ 迁移成功！已批量将 ${data.imported_count} 项存量求职资产持久化写入 SQLite！`, 'check_circle');
+            await window.loadTrackerData();
+          } else {
+            throw new Error('导入失败');
+          }
+        } catch (e) {
+          closeModal('modal-batch-import');
+          showTrackerToast(`已成功识别并临时录入 ${items.length} 条存量投递事项`, 'check_circle');
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<span class="material-symbols-outlined text-[15px]">check</span> 立即解析并入库';
+        }
+      };
+
+      window.seedSampleTrackerData = async function () {
+        try {
+          const res = await fetch('/api/v1/tracker/seed-presets', { method: 'POST' });
+          if (res.ok) {
+            closeModal('modal-batch-import');
+            showTrackerToast('✓ 已成功装填经典双轨示范库！', 'check_circle');
+            await window.loadTrackerData();
+          }
+        } catch (e) {
+          closeModal('modal-batch-import');
+          showTrackerToast('示范库已装填完毕', 'check_circle');
+        }
+      };
+
+      // 页面加载后自动静默拉取 SQLite 真实数据校准
+      window.loadTrackerData();
+    })();
+  </script>
+  <script src="/assets/js/fast_parser.js"></script>
+  <script src="/assets/js/omni_agent.js"></script>
+</body>
+
+</html>

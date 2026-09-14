@@ -1,0 +1,98 @@
+# ==========================================
+# 1. 本地私密数据与数据库隔离 (核心防线)
+# ==========================================
+data/*
+!data/.gitkeep
+!data/resumes/
+!data/resumes/.gitkeep
+!data/cache/
+!data/cache/.gitkeep
+
+# 数据库文件
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# 真实简历文件（防误传）
+data/resumes/*
+!data/resumes/.gitkeep
+
+# 爬虫与临时缓存
+data/cache/*
+!data/cache/.gitkeep
+logs/
+*.log
+
+# ==========================================
+# 2. 真实环境变量与敏感密钥
+# ==========================================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+*.secret
+
+# ==========================================
+# 3. 构建产物与二进制发行包 (超大文件拦截)
+# ==========================================
+dist/
+build/
+*.app/
+*.dmg
+*.zip
+*.tar.gz
+*.egg-info/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg
+MANIFEST
+
+# ==========================================
+# 4. 虚拟环境与依赖
+# ==========================================
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# ==========================================
+# 5. Python 编译与测试缓存
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.installed.cfg
+.pytest_cache/
+.ruff_cache/
+
+# ==========================================
+# 6. IDE 与系统临时文件
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
