@@ -78,7 +78,7 @@ fi
 
 # 5. 检查开源规范文件
 echo -e "\n${YELLOW}[5/5] 检查开源必备基础文件 (LICENSE / README / PRD)...${NC}"
-for req_file in "README.md" "LICENSE" "CONTRIBUTING.md" "SECURITY.md" "CampusJob_Agent_PRD_V1.0.md" "pyproject.toml"; do
+for req_file in "README.md" "LICENSE" ".github/CONTRIBUTING.md" ".github/SECURITY.md" "docs/CampusJob_Agent_PRD_V1.0.md" "pyproject.toml"; do
     if [ ! -f "${req_file}" ]; then
         echo -e "${RED}❌ 缺少必要文件: ${req_file}${NC}"
         HAS_ERROR=1

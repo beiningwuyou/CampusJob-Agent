@@ -39,7 +39,7 @@ uv run python scripts/seed_demo_data.py
 
 # 5. Launch
 # Option A: macOS Native App
-./run_desktop.sh
+./scripts/run_desktop.sh
 
 # Option B: Web Dashboard
 uv run uvicorn app.main:app --reload

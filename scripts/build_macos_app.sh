@@ -13,7 +13,7 @@ rm -rf "${PROJECT_DIR}/dist"
 mkdir -p "${MACOS}" "${RESOURCES}"
 
 echo "==> 2. 生成高清应用图标..."
-uv run python3 "${PROJECT_DIR}/generate_icon.py"
+uv run python3 "${PROJECT_DIR}/scripts/generate_icon.py"
 iconutil -c icns "${PROJECT_DIR}/build/icon.iconset" -o "${RESOURCES}/AppIcon.icns"
 
 echo "==> 3. 写入 macOS 标准 Info.plist 属性字典..."
@@ -97,12 +97,12 @@ LAUNCHER
 chmod +x "${MACOS}/CampusJob-Agent"
 
 echo "==> 5. 创建便携一键启动脚本..."
-cat << 'SH_RUN' > "${PROJECT_DIR}/run_desktop.sh"
+cat << 'SH_RUN' > "${PROJECT_DIR}/scripts/run_desktop.sh"
 #!/usr/bin/env bash
-PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 echo "🚀 正在拉起 CampusJob-Agent 桌面战备系统..."
 uv --directory "${PROJECT_DIR}" run python3 "${PROJECT_DIR}/desktop.py"
 SH_RUN
-chmod +x "${PROJECT_DIR}/run_desktop.sh"
+chmod +x "${PROJECT_DIR}/scripts/run_desktop.sh"
 
 echo "✅ 打包完成！macOS 桌面应用程序已生成于: ${APP_BUNDLE}"

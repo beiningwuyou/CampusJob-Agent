@@ -85,7 +85,7 @@ async def serve_settings():
     return FileResponse(web_dir / "settings.html")
 
 # 挂载 Stitch 设计原型静态资源
-stitch_dir = Path(__file__).resolve().parent.parent / "stitch_graduate_career_hub"
+stitch_dir = Path(__file__).resolve().parent.parent / "docs" / "stitch"
 if stitch_dir.exists():
     app.mount("/stitch", StaticFiles(directory=str(stitch_dir), html=True), name="stitch")
 

@@ -1,7 +1,7 @@
 # CampusJob-Agent 产品形态与商业化付费分级体系需求文档 (PRD)
 
 **文档版本**：V1.0.0  
-**关联主 PRD**：[CampusJob_Agent_PRD_V1.0.md](../CampusJob_Agent_PRD_V1.0.md)  
+**关联主 PRD**：[CampusJob_Agent_PRD_V1.0.md](./CampusJob_Agent_PRD_V1.0.md)  
 **撰写日期**：2026-09-11  
 **状态**：方案定稿 / 评审就绪  
 

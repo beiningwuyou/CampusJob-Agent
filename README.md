@@ -18,7 +18,7 @@
   集多源情报雷达、双 Schema 结构化解析、本地隐私脱敏沙箱、AI 契合度诊断、全流程投递看板与系统日历同步于一体。
 </p>
 
-[English](./README_EN.md) · [查看详细需求 PRD](./CampusJob_Agent_PRD_V1.0.md) · [商业化与分级设计](./docs/PRODUCT_TIERING_AND_MONETIZATION_PRD.md) · [贡献指南](./CONTRIBUTING.md)
+[English](./README_EN.md) · [查看详细需求 PRD](./docs/CampusJob_Agent_PRD_V1.0.md) · [商业化与分级设计](./docs/PRODUCT_TIERING_AND_MONETIZATION_PRD.md) · [贡献指南](./.github/CONTRIBUTING.md)
 
 <br/>
 
@@ -217,7 +217,7 @@ uv run python scripts/seed_demo_data.py
 
 #### 方式 A：双击运行 macOS 原生桌面应用（推荐）
 ```bash
-./run_desktop.sh
+./scripts/run_desktop.sh
 ```
 *或在本地自编译打包生成独立的 `.app` 应用：*
 ```bash
@@ -267,32 +267,40 @@ uv run pytest -v
 
 ```
 CampusJob-Agent/
-├── app/                          # 核心后端逻辑
+├── .github/                      # GitHub 社区治理与安全规范
+│   ├── CONTRIBUTING.md           # 社区贡献指南
+│   └── SECURITY.md               # 隐私沙箱与安全政策
+├── app/                          # 核心后端逻辑 (FastAPI + Agent)
 │   ├── agents/                   # 双轨提取 Agent、匹配 Agent、AI 顾问
-│   ├── api/                      # FastAPI v1 RESTful API 路由
+│   ├── api/                      # RESTful API 路由 (/jobs, /tracker, /calendar 等)
 │   ├── core/                     # 本地隐私沙箱 (security.py)、全局配置与调度器
 │   ├── db/                       # SQLAlchemy ORM 模型、仓储层与会话
 │   ├── schemas/                  # 企业 JD 与体制内公考 Pydantic Schema
 │   ├── services/                 # 爬虫解析、邮件早报、日历生成与脱敏服务
 │   └── main.py                   # 应用启动入口
 ├── web/                          # Web 前端轻量工作台 (Tailwind + Vanilla JS)
-├── docs/                         # 技术规格文档与高清架构效果图
+├── docs/                         # 技术规格文档、UI 原型与全景架构图集
 │   ├── images/                   # 官方工作台全景高清截图 (7张高质感展示图)
-│   └── PRODUCT_TIERING_AND_MONETIZATION_PRD.md
-├── scripts/                      # 自动化工具集
+│   ├── stitch/                   # Stitch 完整高保真原型与设计系统规范
+│   ├── CampusJob_Agent_PRD_V1.0.md # 主产品需求文档 (PRD V1.0)
+│   └── PRODUCT_TIERING_AND_MONETIZATION_PRD.md # 商业化分级规划 PRD
+├── scripts/                      # 自动化工具箱 (构建/演示/审计)
 │   ├── build_macos_app.sh        # macOS 原生 .app 打包脚本
-│   ├── seed_demo_data.py         # 脱敏虚拟演示数据初始化工具
-│   └── pre_publish_check.sh      # 开源发布前安全看门狗核验脚本
+│   ├── generate_icon.py          # 高清应用图标生成器
+│   ├── pre_publish_check.sh      # 开源发布前安全看门狗核验脚本
+│   ├── run_desktop.sh            # 桌面端原生一键启动快捷脚本
+│   ├── sample_resume.txt         # 演示脱敏简历模板
+│   └── seed_demo_data.py         # 脱敏虚拟演示数据初始化工具
 ├── tests/                        # 自动化测试矩阵 (pytest)
-├── desktop.py                    # macOS WebKit 原生客户端外壳
-├── run_desktop.sh                # 桌面端一键启动快捷脚本
+├── desktop.py                    # macOS WebKit 原生客户端外壳入口
+├── pyproject.toml                # 项目元数据与依赖定义
+├── uv.lock                       # uv 依赖版本精确锁定
+├── requirements.txt              # pip 兼容依赖清单
 ├── .env.example                  # 环境变量安全示例模板
 ├── .gitignore                    # 强化的本地数据脱敏与文件隔离规则
-├── pyproject.toml                # 项目元数据与依赖定义
 ├── LICENSE                       # MIT 开源许可证
-├── CONTRIBUTING.md               # 社区贡献规范
-├── SECURITY.md                   # 隐私沙箱与安全政策
-└── README.md                     # 项目官方文档主页
+├── README.md                     # 中文官方主页
+└── README_EN.md                  # 英文官方主页
 ```
 
 ---
@@ -310,7 +318,7 @@ CampusJob-Agent/
 ## 🤝 参与贡献
 
 我们热烈欢迎各类形式的贡献！
-在提交 PR 之前，请阅读我们的 [贡献指南 (CONTRIBUTING.md)](./CONTRIBUTING.md)，并确保运行代码检查与测试：
+在提交 PR 之前，请阅读我们的 [贡献指南 (CONTRIBUTING.md)](./.github/CONTRIBUTING.md)，并确保运行代码检查与测试：
 ```bash
 uv run ruff check .
 uv run pytest -v
